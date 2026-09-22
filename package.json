@@ -1,0 +1,40 @@
+{
+  "name": "gestioneshow",
+  "version": "1.10.7",
+  "description": "Gestione Show MCG",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^44.3.0",
+    "electron-builder": "^26.15.3",
+    "electron-reload": "^2.0.0-alpha.1"
+  },
+  "dependencies": {
+    "electron-store": "^11.0.2"
+  },
+  "build": {
+    "appId": "com.gestioneshow.app",
+    "productName": "Gestione Show MCG",
+    "files": [
+      "**/*",
+      "!app.log",
+      "!shows_data.json",
+      "!window_state.json",
+      "!node_modules/electron/**/*"
+    ],
+    "portable": {
+      "useZip": false
+    },
+    "win": {
+      "target": "portable",
+      "icon": "icon.ico"
+    }
+  }
+}

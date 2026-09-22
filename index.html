@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Show MCG</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="theme-grey">
+
+    <!-- HEADER & NAVIGAZIONE -->
+    <header>
+        <div class="header-container">
+            <h1>
+                <span>♀️ Gestione Show MCG</span>
+                <span id="appVersion" class="version-badge">v1.10.3</span>
+            </h1>
+
+            <div class="header-controls">
+                <div class="font-size-control">
+                    <span class="font-size-label">Testo:</span>
+                    <button type="button" class="btn-font" onclick="riduciFont()">A-</button>
+                    <span id="fontBadge" class="font-size-badge">18px</span>
+                    <button type="button" class="btn-font" onclick="aumentaFont()">A+</button>
+                </div>
+
+                <div class="theme-selector">
+                    <label for="selectTema">Tema:</label>
+                    <select id="selectTema" onchange="cambiaTema(this.value)">
+                        <option value="grey">Grigio Chiaro</option>
+                        <option value="light">Chiaro Standard</option>
+                        <option value="dark">Scuro</option>
+                    </select>
+                </div>
+
+                <div class="data-actions">
+                    <button type="button" class="btn-data" onclick="esportaDati()" title="Esporta Backup">💾 Esporta</button>
+                    <button type="button" class="btn-data" onclick="importaDati()" title="Importa Backup">📥 Importa</button>
+                    <button type="button" class="btn-data" onclick="apriCartellaDati()" title="Apri Cartella Dati">📁 Cartella</button>
+                    <button type="button" class="btn-data" onclick="sincronizzaTransazioniMondoCamGirls()" title="Sincronizza da MondoCamGirls">🔄 Sincronizza MCG</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="tabs-nav">
+            <button type="button" class="tab-btn active" onclick="apriTab('tabDashboard', event)">📝 Form & Cronologia</button>
+            <button type="button" class="tab-btn" onclick="apriTab('tabClassifica', event)">🏆 Classifica Modelle</button>
+            <button type="button" class="tab-btn" onclick="apriTab('tabStatistiche', event)">📈 Statistiche Mensili</button>
+        </nav>
+    </header>
+
+    <main class="main-container">
+
+        <!-- TAB 1: FORM E CRONOLOGIA -->
+        <div id="tabDashboard" class="tab-content active">
+            
+            <section class="card-section">
+                <h2>Aggiungi / Modifica Show</h2>
+                <form id="showForm" class="show-form-grid">
+    <input type="hidden" id="editId" value="">
+
+    <!-- Riga 1: Data/Ora, Nome Modella, Sito Web -->
+    <div class="form-row flex-3">
+        <div class="form-group">
+            <label for="dataOra">Data e Ora</label>
+            <input type="datetime-local" id="dataOra" required>
+        </div>
+
+        <div class="form-group">
+            <label for="nome">Nome Modella</label>
+            <input type="text" id="nome" list="listaModelleSuggerite" placeholder="Es. Anna" required autocomplete="off" oninput="gestisciAutocompletamentoModella()">
+            <datalist id="listaModelleSuggerite"></datalist>
+        </div>
+
+        <div class="form-group">
+            <label for="urlProfilo">Link Profilo Web</label>
+            <input type="url" id="urlProfilo" placeholder="https://...">
+        </div>
+    </div>
+
+    <!-- Riga 2: Piattaforma, Nickname, Costo, Punteggio, Checkbox Regalo -->
+    <div class="form-row flex-5">
+        <div class="form-group">
+            <label for="piattaforma">Piattaforma</label>
+            <div class="custom-select-wrapper">
+                <select id="piattaforma" style="display: none;">
+                    <option value="Teams">Teams</option>
+                    <option value="Telegram">Telegram</option>
+                    <option value="Skype">Skype</option>
+                    <option value="Zoom">Zoom</option>
+                    <option value="Altro">Altro</option>
+                </select>
+                <div class="custom-select-trigger">
+                    <span id="customSelectSelected"><i class="fa-solid fa-users-rectangle" style="color: #6264A7;"></i> Teams</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="custom-options" id="customPiattaformaDropdown">
+                    <div class="custom-option" data-value="Teams"><i class="fa-solid fa-users-rectangle" style="color: #6264A7;"></i> Teams</div>
+                    <div class="custom-option" data-value="Telegram"><i class="fa-brands fa-telegram" style="color: #2AABEE;"></i> Telegram</div>
+                    <div class="custom-option" data-value="Skype"><i class="fa-brands fa-skype" style="color: #00AFF0;"></i> Skype</div>
+                    <div class="custom-option" data-value="Zoom"><i class="fa-solid fa-video" style="color: #2D8CFF;"></i> Zoom</div>
+                    <div class="custom-option" data-value="Altro"><i class="fa-solid fa-globe" style="color: #6c757d;"></i> Altro</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="nickname">Nickname Chat</label>
+            <input type="text" id="nickname" placeholder="@username">
+        </div>
+
+        <div class="form-group">
+            <label for="costo">Costo (€)</label>
+            <input type="number" id="costo" step="0.01" min="0" placeholder="0.00">
+        </div>
+
+        <div class="form-group">
+            <label for="punteggio">Valutazione</label>
+            <select id="punteggio" required>
+                <option value="">Seleziona...</option>
+                <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+                <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                <option value="3">⭐⭐⭐ (3/5)</option>
+                <option value="2">⭐⭐ (2/5)</option>
+                <option value="1">⭐ (1/5)</option>
+                <option value="TBD">TBD (Da valutare)</option>
+            </select>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <label class="checkbox-label" for="isRegalo">
+                <input type="checkbox" id="isRegalo" onchange="gestisciStatoRegalo()">
+                <span>🎁 Regalo</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Riga 3: URL Immagine, Checkbox Recensione -->
+    <div class="form-row flex-2-auto">
+        <div class="form-group">
+            <label for="immagine">URL Immagine / Foto</label>
+            <input type="url" id="immagine" placeholder="https://.../foto.jpg">
+        </div>
+
+        <div class="form-group checkbox-group">
+            <label class="checkbox-label" for="recensione">
+                <input type="checkbox" id="recensione">
+                <span>✅ Recensione Fatta</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Riga 4: Note -->
+    <div class="form-row">
+        <div class="form-group full-width">
+            <label for="note">Note / Dettagli Show</label>
+            <textarea id="note" rows="2" placeholder="Inserisci note aggiuntive..."></textarea>
+        </div>
+    </div>
+
+    <!-- Riga 5: Pulsanti d'azione -->
+    <div class="form-actions">
+        <button type="submit" id="btnSalva" class="btn-primary">Salva Record</button>
+        <button type="button" id="btnAnnulla" class="btn-secondary" style="display: none;" onclick="annullaModifica()">Annulla</button>
+    </div>
+</form>
+            </section>
+
+            <section class="card-section">
+                <div class="section-header" style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+                    <h2>📋 Cronologia Show</h2>
+                    
+                    <div class="filter-item" style="width: 100%;">
+                        <label><strong>Filtra per Anno:</strong></label>
+                        <div id="container-filtri-anni" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 5px;"></div>
+                    </div>
+
+                    <div class="filters-bar" style="width: 100%;">
+                        <div class="filter-item">
+                            <label for="searchModellaCronologia">🔍 Cerca Nome:</label>
+                            <input type="text" id="searchModellaCronologia" placeholder="Filtra per nome..." oninput="filtraCronologiaPerNome()">
+                        </div>
+
+                        <div class="filter-item">
+                            <label for="ordineData">Ordine:</label>
+                            <select id="ordineData">
+                                <option value="desc">Più recenti prima</option>
+                                <option value="asc">Meno recenti prima</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-item">
+                            <label for="limiteRisultati">Mostra:</label>
+                            <select id="limiteRisultati">
+                                <option value="5">5 risultati</option>
+                                <option value="10">10 risultati</option>
+                                <option value="20">20 risultati</option>
+                                <option value="all">Tutti</option>
+                            </select>
+                        </div>
+
+                        <button type="button" class="btn-reset" onclick="resetFiltriCronologia()">Reset Filtri</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Foto</th>
+                                <th>Data & Ora</th>
+                                <th>Nome</th>
+                                <th>Piattaforma</th>
+                                <th>Costo</th>
+                                <th>Voto</th>
+                                <th>Origine</th>
+                                <th>Recensione</th>
+                                <th>Note</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaShow"></tbody>
+                    </table>
+                </div>
+
+                <div id="controlliPaginazione" class="pagination-controls">
+                    <button type="button" id="btnPrevPagina" class="btn-page" onclick="cambiaPagina(-1)">⬅️ Precedente</button>
+                    <span id="infoPagina" style="font-weight: 600;">Pagina 1 di 1</span>
+                    <button type="button" id="btnNextPagina" class="btn-page" onclick="cambiaPagina(1)">Successiva ➡️</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- TAB 2: CLASSIFICA MODELLE -->
+        <div id="tabClassifica" class="tab-content">
+            <section class="card-section">
+                <h2>🏆 Classifica Generale Modelle</h2>
+
+                <!-- BOX INFORMAZIONI CRITERI CLASSIFICA -->
+                <div class="info-classifica-box" style="margin-bottom: 20px; padding: 15px; border-radius: var(--radius-md); background: var(--bg-main); border: 1px solid var(--border-color); font-size: 0.88rem; line-height: 1.5;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 8px; color: var(--primary-color);">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Criteri di Ordinamento della Classifica:</span>
+                    </div>
+                    <ul style="margin-left: 22px; color: var(--text-muted);">
+                        <li style="margin-bottom: 4px;"><strong>Media Voti (Criterio Primario):</strong> Le modelle vengono ordinate prima di tutto in base alla media dei voti ricevuti (da 1 a 5 stelle). Gli show regalati o contrassegnati come <em>TBD</em> non influiscono sulla media.</li>
+                        <li><strong>Numero di Show (Criterio Secondario):</strong> A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.</li>
+                    </ul>
+                </div>
+                
+                <div class="filters-bar" style="margin-bottom: 20px;">
+                    <div class="filter-item" style="width: 100%; max-width: 400px;">
+                        <label for="searchModellaClassifica">🔎 Cerca Modella:</label>
+                        <input type="text" id="searchModellaClassifica" placeholder="Inserisci il nome..." oninput="filtraClassificaModelle()">
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="text-align: center;">Posizione</th>
+                                <th>Foto</th>
+                                <th>Nome Modella</th>
+                                <th>Sito Web</th>
+                                <th>Piattaforma</th>
+                                <th style="text-align: center;">Show Totali</th>
+								<th>Spesa Totale</th>
+								<th>Media Voti</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaMedie"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- TAB 3: STATISTICHE MENSILI -->
+        <div id="tabStatistiche" class="tab-content">
+            <section id="sectionObiettivoBudget" class="card-section" style="background-color: #fef9c3; border: 1px solid #fde047; border-radius: 8px;">
+                <h2 style="color: #1e293b;">Obiettivo e Budget Mensile</h2>
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                    <label for="monthlyBudgetInput" style="font-weight: 600; color: #1e293b;">Imposta Budget Mensile (€):</label>
+                    <input type="number" id="monthlyBudgetInput" placeholder="Es. 1000" step="10" min="0" style="width: 150px;">
+                    <button type="button" id="saveBudgetBtn" class="btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">Salva Budget</button>
+                </div>
+
+                <div id="budgetProgressContainer" style="margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 5px; color: #1e293b;">
+                        <span id="budgetStatusText">Guadagno attuale: € 0.00 / € 0.00</span>
+                        <span id="budgetRemainingText" style="color: var(--primary-color);">Mancano: € 0.00</span>
+                    </div>
+                    <div style="width: 100%; background: rgba(255, 255, 255, 0.8); height: 16px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);">
+                        <div id="progressBar" style="width: 0%; height: 100%; background: var(--accent-color); transition: width 0.4s ease;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card-section">
+                <div class="statistiche-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                    <h2>📈 Statistiche Mensili</h2>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label for="selezionaAnnoStatistiche" style="font-weight: 600;">Seleziona Anno:</label>
+                        <select id="selezionaAnnoStatistiche" onchange="aggiornaStatisticheMensili()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);">
+                            <!-- Popolato dinamicamente da script.js -->
+                        </select>
+                    </div>
+                </div>
+                <div id="sezioneStatistiche" class="accordion-container"></div>
+            </section>
+        </div>
+
+    </main>
+
+    <!-- MODALE DETTAGLIO MODELLA -->
+    <div id="modalModella" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="chiudiModalModella()">&times;</span>
+            <div id="modalHeader" class="modal-header-info"></div>
+            
+            <!-- SEZIONE GALLERIA FOTO -->
+            <div id="sezioneGalleriaModella" style="margin-top: 15px; margin-bottom: 20px;">
+                <h3>🖼️ Galleria Foto Profilo</h3>
+                <div id="contenitoreFotoDinamiche" style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; min-height: 80px; align-items: center;">
+                    <span style="color: var(--text-muted); font-size: 0.9rem;">Caricamento foto in corso...</span>
+                </div>
+            </div>
+            
+            <h3>Storico Show Effettuati</h3>
+            <div class="table-container" style="margin-top: 15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data & Ora</th>
+                            <th>Piattaforma</th>
+                            <th>Costo</th>
+                            <th>Voto</th>
+                            <th>Recensione</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalListaShow"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+	<div id="changelogModal" class="modal" style="display: none;">
+		<div class="modal-content">
+			<span id="closeChangelogBtn" class="close-btn">&times;</span>
+			<h2>📜 Changelog / Novità</h2>
+			
+			<!-- Contenitore del testo -->
+			<div id="changelogContent" style="max-height: 300px; overflow-y: auto; margin: 15px 0;">
+				<p>Caricamento novità in corso...</p>
+			</div>
+
+			<button id="confirmChangelogBtn" class="btn-primary">Ho capito</button>
+		</div>
+	</div>
+
+    <!-- MODALE INGRANDIMENTO IMMAGINE (LIGHTBOX) CON FRECCE -->
+    <div id="modalImmagineIngrandita" class="modal" onclick="chiudiModalImmagine()">
+        <span class="close-modal" style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; z-index: 2010;">&times;</span>
+        
+        <!-- Freccia Sinistra -->
+        <button class="nav-btn-lightbox" onclick="event.stopPropagation(); navigaGalleria(-1)" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; font-size: 30px; padding: 15px 20px; cursor: pointer; border-radius: 50%; z-index: 2010; user-select: none;">&#10094;</button>
+
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+            <img id="imgIngrandita" src="" alt="Foto ingrandita" onclick="event.stopPropagation()" style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain;">
+        </div>
+
+        <!-- Freccia Destra -->
+        <button class="nav-btn-lightbox" onclick="event.stopPropagation(); navigaGalleria(1)" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; font-size: 30px; padding: 15px 20px; cursor: pointer; border-radius: 50%; z-index: 2010; user-select: none;">&#10095;</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

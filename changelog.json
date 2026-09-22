@@ -1,0 +1,35 @@
+{
+  "1.10.7": [
+    "Ottimizzazione generale",
+    "Aggiunta sezione Criteri di Ordinamento della Classifica",
+    "Introdotto controllo Git di versione",
+    "Ripristino funzione Sincronizza MCG",
+    "Introduzione Nickname e sistema di collegamento veloce con piattaforma"
+  ],  
+	"1.10.6": [
+	"FIX ingrandimento testo automatico a seguito di apertura pagina web",
+	"Ottimizzazione generale del codice",
+	"Introduzione del filtro per anni",
+	"Introdotto ingrandimento immagine delle modelle",
+	"Introdotto carosello con recupero foto modelle",
+	"Revisione delle statistiche con l'introduzione del filtro per anno"
+  ],
+	"1.10.5": [
+    "Ottimizzazione IA",
+	"Introduzione del sistema di verifica online delle modelle (non funzionante al momento)",
+	"Sistemazione di alcuni titoli"
+  ],
+   "1.10.3": [
+    "Aggiunto sistema di changelog",
+	"Fix importazione da MCG che si bloccava",
+	"Fix dei modali di dettaglio delle modelle"
+  ],
+  "1.10.2": [
+    "Aggiunta barra di caricamento (Splash Screen) all'avvio dell'app.",
+    "Aggiunto il log della versione corrente all'avvio.",
+    "Corretto l'errore di sintassi nell'importazione dei dati e il gestore append-log."
+  ],
+  "1.10.1": [
+    "Configurazione iniziale per la build dell'eseguibile portatile."
+  ]
+}

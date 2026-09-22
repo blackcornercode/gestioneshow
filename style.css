@@ -1,0 +1,817 @@
+/* ==========================================================================
+   1. IMPORT FONT ELEGANTE (Inter) & VARIABILI
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-main: #f4f7f9;
+    --bg-card: #ffffff;
+    --bg-input: #ffffff;
+    --text-color: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --secondary-color: #64748b;
+    --secondary-hover: #475569;
+    --accent-color: #10b981;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --warning-color: #f59e0b;
+    --warning-hover: #d97706;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 14px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+
+/* --- TEMA GRIGIO (Ultra Chiaro & Elegante) --- */
+body.theme-grey {
+    --bg-main: #e2e8f0;
+    --bg-card: #f1f5f9;
+    --bg-input: #f1f5f9;
+    --text-color: #0f172a;
+    --text-muted: #475569;
+    --border-color: #cbd5e1;
+    --primary-color: #0284c7;
+    --primary-hover: #0369a1;
+}
+
+/* --- TEMA SCURO --- */
+body.theme-dark {
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --bg-input: #1e293b;
+    --text-color: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+}
+
+/* ==========================================================================
+   2. RESET E BASE TIPOGRAFICA
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 18px !important; 
+}
+
+body {
+    font-family: var(--font-family);
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    line-height: 1.55;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    padding-bottom: 40px;
+    -webkit-font-smoothing: antialiased;
+}
+
+.main-container {
+    max-width: 100%;
+    width: 98%;
+    margin: 25px auto;
+    padding: 0 15px;
+}
+
+/* ==========================================================================
+   3. HEADER, CONTROLLI FONT & INDICATORE DIMENSIONE
+   ========================================================================== */
+header {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 100%;
+    width: 98%;
+    margin: 0 auto;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.version-badge {
+    font-size: 0.75rem;
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.font-size-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--bg-main);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.font-size-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.font-size-badge {
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: var(--primary-color);
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 6px;
+}
+
+.btn-font {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 2px 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.btn-font:hover { background: var(--border-color); }
+
+.theme-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.data-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.tabs-nav {
+    max-width: 100%;
+    width: 98%;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 14px 22px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+    color: var(--primary-color);
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   4. CARD CONTAINER & FORM
+   ========================================================================== */
+.card-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    margin-bottom: 25px;
+}
+
+/* --- SFONDO SCURITO PER LA SEZIONE "AGGIUNGI / MODIFICA SHOW" --- */
+.card-section:has(#showForm),
+#showForm {
+    background-color: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+}
+
+body.theme-grey .card-section:has(#showForm),
+body.theme-grey #showForm {
+    background-color: #cbd5e1 !important;
+    border-color: #94a3b8 !important;
+}
+
+body.theme-dark .card-section:has(#showForm),
+body.theme-dark #showForm {
+    background-color: #0b1329 !important;
+    border-color: #1e293b !important;
+}
+
+#showForm input[type="text"],
+#showForm input[type="datetime-local"],
+#showForm input[type="number"],
+#showForm input[type="url"],
+#showForm select,
+#showForm textarea,
+#showForm .custom-select-trigger {
+    background-color: var(--bg-card) !important;
+}
+
+.card-section h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.show-form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    width: 100%;
+}
+
+.form-row.flex-3 > .form-group,
+.form-row.flex-5 > .form-group { flex: 1; min-width: 0; }
+.form-row.flex-2-auto > .form-group:first-child { flex: 1; }
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin-top: 8px;
+}
+
+label, .form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+input[type="text"],
+input[type="datetime-local"],
+input[type="number"],
+input[type="url"],
+select,
+textarea,
+.custom-select-trigger {
+    height: 38px;
+    padding: 0 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-input);
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+textarea {
+    height: auto;
+    padding: 8px 10px;
+    resize: vertical;
+}
+
+input:focus, select:focus, textarea:focus, .custom-select-trigger:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.form-group.checkbox-group {
+    justify-content: flex-end;
+    height: 38px;
+    padding-bottom: 8px;
+}
+
+.checkbox-group label, .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    user-select: none;
+}
+
+.checkbox-group input[type="checkbox"], .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.form-buttons, .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+/* ==========================================================================
+   5. PULSANTI ED ELEMENTI INTERATTIVI
+   ========================================================================== */
+button {
+    font-family: inherit;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    padding: 11px 20px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary { background: var(--primary-color); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+.btn-secondary { background: var(--secondary-color); color: #fff; }
+.btn-secondary:hover { background: var(--secondary-hover); }
+
+.btn-data {
+    background: var(--bg-main);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 7px 14px;
+    font-size: 0.85rem;
+}
+.btn-data:hover { background: var(--border-color); }
+
+.btn-reset {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    padding: 7px 14px;
+    font-size: 0.85rem;
+}
+.btn-reset:hover { background: var(--danger-color); color: #fff; border-color: var(--danger-color); }
+
+.btn-edit { background: var(--warning-color); color: #fff; padding: 5px 10px; font-size: 0.8rem; }
+.btn-edit:hover { background: var(--warning-hover); }
+
+.btn-delete { background: var(--danger-color); color: #fff; padding: 5px 10px; font-size: 0.8rem; }
+.btn-delete:hover { background: var(--danger-hover); }
+
+/* ==========================================================================
+   6. FILTRI E BARRA DI CRONOLOGIA
+   ========================================================================== */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.filters-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    background: var(--bg-main);
+    padding: 10px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-item select {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.filters-bar .filter-item input[type="text"] {
+    max-width: 180px;
+}
+
+/* ==========================================================================
+   7. TABELLE E GESTIONE SENZA SCROLL ORIZZONTALE
+   ========================================================================== */
+.table-container {
+    width: 100%;
+    overflow-x: hidden !important;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.88rem;
+    table-layout: auto;
+}
+
+th {
+    background-color: var(--bg-main);
+    color: var(--text-muted);
+    padding: 10px 8px !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+td {
+    padding: 8px 8px !important;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
+td:nth-child(2),
+td:nth-child(5),
+td:nth-child(6),
+td:nth-child(7),
+td:last-child {
+    white-space: nowrap !important;
+}
+
+.thumb-img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.no-img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: var(--border-color);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.badge-regalo {
+    background-color: #ec4899;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-cost {
+    background: var(--accent-color);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+
+.average-badge {
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--primary-color);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+table td:nth-child(9),
+table td.note-cell {
+    max-width: 180px;
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+td:last-child {
+    text-align: right;
+}
+
+td:last-child .btn-action,
+td:last-child button,
+td:last-child a {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 2px;
+}
+
+.costo-container, 
+td.costo-cell {
+    white-space: nowrap;
+}
+
+.costo-valore {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   8. PAGINAZIONE
+   ========================================================================== */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 22px;
+    padding-top: 15px;
+}
+
+.btn-page {
+    background: var(--bg-main);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 18px;
+    font-size: 0.9rem;
+}
+
+.btn-page:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.btn-page:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   9. ACCORDION & MODALE (TEMA INTEGRATO CON VARIABILI)
+   ========================================================================== */
+.accordion-container details {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.accordion-container summary {
+    padding: 16px 20px;
+    cursor: pointer;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-main);
+    user-select: none;
+    font-size: 1rem;
+}
+
+.modal, .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--bg-card);
+    color: var(--text-color);
+    margin: 5% auto;
+    padding: 35px 28px 28px 28px;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 1050px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    max-height: 85vh;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+}
+
+#changelogModal .modal-content {
+    color: var(--text-color);
+    background-color: var(--bg-card);
+}
+
+.close-modal, .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 10;
+}
+
+.close-modal:hover, .close-btn:hover {
+    color: var(--danger-color);
+    transform: scale(1.15);
+}
+
+.clickable-row { cursor: pointer; }
+.link-web { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+.link-web:hover { text-decoration: underline; }
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+.modal-body { margin-top: 15px; max-height: 400px; overflow-y: auto; text-align: left; }
+.modal-body ul { padding-left: 20px; }
+.modal-body li { margin-bottom: 8px; font-size: 0.95rem; color: var(--text-color); }
+.modal-footer { margin-top: 20px; text-align: right; }
+
+/* ==========================================================================
+   10. DROPDOWN PERSONALIZZATO (SELECT CUSTOM)
+   ========================================================================== */
+.custom-select-wrapper {
+    position: relative;
+    user-select: none;
+    width: 100%;
+}
+
+.custom-select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.custom-options {
+    position: absolute;
+    display: none;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.custom-select-wrapper.active .custom-options,
+.custom-options.open,
+#customPiattaformaDropdown.open .custom-options {
+    display: block;
+}
+
+.custom-option {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+.custom-option:hover {
+    background-color: var(--bg-main);
+}
+
+.custom-option.selected {
+    font-weight: bold;
+    background-color: rgba(37, 99, 235, 0.1);
+    color: var(--primary-color);
+}
+
+/* --- EVIDENZIAZIONE GIALLA MESE ATTUALE & BUDGET --- */
+.highlight-current-month {
+    background-color: #fef08a !important;
+    color: #1e293b !important;
+}
+
+.highlight-current-month strong,
+.highlight-current-month span,
+.highlight-current-month td {
+    color: #1e293b !important;
+}
+
+tbody tr.highlight-current-month:hover {
+    background-color: #fde047 !important;
+}
+
+/* ==========================================================================
+   11. ADATTAMENTO RESPONSIVE
+   ========================================================================== */
+@media (max-width: 900px) {
+    .form-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .form-group.checkbox-group {
+        height: auto;
+    }
+}

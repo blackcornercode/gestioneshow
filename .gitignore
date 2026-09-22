@@ -1,0 +1,9 @@
+# Dipendenze
+node_modules/
+
+# File di build/distribuzione
+dist/
+
+# File di ambiente o configurazioni locali
+.env
+*.log
