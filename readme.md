@@ -77,7 +77,7 @@ Accessibili direttamente dall'intestazione dell'applicazione:
 1. Assicurati di aver installato [Node.js](https://nodejs.org/) (versione consigliata LTS).
 2. Clona il repository locale ed entra nella directory del progetto:
    ```bash
-   git clone https://github.com/tuo-utente/tuo-progetto.git
+   git clone https://github.com/blackcornercode/gestioneshow.git
    cd GestioneShow
    ```
 3. Installa le dipendenze:
