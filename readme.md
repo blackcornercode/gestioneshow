@@ -47,7 +47,6 @@ Elabora la cronologia salvata per generare indicatori prestazionali e statistici
 
 - **Podio Automatico**: Assegnazione visiva delle prime posizioni (🥇 1°, 🥈 2°, 🥉 3°) per le valutazioni più alte.
 - **Media Voti**: Calcolo ponderato escludendo sessioni contrassegnate come regali o `TBD`.
-- **Stato Live**: Controllo rapido dello stato online della performer tramite pulsante dedicato.
 - **Scheda Dettaglio (Modal)**: Cliccando su una riga si apre il resoconto storico dettagliato con quella singola modella.
 
 ---
