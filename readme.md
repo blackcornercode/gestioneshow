@@ -1,6 +1,6 @@
 # Gestione Show MCG V2
 
-![Version](https://img.shields.io/badge/version-v1.10.7-blue.svg)
+![Version](https://img.shields.io/badge/version-v1.10.8-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Electron-brightgreen.svg)
 
 **Gestione Show MCG** è un'applicazione desktop basata sull'architettura **Electron**, progettata per la registrazione, l'organizzazione e l'analisi economica degli show e delle interazioni. Il sistema offre un monitoraggio completo della spesa rispetto a budget mensili prefissati e fornisce metriche e classifiche automatiche sui dati inseriti.
