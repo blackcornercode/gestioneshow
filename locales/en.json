@@ -1,0 +1,150 @@
+{
+  "app_title": "MCG Show Management",
+  "controls": {
+    "font": "Text:",
+    "language": "Language:",
+    "theme": "Theme:"
+  },
+  "themes": {
+    "grey": "Snow & Fog",
+    "light": "Clear Light",
+    "dark": "Dark Eclipse"
+  },
+  "actions": {
+    "export": "💾 Export",
+    "import": "📥 Import",
+    "folder": "📁 Folder",
+    "sync": "🔄 Sync MCG",
+    "close_details": "Close Details"
+  },
+  "tabs": {
+    "dashboard": "📝 Form & History",
+    "ranking": "🏆 Models Ranking",
+    "stats": "📈 Monthly Stats"
+  },
+  "form": {
+    "title": "Add / Edit Show",
+    "title_add": "Add / Edit Show",
+    "date": "Date and Time",
+    "model_name": "Model Name",
+    "ph_name": "E.g. Anna",
+    "profile_url": "Web Profile Link",
+    "duration": "Show Duration (in minutes):",
+    "label_duration": "Show Duration (minutes)",
+    "ph_duration": "E.g. 45",
+    "platform": "Platform",
+    "nickname": "Chat Nickname",
+    "cost": "Cost (€)",
+    "rating": "Rating",
+    "gift": "🎁 Gift",
+    "image_url": "Image / Photo URL",
+    "review_done": "✅ Review Done",
+    "notes": "Notes / Show Details",
+    "ph_notes": "Enter additional notes...",
+    "btn_save": "Save Record",
+    "btn_cancel": "Cancel"
+  },
+  "options": {
+    "other": "Other",
+    "select": "Select...",
+    "tbd": "TBD (To Be Decided)"
+  },
+  "history": {
+    "title": "📋 Show History",
+    "filter_year": "Filter by Year:",
+    "search": "🔍 Search Name:",
+    "ph_search": "Filter by name...",
+    "order": "Order:",
+    "sort_desc": "Newest first",
+    "sort_asc": "Oldest first",
+    "show": "Show:",
+    "results": "results",
+    "all": "All",
+    "reset": "Reset Filters"
+  },
+  "pagination": {
+    "prev": "⬅️ Previous",
+    "next": "Next ➡️"
+  },
+  "ranking": {
+    "title": "🏆 General Models Ranking",
+    "info_title": "Ranking Criteria:",
+    "info_rule1": "Average Rating (Primary Criterion): Models are ordered primarily by the average of ratings received (1 to 5 stars). Gifted shows or shows marked as TBD do not affect the average.",
+    "info_rule2": "Number of Shows (Secondary Criterion): If average ratings are equal, the model with more shows completed will be ranked higher.",
+    "search": "🔎 Search Model:",
+    "ph_search": "Enter name..."
+  },
+  "budget": {
+    "title": "Monthly Target & Budget",
+    "set_label": "Set Monthly Budget (€):",
+    "btn_save": "Save Budget",
+    "not_set_sub": "No monthly budget set. Set it in the Statistics tab.",
+    "not_set_badge": "NOT SET",
+    "under_limit": "You are within budget limits.",
+    "remaining": "Remaining",
+    "under_budget_badge": "UNDER BUDGET",
+    "exceeded_warning": "WARNING! You exceeded your budget by",
+    "exceeded_badge": "BUDGET EXCEEDED",
+    "exceeded_by": "Exceeded by"
+  },
+  "stats": {
+    "title": "📈 Monthly Statistics",
+    "select_year": "Select Year:",
+    "month": "Month",
+    "shows_done": "Shows Completed",
+    "total_spent": "Total Spent",
+    "current_month_spent": "Current Month Spending",
+    "current": "Current",
+    "click_details": "Click to show/hide show details",
+    "no_shows_month": "No shows in this month"
+  },
+  "table": {
+    "pos": "Position",
+    "photo": "Photo",
+    "no_photo": "No Photo",
+    "date": "Date & Time",
+    "name": "Name",
+    "model_name": "Model Name",
+    "website": "Website",
+    "platform": "Platform",
+    "duration": "Duration",
+    "total_shows": "Total Shows",
+    "total_duration": "Total Duration",
+    "total_spent": "Total Spent",
+    "avg_rating": "Average Rating",
+    "cost": "Cost",
+    "rating": "Rating",
+    "source": "Source",
+    "review": "Review",
+    "notes": "Notes",
+    "actions": "Actions"
+  },
+  "modal": {
+    "gallery": "🖼️ Profile Photo Gallery",
+    "loading_photos": "Loading photos...",
+    "history_title": "Show History Log"
+  },
+  "changelog": {
+    "title": "📜 Changelog / What's New",
+    "loading": "Loading updates...",
+    "confirm": "Got it"
+  },
+  "months": {
+    "jan": "January",
+    "feb": "February",
+    "mar": "March",
+    "apr": "April",
+    "may": "May",
+    "jun": "June",
+    "jul": "July",
+    "aug": "August",
+    "sep": "September",
+    "oct": "October",
+    "nov": "November",
+    "dec": "December"
+  },
+  "units": {
+    "hour": "h",
+    "min": "m"
+  }
+}

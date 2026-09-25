@@ -88,8 +88,9 @@ const iconePiattaformaHTML = {
 /* ==========================================================================
    INIZIALIZZAZIONE
    ========================================================================== */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     logger.info("Inizializzazione applicazione...");
+    await caricaLingua(linguaCorrente);
     
     mostraVersioneApp();
     impostaDataOraAttuale();
@@ -1123,8 +1124,9 @@ function caricaStatisticheMensili(shows) {
     sezioneStatistiche.innerHTML = '';
 
     const mesi = [
-        "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-        "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"
+        t('months.jan'), t('months.feb'), t('months.mar'), t('months.apr'),
+        t('months.may'), t('months.jun'), t('months.jul'), t('months.aug'),
+        t('months.sep'), t('months.oct'), t('months.nov'), t('months.dec')
     ];
 
     const spesaMese = Array(12).fill(0);
@@ -1159,24 +1161,24 @@ function caricaStatisticheMensili(shows) {
     const progressBar = document.getElementById('progressBar');
 
     if (budgetStatusText && budgetRemainingText && progressBar) {
-        budgetStatusText.textContent = `Spesa Mese Corrente: € ${spesaMeseCorrente.toFixed(2)} / € ${budgetPrefissato.toFixed(2)}`;
+        budgetStatusText.textContent = `${t('stats.current_month_spent')}: € ${spesaMeseCorrente.toFixed(2)} / € ${budgetPrefissato.toFixed(2)}`;
         
         if (budgetPrefissato > 0) {
             const percentuale = Math.min(100, Math.max(0, (spesaMeseCorrente / budgetPrefissato) * 100));
             progressBar.style.width = `${percentuale}%`;
             
             if (mancante >= 0) {
-                budgetRemainingText.textContent = `Rimanente: € ${mancante.toFixed(2)}`;
+                budgetRemainingText.textContent = `${t('budget.remaining')}: € ${mancante.toFixed(2)}`;
                 budgetRemainingText.style.color = '#15803d';
                 progressBar.style.backgroundColor = '#16a34a';
             } else {
-                budgetRemainingText.textContent = `Sforato di: € ${Math.abs(mancante).toFixed(2)}`;
+                budgetRemainingText.textContent = `${t('budget.exceeded_by')}: € ${Math.abs(mancante).toFixed(2)}`;
                 budgetRemainingText.style.color = '#b91c1c';
                 progressBar.style.backgroundColor = '#dc2626';
             }
         } else {
             progressBar.style.width = '0%';
-            budgetRemainingText.textContent = 'Nessun budget impostato';
+            budgetRemainingText.textContent = t('budget.not_set_badge');
             budgetRemainingText.style.color = '#475569';
         }
     }
@@ -1185,9 +1187,9 @@ function caricaStatisticheMensili(shows) {
         <table class="table-container" style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
-                    <th style="padding: 10px;">Mese (${annoSelezionato})</th>
-                    <th style="padding: 10px; text-align: center;">Show Effettuati</th>
-                    <th style="padding: 10px; text-align: right;">Totale Speso</th>
+                    <th style="padding: 10px;">${t('stats.month')} (${annoSelezionato})</th>
+                    <th style="padding: 10px; text-align: center;">${t('stats.shows_done')}</th>
+                    <th style="padding: 10px; text-align: right;">${t('stats.total_spent')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -1209,10 +1211,12 @@ function caricaStatisticheMensili(shows) {
             ? `cursor: pointer; background-color: ${bgColor}; color: ${eMeseCorrente ? '#1e293b' : 'inherit'}; border-bottom: 1px solid var(--border-color);`
             : `background-color: ${bgColor}; color: ${eMeseCorrente ? '#1e293b' : 'inherit'}; border-bottom: 1px solid var(--border-color); opacity: 0.6;`;
 
+        const tooltipText = haShow ? t('stats.click_details') : t('stats.no_shows_month');
+
         html += `
-            <tr style="${stileTr}" ${haShow ? `onclick="selezionaMeseDettaglio(${idx})"` : ''} title="${haShow ? 'Clicca per vedere/nascondere i dettagli degli show' : 'Nessuno show in questo mese'}">
+            <tr style="${stileTr}" ${haShow ? `onclick="selezionaMeseDettaglio(${idx})"` : ''} title="${tooltipText}">
                 <td style="padding: 10px;">
-                    <strong>${haShow ? (isAttivo ? '🔽 ' : '▶ ') : ''}${nomeMese} ${eMeseCorrente ? '📌 (Attuale)' : ''}</strong>
+                    <strong>${haShow ? (isAttivo ? '🔽 ' : '▶ ') : ''}${nomeMese} ${eMeseCorrente ? `📌 (${t('stats.current')})` : ''}</strong>
                 </td>
                 <td style="padding: 10px; text-align: center;">${countMese[idx]}</td>
                 <td style="padding: 10px; text-align: right; color: ${eMeseCorrente ? '#1e293b' : 'var(--accent-color)'}; font-weight: bold;">€ ${spesaMese[idx].toFixed(2)}</td>
@@ -1232,21 +1236,21 @@ function caricaStatisticheMensili(shows) {
         html += `
             <div style="margin-top: 20px; padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--bg-card, #fff);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h3 style="margin: 0;">Show Effettuati - ${mesi[meseSelezionatoDettaglio]} ${annoSelezionato} (${elencoShowMese.length})</h3>
-                    <button onclick="selezionaMeseDettaglio(null)" style="padding: 4px 10px; cursor: pointer; border-radius: 4px; border: 1px solid var(--border-color);">✖ Chiudi Dettaglio</button>
+                    <h3 style="margin: 0;">${t('stats.shows_done')} - ${mesi[meseSelezionatoDettaglio]} ${annoSelezionato} (${elencoShowMese.length})</h3>
+                    <button onclick="selezionaMeseDettaglio(null)" style="padding: 4px 10px; cursor: pointer; border-radius: 4px; border: 1px solid var(--border-color);">✖ ${t('actions.close_details')}</button>
                 </div>
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--border-color); text-align: left;">
-                            <th>Foto</th>
-                            <th>Data</th>
-                            <th>Modella</th>
-                            <th>Piattaforma</th>
-                            <th>Durata</th>
-                            <th>Costo</th>
-                            <th>Voto</th>
-                            <th>Recensione</th>
-                            <th>Note</th>
+                            <th>${t('table.photo')}</th>
+                            <th>${t('table.date')}</th>
+                            <th>${t('table.name')}</th>
+                            <th>${t('table.platform')}</th>
+                            <th>${t('table.duration')}</th>
+                            <th>${t('table.cost')}</th>
+                            <th>${t('table.rating')}</th>
+                            <th>${t('table.review')}</th>
+                            <th>${t('table.notes')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1255,8 +1259,8 @@ function caricaStatisticheMensili(shows) {
         elencoShowMese.forEach(item => {
             const fotoUrl = item.immagine || mappaImmaginiModelle[item.nome.trim().toLowerCase()] || '';
             const imgHtml = fotoUrl 
-                ? `<img src="${escapeHtml(fotoUrl)}" class="thumb-img" style="cursor: pointer;" alt="foto" onclick="event.stopPropagation(); apriModalImmagine('${escapeHtml(fotoUrl)}')" onerror="this.outerHTML='<div class=\\'no-img\\'>No Foto</div>'">`
-                : `<div class="no-img">No Foto</div>`;
+                ? `<img src="${escapeHtml(fotoUrl)}" class="thumb-img" style="cursor: pointer;" alt="foto" onclick="event.stopPropagation(); apriModalImmagine('${escapeHtml(fotoUrl)}')" onerror="this.outerHTML='<div class=\\'no-img\\'>${t('table.no_photo')}</div>'">`
+                : `<div class="no-img">${t('table.no_photo')}</div>`;
 
             let votoTxt = '-';
             if (!item.isRegalo) {
@@ -1880,13 +1884,13 @@ function chiudiModalChangelog() {
 
 // --- FUNZIONE UTILITY PER FORMATTARE IL TEMPO (Minuti -> Ore e Minuti) ---
 function formattaTempo(minuti) {
-    if (!minuti || isNaN(minuti) || minuti <= 0) return '0m';
+    if (!minuti || isNaN(minuti) || minuti <= 0) return `0${t('units.min')}`;
     const ore = Math.floor(minuti / 60);
     const mins = minuti % 60;
     if (ore > 0) {
-        return `${ore}h ${mins > 0 ? mins + 'm' : ''}`;
+        return `${ore}${t('units.hour')} ${mins > 0 ? mins + t('units.min') : ''}`;
     }
-    return `${mins}m`;
+    return `${mins}${t('units.min')}`;
 }
 
 // --- SALVATAGGIO / AGGIORNAMENTO SHOW ---
@@ -1947,9 +1951,9 @@ function aggiornaIndicatoreBudgetHomepage(shows) {
     // Se non c'è budget impostato
     if (budgetPrefissato <= 0) {
         if (icon) icon.textContent = 'ℹ️';
-        if (subtitle) subtitle.textContent = 'Nessun budget mensile impostato. Impostalo nella scheda Statistiche.';
+        if (subtitle) subtitle.textContent = t('budget.not_set_sub');
         if (badge) {
-            badge.textContent = 'NON IMPOSTATO';
+            badge.textContent = t('budget.not_set_badge');
             badge.style.backgroundColor = '#e2e8f0';
             badge.style.color = '#475569';
         }
@@ -1971,9 +1975,9 @@ function aggiornaIndicatoreBudgetHomepage(shows) {
     if (differenza >= 0) {
         // BUDGET RISPETTATO
         if (icon) icon.textContent = '✅';
-        if (subtitle) subtitle.textContent = `Sei nei limiti del budget. Rimanente: € ${differenza.toFixed(2)}`;
+        if (subtitle) subtitle.textContent = `${t('budget.under_limit')} ${t('budget.remaining')}: € ${differenza.toFixed(2)}`;
         if (badge) {
-            badge.textContent = 'SOTTO BUDGET';
+            badge.textContent = t('budget.under_budget_badge');
             badge.style.backgroundColor = '#dcfce7';
             badge.style.color = '#15803d';
         }
@@ -1991,9 +1995,9 @@ function aggiornaIndicatoreBudgetHomepage(shows) {
         // BUDGET SUPERATO
         const sforamento = Math.abs(differenza);
         if (icon) icon.textContent = '⚠️';
-        if (subtitle) subtitle.textContent = `ATTENZIONE! Hai superato il budget di € ${sforamento.toFixed(2)}`;
+        if (subtitle) subtitle.textContent = `${t('budget.exceeded_warning')} € ${sforamento.toFixed(2)}`;
         if (badge) {
-            badge.textContent = 'BUDGET SUPERATO';
+            badge.textContent = t('budget.exceeded_badge');
             badge.style.backgroundColor = '#fee2e2';
             badge.style.color = '#b91c1c';
         }
@@ -2008,4 +2012,55 @@ function aggiornaIndicatoreBudgetHomepage(shows) {
             navBadge.style.color = '#ffffff';
         }
     }
+}
+
+let traduzioniCorrenti = {};
+let linguaCorrente = localStorage.getItem('appLang') || 'it';
+
+// Carica il file JSON della lingua
+async function caricaLingua(lang) {
+    try {
+        const response = await fetch(`./locales/${lang}.json`);
+        traduzioniCorrenti = await response.json();
+        linguaCorrente = lang;
+        localStorage.setItem('appLang', lang);
+
+        aggiornaTestiDOM();
+
+        // Allinea il selettore nell'header se presente
+        const select = document.getElementById('selectLingua');
+        if (select) select.value = lang;
+    } catch (err) {
+        console.error(`Errore nel caricamento della lingua ${lang}:`, err);
+    }
+}
+
+// Funzione helper per recuperare chiavi annidate (es. t('form.title'))
+function t(key) {
+    return key.split('.').reduce((obj, i) => (obj ? obj[i] : null), traduzioniCorrenti) || key;
+}
+
+// Aggiorna tutti gli elementi con data-i18n e data-i18n-ph
+function aggiornaTestiDOM() {
+    // Testi generici
+    document.querySelectorAll('[data-i18n]').forEach(elem => {
+        const key = elem.getAttribute('data-i18n');
+        elem.textContent = t(key);
+    });
+
+    // Placeholder degli input
+    document.querySelectorAll('[data-i18n-ph]').forEach(elem => {
+        const key = elem.getAttribute('data-i18n-ph');
+        elem.placeholder = t(key);
+    });
+}
+
+// Handler richiamato dall'onchange del selettore nell'HTML
+function cambiaLingua(nuovaLingua) {
+    caricaLingua(nuovaLingua).then(() => {
+        // Ricarica le viste che generano HTML dinamicamente tramite JS
+        if (typeof aggiornaInterfaccia === 'function') {
+            aggiornaInterfaccia();
+        }
+    });
 }

@@ -1,0 +1,150 @@
+{
+  "app_title": "Gestione Show MCG",
+  "controls": {
+    "font": "Testo:",
+    "language": "Lingua:",
+    "theme": "Tema:"
+  },
+  "themes": {
+    "grey": "Neve & Nebbia",
+    "light": "Luce Chiara",
+    "dark": "Eclissi Scura"
+  },
+  "actions": {
+    "export": "💾 Esporta",
+    "import": "📥 Importa",
+    "folder": "📁 Cartella",
+    "sync": "🔄 Sincronizza MCG",
+    "close_details": "Chiudi Dettaglio"
+  },
+  "tabs": {
+    "dashboard": "📝 Form & Cronologia",
+    "ranking": "🏆 Classifica Modelle",
+    "stats": "📈 Statistiche Mensili"
+  },
+  "form": {
+    "title": "Aggiungi / Modifica Show",
+    "title_add": "Aggiungi / Modifica Show",
+    "date": "Data e Ora",
+    "model_name": "Nome Modella",
+    "ph_name": "Es. Anna",
+    "profile_url": "Link Profilo Web",
+    "duration": "Durata Show (in minuti):",
+    "label_duration": "Durata Show (minuti)",
+    "ph_duration": "Es. 45",
+    "platform": "Piattaforma",
+    "nickname": "Nickname Chat",
+    "cost": "Costo (€)",
+    "rating": "Valutazione",
+    "gift": "🎁 Regalo",
+    "image_url": "URL Immagine / Foto",
+    "review_done": "✅ Recensione Fatta",
+    "notes": "Note / Dettagli Show",
+    "ph_notes": "Inserisci note aggiuntive...",
+    "btn_save": "Salva Record",
+    "btn_cancel": "Annulla"
+  },
+  "options": {
+    "other": "Altro",
+    "select": "Seleziona...",
+    "tbd": "TBD (Da valutare)"
+  },
+  "history": {
+    "title": "📋 Cronologia Show",
+    "filter_year": "Filtra per Anno:",
+    "search": "🔍 Cerca Nome:",
+    "ph_search": "Filtra per nome...",
+    "order": "Ordine:",
+    "sort_desc": "Più recenti prima",
+    "sort_asc": "Meno recenti prima",
+    "show": "Mostra:",
+    "results": "risultati",
+    "all": "Tutti",
+    "reset": "Reset Filtri"
+  },
+  "pagination": {
+    "prev": "⬅️ Precedente",
+    "next": "Successiva ➡️"
+  },
+  "ranking": {
+    "title": "🏆 Classifica Generale Modelle",
+    "info_title": "Criteri di Ordinamento della Classifica:",
+    "info_rule1": "Media Voti (Criterio Primario): Le modelle vengono ordinate prima di tutto in base alla media dei voti ricevuti (da 1 a 5 stelle). Gli show regalati o contrassegnati come TBD non influiscono sulla media.",
+    "info_rule2": "Numero di Show (Criterio Secondario): A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.",
+    "search": "🔎 Cerca Modella:",
+    "ph_search": "Inserisci il nome..."
+  },
+  "budget": {
+    "title": "Obiettivo e Budget Mensile",
+    "set_label": "Imposta Budget Mensile (€):",
+    "btn_save": "Salva Budget",
+    "not_set_sub": "Nessun budget mensile impostato. Impostalo nella scheda Statistiche.",
+    "not_set_badge": "NON IMPOSTATO",
+    "under_limit": "Sei nei limiti del budget.",
+    "remaining": "Rimanente",
+    "under_budget_badge": "SOTTO BUDGET",
+    "exceeded_warning": "ATTENZIONE! Hai superato il budget di",
+    "exceeded_badge": "BUDGET SUPERATO",
+    "exceeded_by": "Sforato di"
+  },
+  "stats": {
+    "title": "📈 Statistiche Mensili",
+    "select_year": "Seleziona Anno:",
+    "month": "Mese",
+    "shows_done": "Show Effettuati",
+    "total_spent": "Totale Speso",
+    "current_month_spent": "Spesa Mese Corrente",
+    "current": "Attuale",
+    "click_details": "Clicca per vedere/nascondere i dettagli degli show",
+    "no_shows_month": "Nessuno show in questo mese"
+  },
+  "table": {
+    "pos": "Posizione",
+    "photo": "Foto",
+    "no_photo": "No Foto",
+    "date": "Data & Ora",
+    "name": "Nome",
+    "model_name": "Nome Modella",
+    "website": "Sito Web",
+    "platform": "Piattaforma",
+    "duration": "Durata",
+    "total_shows": "Show Totali",
+    "total_duration": "Durata Totale",
+    "total_spent": "Spesa Totale",
+    "avg_rating": "Media Voti",
+    "cost": "Costo",
+    "rating": "Voto",
+    "source": "Origine",
+    "review": "Recensione",
+    "notes": "Note",
+    "actions": "Azioni"
+  },
+  "modal": {
+    "gallery": "🖼️ Galleria Foto Profilo",
+    "loading_photos": "Caricamento foto in corso...",
+    "history_title": "Storico Show Effettuati"
+  },
+  "changelog": {
+    "title": "📜 Changelog / Novità",
+    "loading": "Caricamento novità in corso...",
+    "confirm": "Ho capito"
+  },
+  "months": {
+    "jan": "Gennaio",
+    "feb": "Febbraio",
+    "mar": "Marzo",
+    "apr": "Aprile",
+    "may": "Maggio",
+    "jun": "Giugno",
+    "jul": "Luglio",
+    "aug": "Agosto",
+    "sep": "Settembre",
+    "oct": "Ottobre",
+    "nov": "Novembre",
+    "dec": "Dicembre"
+  },
+  "units": {
+    "hour": "h",
+    "min": "m"
+  }
+}

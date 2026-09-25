@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Show MCG</title>
+    <title data-i18n="app_title">Gestione Show MCG</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -13,41 +13,50 @@
     <header>
         <div class="header-container">
             <h1>
-                <span>♀️ Gestione Show MCG</span>
+                <span>♀️ <span data-i18n="app_title">Gestione Show MCG</span></span>
                 <span id="appVersion" class="version-badge">v1.10.3</span>
             </h1>
 
             <div class="header-controls">
                 <div class="font-size-control">
-                    <span class="font-size-label">Testo:</span>
+                    <span class="font-size-label" data-i18n="controls.font">Testo:</span>
                     <button type="button" class="btn-font" onclick="riduciFont()">A-</button>
                     <span id="fontBadge" class="font-size-badge">18px</span>
                     <button type="button" class="btn-font" onclick="aumentaFont()">A+</button>
                 </div>
 
+                <!-- SELETTORE LINGUA -->
+                <div class="lang-selector">
+                    <label for="selectLingua" data-i18n="controls.language">Lingua:</label>
+                    <select id="selectLingua" onchange="cambiaLingua(this.value)">
+                        <option value="it">Italiano</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+
                 <div class="theme-selector">
-                    <label for="selectTema">Tema:</label>
+                    <label for="selectTema" data-i18n="controls.theme">Tema:</label>
                     <select id="selectTema" onchange="cambiaTema(this.value)">
-                        <option value="grey">Neve & Nebbia</option>
-                        <option value="light">Luce Chiara</option>
-                        <option value="dark">Eclissi Scura</option>
+                        <option value="grey" data-i18n="themes.grey">Neve & Nebbia</option>
+                        <option value="light" data-i18n="themes.light">Luce Chiara</option>
+                        <option value="dark" data-i18n="themes.dark">Eclissi Scura</option>
                     </select>
                 </div>
 
                 <div class="data-actions">
-                    <button type="button" class="btn-data" onclick="esportaDati()" title="Esporta Backup">💾 Esporta</button>
-                    <button type="button" class="btn-data" onclick="importaDati()" title="Importa Backup">📥 Importa</button>
-                    <button type="button" class="btn-data" onclick="apriCartellaDati()" title="Apri Cartella Dati">📁 Cartella</button>
-                    <button type="button" class="btn-data" onclick="sincronizzaTransazioniMondoCamGirls()" title="Sincronizza da MondoCamGirls">🔄 Sincronizza MCG</button>
+                    <button type="button" class="btn-data" onclick="esportaDati()" title="Esporta Backup" data-i18n="actions.export">💾 Esporta</button>
+                    <button type="button" class="btn-data" onclick="importaDati()" title="Importa Backup" data-i18n="actions.import">📥 Importa</button>
+                    <button type="button" class="btn-data" onclick="apriCartellaDati()" title="Apri Cartella Dati" data-i18n="actions.folder">📁 Cartella</button>
+                    <button type="button" class="btn-data" onclick="sincronizzaTransazioniMondoCamGirls()" title="Sincronizza da MondoCamGirls" data-i18n="actions.sync">🔄 Sincronizza MCG</button>
                 </div>
             </div>
         </div>
 
         <nav class="tabs-nav">
-            <button type="button" class="tab-btn active" onclick="apriTab('tabDashboard', event)">📝 Form & Cronologia</button>
-            <button type="button" class="tab-btn" onclick="apriTab('tabClassifica', event)">🏆 Classifica Modelle</button>
+            <button type="button" class="tab-btn active" onclick="apriTab('tabDashboard', event)" data-i18n="tabs.dashboard">📝 Form & Cronologia</button>
+            <button type="button" class="tab-btn" onclick="apriTab('tabClassifica', event)" data-i18n="tabs.ranking">🏆 Classifica Modelle</button>
             <button type="button" class="tab-btn" onclick="apriTab('tabStatistiche', event)" style="display: inline-flex; align-items: center; gap: 8px;">
-                <span>📈 Statistiche Mensili</span>
+                <span data-i18n="tabs.stats">📈 Statistiche Mensili</span>
                 <span id="navBudgetBadge" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; font-weight: bold; display: none;"></span>
             </button>
         </nav>
@@ -59,31 +68,31 @@
         <div id="tabDashboard" class="tab-content active">
             
             <section class="card-section">
-                <h2>Aggiungi / Modifica Show</h2>
+                <h2 data-i18n="form.title">Aggiungi / Modifica Show</h2>
                 <form id="showForm" class="show-form-grid">
     <input type="hidden" id="editId" value="">
 
     <!-- Riga 1: Data/Ora, Nome Modella, Sito Web -->
     <div class="form-row flex-3">
         <div class="form-group">
-            <label for="dataOra">Data e Ora</label>
+            <label for="dataOra" data-i18n="form.date">Data e Ora</label>
             <input type="datetime-local" id="dataOra" required>
         </div>
 
         <div class="form-group">
-            <label for="nome">Nome Modella</label>
-            <input type="text" id="nome" list="listaModelleSuggerite" placeholder="Es. Anna" required autocomplete="off" oninput="gestisciAutocompletamentoModella()">
+            <label for="nome" data-i18n="form.model_name">Nome Modella</label>
+            <input type="text" id="nome" list="listaModelleSuggerite" placeholder="Es. Anna" data-i18n-ph="form.ph_name" required autocomplete="off" oninput="gestisciAutocompletamentoModella()">
             <datalist id="listaModelleSuggerite"></datalist>
         </div>
 
         <div class="form-group">
-            <label for="urlProfilo">Link Profilo Web</label>
+            <label for="urlProfilo" data-i18n="form.profile_url">Link Profilo Web</label>
             <input type="url" id="urlProfilo" placeholder="https://...">
         </div>
 
         <div class="form-group">
-            <label for="durataShow">Durata Show (in minuti):</label>
-            <input type="number" id="durataShow" min="0" placeholder="Es. 45" required>
+            <label for="durataShow" data-i18n="form.duration">Durata Show (in minuti):</label>
+            <input type="number" id="durataShow" min="0" placeholder="Es. 45" data-i18n-ph="form.ph_duration" required>
         </div>
 
     </div>
@@ -91,14 +100,14 @@
     <!-- Riga 2: Piattaforma, Nickname, Costo, Punteggio, Checkbox Regalo -->
     <div class="form-row flex-5">
         <div class="form-group">
-            <label for="piattaforma">Piattaforma</label>
+            <label for="piattaforma" data-i18n="form.platform">Piattaforma</label>
             <div class="custom-select-wrapper">
                 <select id="piattaforma" style="display: none;">
                     <option value="Teams">Teams</option>
                     <option value="Telegram">Telegram</option>
                     <option value="Skype">Skype</option>
                     <option value="Zoom">Zoom</option>
-                    <option value="Altro">Altro</option>
+                    <option value="Altro" data-i18n="options.other">Altro</option>
                 </select>
                 <div class="custom-select-trigger">
                     <span id="customSelectSelected"><i class="fa-solid fa-users-rectangle" style="color: #6264A7;"></i> Teams</span>
@@ -109,38 +118,38 @@
                     <div class="custom-option" data-value="Telegram"><i class="fa-brands fa-telegram" style="color: #2AABEE;"></i> Telegram</div>
                     <div class="custom-option" data-value="Skype"><i class="fa-brands fa-skype" style="color: #00AFF0;"></i> Skype</div>
                     <div class="custom-option" data-value="Zoom"><i class="fa-solid fa-video" style="color: #2D8CFF;"></i> Zoom</div>
-                    <div class="custom-option" data-value="Altro"><i class="fa-solid fa-globe" style="color: #6c757d;"></i> Altro</div>
+                    <div class="custom-option" data-value="Altro"><i class="fa-solid fa-globe" style="color: #6c757d;"></i> <span data-i18n="options.other">Altro</span></div>
                 </div>
             </div>
         </div>
 
         <div class="form-group">
-            <label for="nickname">Nickname Chat</label>
+            <label for="nickname" data-i18n="form.nickname">Nickname Chat</label>
             <input type="text" id="nickname" placeholder="@username">
         </div>
 
         <div class="form-group">
-            <label for="costo">Costo (€)</label>
+            <label for="costo" data-i18n="form.cost">Costo (€)</label>
             <input type="number" id="costo" step="0.01" min="0" placeholder="0.00">
         </div>
 
         <div class="form-group">
-            <label for="punteggio">Valutazione</label>
+            <label for="punteggio" data-i18n="form.rating">Valutazione</label>
             <select id="punteggio" required>
-                <option value="">Seleziona...</option>
+                <option value="" data-i18n="options.select">Seleziona...</option>
                 <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
                 <option value="4">⭐⭐⭐⭐ (4/5)</option>
                 <option value="3">⭐⭐⭐ (3/5)</option>
                 <option value="2">⭐⭐ (2/5)</option>
                 <option value="1">⭐ (1/5)</option>
-                <option value="TBD">TBD (Da valutare)</option>
+                <option value="TBD" data-i18n="options.tbd">TBD (Da valutare)</option>
             </select>
         </div>
 
         <div class="form-group checkbox-group">
             <label class="checkbox-label" for="isRegalo">
                 <input type="checkbox" id="isRegalo" onchange="gestisciStatoRegalo()">
-                <span>🎁 Regalo</span>
+                <span data-i18n="form.gift">🎁 Regalo</span>
             </label>
         </div>
     </div>
@@ -148,14 +157,14 @@
     <!-- Riga 3: URL Immagine, Checkbox Recensione -->
     <div class="form-row flex-2-auto">
         <div class="form-group">
-            <label for="immagine">URL Immagine / Foto</label>
+            <label for="immagine" data-i18n="form.image_url">URL Immagine / Foto</label>
             <input type="url" id="immagine" placeholder="https://.../foto.jpg">
         </div>
 
         <div class="form-group checkbox-group">
             <label class="checkbox-label" for="recensione">
                 <input type="checkbox" id="recensione">
-                <span>✅ Recensione Fatta</span>
+                <span data-i18n="form.review_done">✅ Recensione Fatta</span>
             </label>
         </div>
     </div>
@@ -163,53 +172,53 @@
     <!-- Riga 4: Note -->
     <div class="form-row">
         <div class="form-group full-width">
-            <label for="note">Note / Dettagli Show</label>
-            <textarea id="note" rows="2" placeholder="Inserisci note aggiuntive..."></textarea>
+            <label for="note" data-i18n="form.notes">Note / Dettagli Show</label>
+            <textarea id="note" rows="2" placeholder="Inserisci note aggiuntive..." data-i18n-ph="form.ph_notes"></textarea>
         </div>
     </div>
 
     <!-- Riga 5: Pulsanti d'azione -->
     <div class="form-actions">
-        <button type="submit" id="btnSalva" class="btn-primary">Salva Record</button>
-        <button type="button" id="btnAnnulla" class="btn-secondary" style="display: none;" onclick="annullaModifica()">Annulla</button>
+        <button type="submit" id="btnSalva" class="btn-primary" data-i18n="form.btn_save">Salva Record</button>
+        <button type="button" id="btnAnnulla" class="btn-secondary" style="display: none;" onclick="annullaModifica()" data-i18n="form.btn_cancel">Annulla</button>
     </div>
 </form>
             </section>
 
             <section class="card-section">
                 <div class="section-header" style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
-                    <h2>📋 Cronologia Show</h2>
+                    <h2 data-i18n="history.title">📋 Cronologia Show</h2>
                     
                     <div class="filter-item" style="width: 100%;">
-                        <label><strong>Filtra per Anno:</strong></label>
+                        <label><strong data-i18n="history.filter_year">Filtra per Anno:</strong></label>
                         <div id="container-filtri-anni" style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 5px;"></div>
                     </div>
 
                     <div class="filters-bar" style="width: 100%;">
                         <div class="filter-item">
-                            <label for="searchModellaCronologia">🔍 Cerca Nome:</label>
-                            <input type="text" id="searchModellaCronologia" placeholder="Filtra per nome..." oninput="filtraCronologiaPerNome()">
+                            <label for="searchModellaCronologia" data-i18n="history.search">🔍 Cerca Nome:</label>
+                            <input type="text" id="searchModellaCronologia" placeholder="Filtra per nome..." data-i18n-ph="history.ph_search" oninput="filtraCronologiaPerNome()">
                         </div>
 
                         <div class="filter-item">
-                            <label for="ordineData">Ordine:</label>
+                            <label for="ordineData" data-i18n="history.order">Ordine:</label>
                             <select id="ordineData">
-                                <option value="desc">Più recenti prima</option>
-                                <option value="asc">Meno recenti prima</option>
+                                <option value="desc" data-i18n="history.sort_desc">Più recenti prima</option>
+                                <option value="asc" data-i18n="history.sort_asc">Meno recenti prima</option>
                             </select>
                         </div>
 
                         <div class="filter-item">
-                            <label for="limiteRisultati">Mostra:</label>
+                            <label for="limiteRisultati" data-i18n="history.show">Mostra:</label>
                             <select id="limiteRisultati">
-                                <option value="5">5 risultati</option>
-                                <option value="10">10 risultati</option>
-                                <option value="20">20 risultati</option>
-                                <option value="all">Tutti</option>
+                                <option value="5">5 <span data-i18n="history.results">risultati</span></option>
+                                <option value="10">10 <span data-i18n="history.results">risultati</span></option>
+                                <option value="20">20 <span data-i18n="history.results">risultati</span></option>
+                                <option value="all" data-i18n="history.all">Tutti</option>
                             </select>
                         </div>
 
-                        <button type="button" class="btn-reset" onclick="resetFiltriCronologia()">Reset Filtri</button>
+                        <button type="button" class="btn-reset" onclick="resetFiltriCronologia()" data-i18n="history.reset">Reset Filtri</button>
                     </div>
                 </div>
 
@@ -217,17 +226,17 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Foto</th>
-                                <th>Data & Ora</th>
-                                <th>Nome</th>
-                                <th>Piattaforma</th>
-                                <th>Durata</th>
-                                <th>Costo</th>
-                                <th>Voto</th>
-                                <th>Origine</th>
-                                <th>Recensione</th>
-                                <th>Note</th>
-                                <th>Azioni</th>
+                                <th data-i18n="table.photo">Foto</th>
+                                <th data-i18n="table.date">Data & Ora</th>
+                                <th data-i18n="table.name">Nome</th>
+                                <th data-i18n="table.platform">Piattaforma</th>
+                                <th data-i18n="table.duration">Durata</th>
+                                <th data-i18n="table.cost">Costo</th>
+                                <th data-i18n="table.rating">Voto</th>
+                                <th data-i18n="table.source">Origine</th>
+                                <th data-i18n="table.review">Recensione</th>
+                                <th data-i18n="table.notes">Note</th>
+                                <th data-i18n="table.actions">Azioni</th>
                             </tr>
                         </thead>
                         <tbody id="listaShow"></tbody>
@@ -235,9 +244,9 @@
                 </div>
 
                 <div id="controlliPaginazione" class="pagination-controls">
-                    <button type="button" id="btnPrevPagina" class="btn-page" onclick="cambiaPagina(-1)">⬅️ Precedente</button>
+                    <button type="button" id="btnPrevPagina" class="btn-page" onclick="cambiaPagina(-1)" data-i18n="pagination.prev">⬅️ Precedente</button>
                     <span id="infoPagina" style="font-weight: 600;">Pagina 1 di 1</span>
-                    <button type="button" id="btnNextPagina" class="btn-page" onclick="cambiaPagina(1)">Successiva ➡️</button>
+                    <button type="button" id="btnNextPagina" class="btn-page" onclick="cambiaPagina(1)" data-i18n="pagination.next">Successiva ➡️</button>
                 </div>
             </section>
         </div>
@@ -245,24 +254,24 @@
         <!-- TAB 2: CLASSIFICA MODELLE -->
         <div id="tabClassifica" class="tab-content">
             <section class="card-section">
-                <h2>🏆 Classifica Generale Modelle</h2>
+                <h2 data-i18n="ranking.title">🏆 Classifica Generale Modelle</h2>
 
                 <!-- BOX INFORMAZIONI CRITERI CLASSIFICA -->
                 <div class="info-classifica-box" style="margin-bottom: 20px; padding: 15px; border-radius: var(--radius-md); background: var(--bg-main); border: 1px solid var(--border-color); font-size: 0.88rem; line-height: 1.5;">
                     <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; margin-bottom: 8px; color: var(--primary-color);">
                         <i class="fa-solid fa-circle-info"></i>
-                        <span>Criteri di Ordinamento della Classifica:</span>
+                        <span data-i18n="ranking.info_title">Criteri di Ordinamento della Classifica:</span>
                     </div>
                     <ul style="margin-left: 22px; color: var(--text-muted);">
-                        <li style="margin-bottom: 4px;"><strong>Media Voti (Criterio Primario):</strong> Le modelle vengono ordinate prima di tutto in base alla media dei voti ricevuti (da 1 a 5 stelle). Gli show regalati o contrassegnati come <em>TBD</em> non influiscono sulla media.</li>
-                        <li><strong>Numero di Show (Criterio Secondario):</strong> A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.</li>
+                        <li style="margin-bottom: 4px;" data-i18n="ranking.info_rule1"><strong>Media Voti (Criterio Primario):</strong> Le modelle vengono ordinate prima di tutto in base alla media dei voti ricevuti (da 1 a 5 stelle). Gli show regalati o contrassegnati come <em>TBD</em> non influiscono sulla media.</li>
+                        <li data-i18n="ranking.info_rule2"><strong>Numero di Show (Criterio Secondario):</strong> A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.</li>
                     </ul>
                 </div>
                 
                 <div class="filters-bar" style="margin-bottom: 20px;">
                     <div class="filter-item" style="width: 100%; max-width: 400px;">
-                        <label for="searchModellaClassifica">🔎 Cerca Modella:</label>
-                        <input type="text" id="searchModellaClassifica" placeholder="Inserisci il nome..." oninput="filtraClassificaModelle()">
+                        <label for="searchModellaClassifica" data-i18n="ranking.search">🔎 Cerca Modella:</label>
+                        <input type="text" id="searchModellaClassifica" placeholder="Inserisci il nome..." data-i18n-ph="ranking.ph_search" oninput="filtraClassificaModelle()">
                     </div>
                 </div>
 
@@ -270,15 +279,15 @@
                     <table>
                         <thead>
                             <tr>
-                                <th style="text-align: center;">Posizione</th>
-                                <th>Foto</th>
-                                <th>Nome Modella</th>
-                                <th>Sito Web</th>
-                                <th>Piattaforma</th>
-                                <th>Show Totali</th>
-                                <th>Durata Totale</th>
-								<th>Spesa Totale</th>
-								<th>Media Voti</th>
+                                <th style="text-align: center;" data-i18n="table.pos">Posizione</th>
+                                <th data-i18n="table.photo">Foto</th>
+                                <th data-i18n="table.model_name">Nome Modella</th>
+                                <th data-i18n="table.website">Sito Web</th>
+                                <th data-i18n="table.platform">Piattaforma</th>
+                                <th data-i18n="table.total_shows">Show Totali</th>
+                                <th data-i18n="table.total_duration">Durata Totale</th>
+								<th data-i18n="table.total_spent">Spesa Totale</th>
+								<th data-i18n="table.avg_rating">Media Voti</th>
                             </tr>
                         </thead>
                         <tbody id="listaMedie"></tbody>
@@ -290,11 +299,11 @@
         <!-- TAB 3: STATISTICHE MENSILI -->
         <div id="tabStatistiche" class="tab-content">
             <section id="sectionObiettivoBudget" class="card-section" style="background-color: #fef9c3; border: 1px solid #fde047; border-radius: 8px;">
-                <h2 style="color: #1e293b;">Obiettivo e Budget Mensile</h2>
+                <h2 style="color: #1e293b;" data-i18n="budget.title">Obiettivo e Budget Mensile</h2>
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                    <label for="monthlyBudgetInput" style="font-weight: 600; color: #1e293b;">Imposta Budget Mensile (€):</label>
+                    <label for="monthlyBudgetInput" style="font-weight: 600; color: #1e293b;" data-i18n="budget.set_label">Imposta Budget Mensile (€):</label>
                     <input type="number" id="monthlyBudgetInput" placeholder="Es. 1000" step="10" min="0" style="width: 150px;">
-                    <button type="button" id="saveBudgetBtn" class="btn-primary" style="padding: 6px 12px; font-size: 0.85rem;">Salva Budget</button>
+                    <button type="button" id="saveBudgetBtn" class="btn-primary" style="padding: 6px 12px; font-size: 0.85rem;" data-i18n="budget.btn_save">Salva Budget</button>
                 </div>
 
                 <div id="budgetProgressContainer" style="margin-top: 15px;">
@@ -310,9 +319,9 @@
 
             <section class="card-section">
                 <div class="statistiche-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-                    <h2>📈 Statistiche Mensili</h2>
+                    <h2 data-i18n="stats.title">📈 Statistiche Mensili</h2>
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <label for="selezionaAnnoStatistiche" style="font-weight: 600;">Seleziona Anno:</label>
+                        <label for="selezionaAnnoStatistiche" style="font-weight: 600;" data-i18n="stats.select_year">Seleziona Anno:</label>
                         <select id="selezionaAnnoStatistiche" onchange="aggiornaStatisticheMensili()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);">
                             <!-- Popolato dinamicamente da script.js -->
                         </select>
@@ -332,24 +341,24 @@
             
             <!-- SEZIONE GALLERIA FOTO -->
             <div id="sezioneGalleriaModella" style="margin-top: 15px; margin-bottom: 20px;">
-                <h3>🖼️ Galleria Foto Profilo</h3>
+                <h3 data-i18n="modal.gallery">🖼️ Galleria Foto Profilo</h3>
                 <div id="contenitoreFotoDinamiche" style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; min-height: 80px; align-items: center;">
-                    <span style="color: var(--text-muted); font-size: 0.9rem;">Caricamento foto in corso...</span>
+                    <span style="color: var(--text-muted); font-size: 0.9rem;" data-i18n="modal.loading_photos">Caricamento foto in corso...</span>
                 </div>
             </div>
             
-            <h3>Storico Show Effettuati</h3>
+            <h3 data-i18n="modal.history_title">Storico Show Effettuati</h3>
             <div class="table-container" style="margin-top: 15px;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Data & Ora</th>
-                            <th>Piattaforma</th>
-                            <th>Durata</th>
-                            <th>Costo</th>
-                            <th>Voto</th>
-                            <th>Recensione</th>
-                            <th>Note</th>
+                            <th data-i18n="table.date">Data & Ora</th>
+                            <th data-i18n="table.platform">Piattaforma</th>
+                            <th data-i18n="table.duration">Durata</th>
+                            <th data-i18n="table.cost">Costo</th>
+                            <th data-i18n="table.rating">Voto</th>
+                            <th data-i18n="table.review">Recensione</th>
+                            <th data-i18n="table.notes">Note</th>
                         </tr>
                     </thead>
                     <tbody id="modalListaShow"></tbody>
@@ -361,14 +370,14 @@
 	<div id="changelogModal" class="modal" style="display: none;">
 		<div class="modal-content">
 			<span id="closeChangelogBtn" class="close-btn">&times;</span>
-			<h2>📜 Changelog / Novità</h2>
+			<h2 data-i18n="changelog.title">📜 Changelog / Novità</h2>
 			
 			<!-- Contenitore del testo -->
 			<div id="changelogContent" style="max-height: 300px; overflow-y: auto; margin: 15px 0;">
-				<p>Caricamento novità in corso...</p>
+				<p data-i18n="changelog.loading">Caricamento novità in corso...</p>
 			</div>
 
-			<button id="confirmChangelogBtn" class="btn-primary">Ho capito</button>
+			<button id="confirmChangelogBtn" class="btn-primary" data-i18n="changelog.confirm">Ho capito</button>
 		</div>
 	</div>
 
