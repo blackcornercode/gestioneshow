@@ -815,3 +815,59 @@ tbody tr.highlight-current-month:hover {
         height: auto;
     }
 }
+
+/* Layout griglia statistiche del modale */
+.modal-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.stat-card {
+    text-align: center;
+}
+
+.stat-card .stat-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-transform: uppercase;
+}
+
+.stat-card .stat-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* ==========================================================================
+   RIGHE ALTERNATE TABELLA (EFFETTO ZEBRA DELICATO)
+   ========================================================================== */
+
+/* Riga dispari (1ª, 3ª, 5ª...): colore base della card */
+tbody tr:nth-child(odd) {
+    background-color: var(--bg-card) !important;
+}
+
+/* Riga pari (2ª, 4ª, 6ª...): leggermente più scura in modo molto sfumato */
+tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.025) !important;
+}
+
+/* --- ADATTAMENTO PER TEMA GRIGIO (Velatura più morbida) --- */
+body.theme-grey tbody tr:nth-child(even) {
+    background-color: #e2e8f0 !important; /* Molto più vicino a #f1f5f9 */
+}
+
+/* --- ADATTAMENTO PER TEMA SCURO (Velatura più morbida) --- */
+body.theme-dark tbody tr:nth-child(even) {
+    background-color: #182234 !important; /* Molto più vicino a #1e293b */
+}
+
+/* Effetto Hover per mantenere la riga evidenziata al passaggio del mouse */
+tbody tr:hover {
+    background-color: rgba(37, 99, 235, 0.08) !important;
+}

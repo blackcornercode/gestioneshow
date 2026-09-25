@@ -28,9 +28,9 @@
                 <div class="theme-selector">
                     <label for="selectTema">Tema:</label>
                     <select id="selectTema" onchange="cambiaTema(this.value)">
-                        <option value="grey">Grigio Chiaro</option>
-                        <option value="light">Chiaro Standard</option>
-                        <option value="dark">Scuro</option>
+                        <option value="grey">Neve & Nebbia</option>
+                        <option value="light">Luce Chiara</option>
+                        <option value="dark">Eclissi Scura</option>
                     </select>
                 </div>
 
@@ -46,7 +46,10 @@
         <nav class="tabs-nav">
             <button type="button" class="tab-btn active" onclick="apriTab('tabDashboard', event)">📝 Form & Cronologia</button>
             <button type="button" class="tab-btn" onclick="apriTab('tabClassifica', event)">🏆 Classifica Modelle</button>
-            <button type="button" class="tab-btn" onclick="apriTab('tabStatistiche', event)">📈 Statistiche Mensili</button>
+            <button type="button" class="tab-btn" onclick="apriTab('tabStatistiche', event)" style="display: inline-flex; align-items: center; gap: 8px;">
+                <span>📈 Statistiche Mensili</span>
+                <span id="navBudgetBadge" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; font-weight: bold; display: none;"></span>
+            </button>
         </nav>
     </header>
 
@@ -77,6 +80,12 @@
             <label for="urlProfilo">Link Profilo Web</label>
             <input type="url" id="urlProfilo" placeholder="https://...">
         </div>
+
+        <div class="form-group">
+            <label for="durataShow">Durata Show (in minuti):</label>
+            <input type="number" id="durataShow" min="0" placeholder="Es. 45" required>
+        </div>
+
     </div>
 
     <!-- Riga 2: Piattaforma, Nickname, Costo, Punteggio, Checkbox Regalo -->
@@ -212,6 +221,7 @@
                                 <th>Data & Ora</th>
                                 <th>Nome</th>
                                 <th>Piattaforma</th>
+                                <th>Durata</th>
                                 <th>Costo</th>
                                 <th>Voto</th>
                                 <th>Origine</th>
@@ -265,7 +275,8 @@
                                 <th>Nome Modella</th>
                                 <th>Sito Web</th>
                                 <th>Piattaforma</th>
-                                <th style="text-align: center;">Show Totali</th>
+                                <th>Show Totali</th>
+                                <th>Durata Totale</th>
 								<th>Spesa Totale</th>
 								<th>Media Voti</th>
                             </tr>
@@ -334,6 +345,7 @@
                         <tr>
                             <th>Data & Ora</th>
                             <th>Piattaforma</th>
+                            <th>Durata</th>
                             <th>Costo</th>
                             <th>Voto</th>
                             <th>Recensione</th>

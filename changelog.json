@@ -1,4 +1,9 @@
 {
+  "1.10.8": [
+    "Introdotta la durata degli show",
+    "Introdotte le righe bicolor per migliorare la lettura"
+  ], 
+
   "1.10.7": [
     "Ottimizzazione generale",
     "Aggiunta sezione Criteri di Ordinamento della Classifica",

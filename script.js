@@ -338,7 +338,10 @@ function inizializzaGestioneBudget() {
             const val = parseFloat(budgetInput.value) || 0;
             localStorage.setItem('monthly_budget', val > 0 ? val : '');
             logger.info(`Budget mensile aggiornato: € ${val}`);
+            
+            // --- AGGIORNAMENTO ISTANTANEO DEGLI INDICATORI E STATISTICHE ---
             caricaStatisticheMensili(tuttiGliShow);
+            aggiornaIndicatoreBudgetHomepage(tuttiGliShow);
         });
     }
 }
@@ -566,6 +569,7 @@ if (showForm) {
         const inputImmagine = document.getElementById('immagine');
         const inputUrlProfilo = document.getElementById('urlProfilo');
         const inputCosto = document.getElementById('costo');
+        const inputDurata = document.getElementById('durataShow'); // <-- AGGIUNTO
         const inputRecensione = document.getElementById('recensione');
         const inputNote = document.getElementById('note');
         const inputNickname = document.getElementById('nickname');
@@ -595,6 +599,7 @@ if (showForm) {
             piattaforma: isRegalo ? '' : (piattaformaSelect ? piattaformaSelect.value : ''),
             punteggio: isRegalo ? null : (valPunteggio === 'TBD' ? 'TBD' : parseInt(valPunteggio, 10) || 'TBD'),
             costo: inputCosto ? (parseFloat(inputCosto.value) || 0) : 0,
+            durata: inputDurata ? (parseInt(inputDurata.value, 10) || 0) : 0, // <-- AGGIUNTO
             immagine: inputImmagine ? inputImmagine.value.trim() : '',
             urlProfilo: inputUrlProfilo ? inputUrlProfilo.value.trim() : '',
             recensione: inputRecensione ? inputRecensione.checked : false,
@@ -655,6 +660,10 @@ async function modificaShow(id) {
     const inputNickname = document.getElementById('nickname');
     if (inputNickname) inputNickname.value = item.nickname || '';
 
+    // Popolamento Durata Show
+    const inputDurata = document.getElementById('durataShow');
+    if (inputDurata) inputDurata.value = item.durata || item.tempoShow || '';
+
     const piattaformaSelect = document.getElementById('piattaforma');
     const punteggioSelect = document.getElementById('punteggio');
     const isRegaloCheckbox = document.getElementById('isRegalo');
@@ -710,7 +719,9 @@ function resetForm() {
     const costoInput = document.getElementById('costo');
     const btnSalva = document.getElementById('btnSalva');
     const btnAnnulla = document.getElementById('btnAnnulla');
-
+    const inputDurata = document.getElementById('durataShow');
+    
+    if (inputDurata) inputDurata.value = '';
     if (editIdInput) editIdInput.value = '';
     if (showForm) showForm.reset();
     if (isRegaloCheckbox) isRegaloCheckbox.checked = false;
@@ -776,6 +787,8 @@ async function aggiornaInterfaccia() {
 
         caricaStatisticheMensili(tuttiGliShow);
         caricaMedieEStoricizzazione(tuttiGliShow);
+
+        aggiornaIndicatoreBudgetHomepage(tuttiGliShow);
     } catch (err) {
         logger.error("Errore durante l'aggiornamento dell'interfaccia", err);
     }
@@ -973,11 +986,15 @@ function caricaCronologia(shows) {
             ? `<span style="background-color: #e3f2fd; color: #0d47a1; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; white-space: nowrap;">🤖 Auto MCG</span>` 
             : `<span style="background-color: #f5f5f5; color: #616161; padding: 3px 8px; border-radius: 12px; font-size: 11px; white-space: nowrap;">👤 Manuale</span>`;
 
+        // Calcolo e formattazione durata dello show
+        const durataTxt = formattaTempo(item.durata || item.tempoShow || 0);
+
         tr.innerHTML = `
             <td>${imgHtml}</td>
             <td style="white-space: nowrap;">${escapeHtml(item.dataFormattata || item.data)}</td>
             <td><strong>${escapeHtml(item.nome)}</strong></td>
             <td>${piattaformaTxt}</td>
+            <td style="text-align: center; font-weight: bold; color: #000000; white-space: nowrap;">${durataTxt}</td>
             <td style="white-space: nowrap;">€ ${item.costo ? item.costo.toFixed(2) : '0.00'}</td>
             <td>${votoTxt}</td>
             <td>${origineBadge}</td>
@@ -1225,6 +1242,7 @@ function caricaStatisticheMensili(shows) {
                             <th>Data</th>
                             <th>Modella</th>
                             <th>Piattaforma</th>
+                            <th>Durata</th>
                             <th>Costo</th>
                             <th>Voto</th>
                             <th>Recensione</th>
@@ -1245,12 +1263,15 @@ function caricaStatisticheMensili(shows) {
                 votoTxt = (item.punteggio === 'TBD' || !item.punteggio) ? 'TBD' : `${item.punteggio} / 5`;
             }
 
+            const durataTxt = formattaTempo(item.durata || item.tempoShow || 0);
+
             html += `
                 <tr style="border-bottom: 1px solid var(--border-color);">
                     <td style="padding: 6px;">${imgHtml}</td>
                     <td style="white-space: nowrap; padding: 6px;">${escapeHtml(item.dataFormattata || item.data)}</td>
                     <td style="padding: 6px;"><strong style="cursor: pointer; color: #000000;" onclick="apriModalModella('${escapeHtml(item.nome)}')">${escapeHtml(item.nome)}</strong></td>
                     <td style="padding: 6px;">${getPiattaformaFormatted(item)}</td>
+                    <td style="padding: 6px; text-align: center; font-weight: bold; color: 000000; white-space: nowrap;">${durataTxt}</td>
                     <td style="white-space: nowrap; padding: 6px;">€ ${item.costo ? item.costo.toFixed(2) : '0.00'}</td>
                     <td style="padding: 6px;">${votoTxt}</td>
                     <td style="text-align: center; padding: 6px;">${item.recensione ? '✅' : '❌'}</td>
@@ -1290,6 +1311,7 @@ function caricaMedieEStoricizzazione(shows) {
                 nome: nomeNorm,
                 totaleShow: 0,
                 spesaTotale: 0,
+                totaleDurata: 0,
                 sommaVoti: 0,
                 conteggioVoti: 0,
                 foto: show.immagine || mappaImmaginiModelle[chiave] || '',
@@ -1301,6 +1323,7 @@ function caricaMedieEStoricizzazione(shows) {
 
         mappaModelle[chiave].totaleShow += 1;
         mappaModelle[chiave].spesaTotale += (parseFloat(show.costo) || 0);
+        mappaModelle[chiave].totaleDurata += (parseInt(show.durata || show.tempoShow, 10) || 0);
 
         if (!show.isRegalo && show.punteggio && show.punteggio !== 'TBD') {
             const v = parseFloat(show.punteggio);
@@ -1313,20 +1336,26 @@ function caricaMedieEStoricizzazione(shows) {
 
     classificaCompletaCache = Object.values(mappaModelle).map(m => {
         const media = m.conteggioVoti > 0 ? (m.sommaVoti / m.conteggioVoti).toFixed(2) : 'N/D';
-        return { ...m, mediaValore: media === 'N/D' ? -1 : parseFloat(media), mediaTxt: media };
+        return { 
+            ...m, 
+            mediaValore: media === 'N/D' ? -1 : parseFloat(media), 
+            mediaTxt: media 
+        };
     });
 
+    // --- CRITERI DI ORDINAMENTO (1° Media Voti, 2° Numero di Show) ---
     classificaCompletaCache.sort((a, b) => {
-    if (b.mediaValore !== a.mediaValore) return b.mediaValore - a.mediaValore;
-    return b.totaleShow - a.totaleShow;
+        // 1° Criterio: Media Voti (Decrescente)
+        if (b.mediaValore !== a.mediaValore) {
+            return b.mediaValore - a.mediaValore;
+        }
+        // 2° Criterio (A parità di media voti): Numero di Show (Decrescente)
+        return b.totaleShow - a.totaleShow;
     });
 
-    // ADD QUESTA PARTE: assegna la posizione REALE in classifica a ciascuna modella
     classificaCompletaCache.forEach((item, index) => {
         item.posizioneOriginale = index + 1;
     });
-
-    mostraClassifica(classificaCompletaCache);
 
     mostraClassifica(classificaCompletaCache);
 }
@@ -1370,6 +1399,9 @@ function mostraClassifica(lista) {
             }
         }
 
+        // Calcolo/Formattazione del tempo totale accumulato
+        const tempoTotaleTxt = formattaTempo(item.tempoTotale || item.totaleDurata || 0);
+
         tr.innerHTML = `
             <td style="text-align: center; font-weight: bold;">#${item.posizioneOriginale || (index + 1)}</td>
             <td>${imgHtml}</td>
@@ -1377,8 +1409,9 @@ function mostraClassifica(lista) {
             <td>${linkWebHtml}</td>
             <td>${piattaformaHtml}</td>
             <td style="text-align: center;">${item.totaleShow}</td>
-            <td style="white-space: nowrap; font-weight: bold; color: #e76f51;">€ ${item.spesaTotale.toFixed(2)}</td>
-            <td style="font-weight: bold; color: var(--accent-color);">${item.mediaTxt}</td>
+            <td style="text-align: center; font-weight: bold; color: #000000;">${tempoTotaleTxt}</td>
+            <td style="white-space: nowrap; font-weight: bold; color: #000000;">€ ${item.spesaTotale.toFixed(2)}</td>
+            <td style="text-align: center; font-weight: bold; color: #f59e0b;">${item.mediaTxt}</td>
         `;
         fragment.appendChild(tr);
     });
@@ -1420,6 +1453,7 @@ async function apriModalModella(nomeModella) {
 
     const totaleShow = showsModella.length;
     const spesaTotale = showsModella.reduce((acc, show) => acc + (parseFloat(show.costo) || 0), 0);
+    const tempoTotale = showsModella.reduce((acc, show) => acc + (parseInt(show.durata || show.tempoShow, 10) || 0), 0);
     
     const showConVoto = showsModella.filter(s => !s.isRegalo && s.punteggio && s.punteggio !== 'TBD');
     const sommaVoti = showConVoto.reduce((acc, s) => acc + parseFloat(s.punteggio), 0);
@@ -1457,12 +1491,16 @@ async function apriModalModella(nomeModella) {
                     <strong style="font-size: 1.2em; color: var(--text-main, #333);">${totaleShow}</strong>
                 </div>
                 <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
+                    <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Durata Totale</span>
+                    <strong style="font-size: 1.2em; color: #000000;">${formattaTempo(tempoTotale)}</strong>
+                </div>
+                <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
                     <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Spesa Totale</span>
-                    <strong style="font-size: 1.2em; color: #e76f51;">€ ${spesaTotale.toFixed(2)}</strong>
+                    <strong style="font-size: 1.2em; color: #000000;">€ ${spesaTotale.toFixed(2)}</strong>
                 </div>
                 <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
                     <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Media Voti</span>
-                    <strong style="font-size: 1.2em; color: var(--accent-color, #2a9d8f);">${mediaVoti !== 'N/D' ? mediaVoti + ' / 5' : 'N/D'}</strong>
+                    <strong style="font-size: 1.2em; color: var(--accent-color, #f59e0b);">${mediaVoti !== 'N/D' ? mediaVoti + ' / 5' : 'N/D'}</strong>
                 </div>
             </div>
         </div>
@@ -1480,9 +1518,12 @@ async function apriModalModella(nomeModella) {
             votoTxt = (item.punteggio === 'TBD' || !item.punteggio) ? 'TBD' : `${item.punteggio} / 5`;
         }
 
+        const durataSingola = formattaTempo(item.durata || item.tempoShow || 0);
+
         tr.innerHTML = `
             <td>${escapeHtml(item.dataFormattata || item.data)}</td>
             <td>${piattaformaTxt}</td>
+            <td style="text-align: center; font-weight: bold; color: #000000;">${durataSingola}</td>
             <td>€ ${item.costo ? item.costo.toFixed(2) : '0.00'}</td>
             <td>${votoTxt}</td>
             <td style="text-align: center;">${item.recensione ? '✅' : '❌'}</td>
@@ -1834,5 +1875,137 @@ function chiudiModalChangelog() {
     const modal = document.getElementById('changelogModal');
     if (modal) {
         modal.style.display = 'none';
+    }
+}
+
+// --- FUNZIONE UTILITY PER FORMATTARE IL TEMPO (Minuti -> Ore e Minuti) ---
+function formattaTempo(minuti) {
+    if (!minuti || isNaN(minuti) || minuti <= 0) return '0m';
+    const ore = Math.floor(minuti / 60);
+    const mins = minuti % 60;
+    if (ore > 0) {
+        return `${ore}h ${mins > 0 ? mins + 'm' : ''}`;
+    }
+    return `${mins}m`;
+}
+
+// --- SALVATAGGIO / AGGIORNAMENTO SHOW ---
+function salvaShow(event) {
+    event.preventDefault();
+    
+    const modella = document.getElementById('selectModella').value;
+    const guadagno = parseFloat(document.getElementById('guadagnoShow').value) || 0;
+    const durata = parseInt(document.getElementById('durataShow').value, 10) || 0;
+    const data = document.getElementById('dataShow').value;
+
+    const nuovoShow = {
+        id: Date.now().toString(),
+        modella: modella,
+        guadagno: guadagno,
+        durata: durata, // Salvataggio della durata in minuti
+        data: data
+    };
+
+    // ... salvataggio in localStorage / Array globale ...
+    elencoShow.push(nuovoShow);
+    salvaNelStorage();
+    aggiornaInterfaccia();
+}
+
+function aggiornaIndicatoreBudgetHomepage(shows) {
+    const widget = document.getElementById('homepageBudgetWidget');
+    const title = document.getElementById('budgetWidgetTitle');
+    const subtitle = document.getElementById('budgetWidgetSubtitle');
+    const amount = document.getElementById('budgetWidgetAmount');
+    const badge = document.getElementById('budgetWidgetBadge');
+    const icon = document.getElementById('budgetWidgetIcon');
+    const progressBar = document.getElementById('homepageProgressBar');
+
+    // Badge nel menu di navigazione
+    const navBadge = document.getElementById('navBudgetBadge');
+
+    const budgetPrefissato = parseFloat(localStorage.getItem('monthly_budget')) || 0;
+
+    // Calcolo spesa mese corrente
+    const ora = new Date();
+    const meseCorrenteIdx = ora.getMonth();
+    const annoCorrenteNum = ora.getFullYear();
+
+    let spesaMeseCorrente = 0;
+    shows.forEach(show => {
+        const dataRef = show.dataOraISO || show.dataOra || show.data;
+        if (dataRef) {
+            const d = new Date(dataRef);
+            if (d.getFullYear() === annoCorrenteNum && d.getMonth() === meseCorrenteIdx) {
+                spesaMeseCorrente += parseFloat(show.costo) || 0;
+            }
+        }
+    });
+
+    if (amount) amount.textContent = `€ ${spesaMeseCorrente.toFixed(2)} / € ${budgetPrefissato.toFixed(2)}`;
+
+    // Se non c'è budget impostato
+    if (budgetPrefissato <= 0) {
+        if (icon) icon.textContent = 'ℹ️';
+        if (subtitle) subtitle.textContent = 'Nessun budget mensile impostato. Impostalo nella scheda Statistiche.';
+        if (badge) {
+            badge.textContent = 'NON IMPOSTATO';
+            badge.style.backgroundColor = '#e2e8f0';
+            badge.style.color = '#475569';
+        }
+        if (widget) widget.style.borderLeft = '6px solid #94a3b8';
+        if (progressBar) progressBar.style.width = '0%';
+
+        // Nav Badge
+        if (navBadge) {
+            navBadge.style.display = 'none';
+        }
+        return;
+    }
+
+    const percentuale = Math.min(100, Math.max(0, (spesaMeseCorrente / budgetPrefissato) * 100));
+    if (progressBar) progressBar.style.width = `${percentuale}%`;
+
+    const differenza = budgetPrefissato - spesaMeseCorrente;
+
+    if (differenza >= 0) {
+        // BUDGET RISPETTATO
+        if (icon) icon.textContent = '✅';
+        if (subtitle) subtitle.textContent = `Sei nei limiti del budget. Rimanente: € ${differenza.toFixed(2)}`;
+        if (badge) {
+            badge.textContent = 'SOTTO BUDGET';
+            badge.style.backgroundColor = '#dcfce7';
+            badge.style.color = '#15803d';
+        }
+        if (widget) widget.style.borderLeft = '6px solid #22c55e';
+        if (progressBar) progressBar.style.backgroundColor = '#22c55e';
+
+        // Nav Badge
+        if (navBadge) {
+            navBadge.style.display = 'inline-block';
+            navBadge.textContent = 'OK';
+            navBadge.style.backgroundColor = '#22c55e';
+            navBadge.style.color = '#ffffff';
+        }
+    } else {
+        // BUDGET SUPERATO
+        const sforamento = Math.abs(differenza);
+        if (icon) icon.textContent = '⚠️';
+        if (subtitle) subtitle.textContent = `ATTENZIONE! Hai superato il budget di € ${sforamento.toFixed(2)}`;
+        if (badge) {
+            badge.textContent = 'BUDGET SUPERATO';
+            badge.style.backgroundColor = '#fee2e2';
+            badge.style.color = '#b91c1c';
+        }
+        if (widget) widget.style.borderLeft = '6px solid #ef4444';
+        if (progressBar) progressBar.style.backgroundColor = '#ef4444';
+
+        // Nav Badge
+        if (navBadge) {
+            navBadge.style.display = 'inline-block';
+            navBadge.textContent = '!';
+            navBadge.style.backgroundColor = '#ef4444';
+            navBadge.style.color = '#ffffff';
+        }
     }
 }
