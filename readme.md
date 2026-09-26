@@ -3,17 +3,18 @@
 ![Version](https://img.shields.io/badge/version-v1.10.8-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Electron-brightgreen.svg)
 
-**Gestione Show MCG** è un'applicazione desktop basata sull'architettura **Electron**, progettata per la registrazione, l'organizzazione e l'analisi economica degli show e delle interazioni. Il sistema offre un monitoraggio completo della spesa rispetto a budget mensili prefissati e fornisce metriche e classifiche automatiche sui dati inseriti.
+**Gestione Show MCG** è un'applicazione desktop basata sull'architettura **Electron**, progettata per la registrazione, l'organizzazione e l'analisi economica degli show e delle interazioni. Il sistema offre un monitoraggio completo della spesa rispetto a budget mensili prefissati e fornisce metriche, statistiche e classifiche automatiche sui dati inseriti.
 
 ---
 
 ## 📸 Caratteristiche Principali
 
 - **Tracciamento Completo**: Registrazione dettagliata di ciascuna sessione (data/ora, performer, piattaforma, costi, valutazioni e recensioni).
+- **Internazionalizzazione (i18n)**: Supporto nativo multilingua (Italiano 🇮🇹 ed Inglese 🇬🇧) con caricamento dinamico e persistenza della preferenza del contesto.
 - **Classifica Automatica**: Elaborazione automatica delle metriche delle modella/performer in base a frequenza e punteggio medio.
 - **Controllo Finanziario**: Monitoraggio dei costi mensili con soglie di budget configurabili e barre di avanzamento grafiche.
 - **Sincronizzazione Remota**: Funzionalità integrata per l'importazione automatica delle transazioni da area clienti web.
-- **Personalizzazione Visiva**: Supporto per temi multipli (Grigio Chiaro, Chiaro Standard, Scuro) e ridimensionamento dinamico del font.
+- **Personalizzazione Visiva**: Supporto per temi multipli (*Neve & Nebbia*, *Luce Chiara*, *Eclissi Scura*) e ridimensionamento dinamico del font.
 - **Gestione Dati Integrata**: Backup e ripristino in formato JSON, con filtri avanzati per anno, ricerca testo e paginazione.
 
 ---
@@ -31,7 +32,7 @@ Consente l'inserimento manuale, la modifica e la consultazione dell'archivio sto
 | **Nome Modella** | Testo (Autocompletamento) | Nome della performer. Recupera automaticamente link e foto salvati. |
 | **Piattaforma** | Menù a tendina custom | Opzioni: *Teams, Telegram, Skype, Zoom, Altro*. Disabilitato se "Regalo". |
 | **Costo (€)** | Numerico (Decimali) | Importo economico speso. |
-| **Voto / Punteggio** | Selezione (1-5 o TBD) | Valutazione qualitativa (1-5) o `TBD` (To Be Defined) per revisioni rinvii. |
+| **Voto / Punteggio** | Selezione (1-5 o TBD) | Valutazione qualitativa (1-5) o `TBD` (*To Be Decided*) per revisioni rinviate. |
 | **Regalo / Recensione**| Checkbox | Contrassegna eventi gratuiti/regalo o presenza di recensione. |
 | **URL Foto / Profilo** | URL Web | Link esterni per l'avatar e il profilo web della modella. |
 
@@ -54,8 +55,9 @@ Elabora la cronologia salvata per generare indicatori prestazionali e statistici
 ### 3. Statistiche Mensili e Budget
 Fornisce il controllo finanziario sulle uscite e i costi operativi:
 
-- **Impostazione Budget**: Definisce la soglia massima speso mensile (€).
-- **Barra di Avanzamento**: Monitoraggio percentuale in tempo reale con avvisi cromatici al raggiungimento o superamento dei limiti impostati.
+- **Impostazione Budget**: Definisce la soglia massima di spesa mensile (€).
+- **Avanzamento e Indicatori Dynamic**: Monitoraggio percentuale in tempo reale con avvisi cromatici e messaggi contestuali tradotti in base al superamento o rispetto dei limiti impostati.
+- **Visualizzazione Tabellare Dettagliata**: Prospetto dei 12 mesi con contatore degli show, totale speso e vista espandibile per singolo mese.
 
 ---
 
@@ -63,11 +65,12 @@ Fornisce il controllo finanziario sulle uscite e i costi operativi:
 
 Accessibili direttamente dall'intestazione dell'applicazione:
 
+- **🌍 Selezione Lingua (i18n)**: Selettore orizzontale affiancato nell'header che permette lo switch istantaneo tra Italiano (`it`) e Inglese (`en`) tramite file JSON dedicati nella cartella `/locales`.
 - **🔄 Sincronizzazione Automatica MCG**: Scarica e importa in automatico le transazioni dell'area clienti web non ancora registrate localmente.
 - **💾 Esportazione / Importazione Backup**: Ripristino e salvataggio dei dati in formato JSON.
 - **🎨 Accessibilità e Temi**:
   - **Dimensione Testo**: Pulsanti `A+` / `A-` per modificare al volo la grandezza dei font (12px - 26px).
-  - **Temi Visivi**: Selezione tra *Grigio Chiaro*, *Chiaro Standard* e *Scuro*.
+  - **Temi Visivi**: Selezione tra *Neve & Nebbia*, *Luce Chiara* ed *Eclissi Scura*.
 - **📁 Gestione Cartella Dati**: Collegamento rapido alla cartella `userData` di sistema per consultare file JSON e log.
 
 ---
@@ -77,25 +80,5 @@ Accessibili direttamente dall'intestazione dell'applicazione:
 1. Assicurati di aver installato [Node.js](https://nodejs.org/) (versione consigliata LTS).
 2. Clona il repository locale ed entra nella directory del progetto:
    ```bash
-   git clone https://github.com/blackcornercode/gestioneshow.git
+   git clone [https://github.com/blackcornercode/gestioneshow.git](https://github.com/blackcornercode/gestioneshow.git)
    cd GestioneShow
-   ```
-3. Installa le dipendenze:
-   ```bash
-   npm install
-   ```
-4. Avvia l'applicazione in ambiente di sviluppo:
-   ```bash
-   npm start
-   ```
-
----
-
-## 📦 Build e Distribuzione
-
-Per compilare l'applicazione per la distribuzione tramite l'eseguibile `AVVIA.bat` o generare i pacchetti binaries:
-
-```bash
-npm run make
-```
-*I file compilati verranno generati nella cartella `dist/` (esclusa dal tracciamento Git).*
