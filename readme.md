@@ -3,19 +3,19 @@
 ![Version](https://img.shields.io/badge/version-v1.10.8-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Electron-brightgreen.svg)
 
-**Gestione Show MCG** è un'applicazione desktop basata sull'architettura **Electron**, progettata per la registrazione, l'organizzazione e l'analisi economica degli show e delle interazioni. Il sistema offre un monitoraggio completo della spesa rispetto a budget mensili prefissati e fornisce metriche, statistiche e classifiche automatiche sui dati inseriti.
+**Gestione Show MCG** è un'applicazione desktop basata sull'architettura **Electron**, progettata per il monitoraggio, l'organizzazione e la storicizzazione degli show con **camgirl**. Il sistema offre un tracciamento avanzato delle sessioni e della spesa rispetto a budget mensili prefissati, fornendo metriche, statistiche economiche e classifiche automatiche. È nativamente integrata con il portale web **Mondo Cam Girls**.
 
 ---
 
 ## 📸 Caratteristiche Principali
 
-- **Tracciamento Completo**: Registrazione dettagliata di ciascuna sessione (data/ora, performer, piattaforma, costi, valutazioni e recensioni).
-- **Internazionalizzazione (i18n)**: Supporto nativo multilingua (Italiano 🇮🇹 ed Inglese 🇬🇧) con caricamento dinamico e persistenza della preferenza del contesto.
-- **Classifica Automatica**: Elaborazione automatica delle metriche delle modella/performer in base a frequenza e punteggio medio.
-- **Controllo Finanziario**: Monitoraggio dei costi mensili con soglie di budget configurabili e barre di avanzamento grafiche.
-- **Sincronizzazione Remota**: Funzionalità integrata per l'importazione automatica delle transazioni da area clienti web.
+- **Storicizzazione e Monitoraggio Show**: Registrazione dettagliata di ciascuna sessione con camgirl (data/ora, performer, piattaforma utilizzata, costi, valutazioni e recensioni).
+- **Integrazione Mondo Cam Girls**: Sincronizzazione remota integrata per l'importazione automatica delle transazioni direttamente dall'area clienti web del sito Mondo Cam Girls.
+- **Internazionalizzazione (i18n)**: Supporto nativo multilingua (Italiano 🇮🇹 ed Inglese 🇬🇧) con caricamento dinamico e persistenza della lingua selezionata.
+- **Classifica Automatica Performer**: Elaborazione automatica delle metriche e delle valutazioni delle modella/camgirl in base a frequenza e punteggio medio.
+- **Controllo Finanziario e Budget**: Monitoraggio della spesa mensile con soglie configurabili, avvisi di sforamento e barre di avanzamento grafiche.
 - **Personalizzazione Visiva**: Supporto per temi multipli (*Neve & Nebbia*, *Luce Chiara*, *Eclissi Scura*) e ridimensionamento dinamico del font.
-- **Gestione Dati Integrata**: Backup e ripristino in formato JSON, con filtri avanzati per anno, ricerca testo e paginazione.
+- **Gestione Dati Integrata**: Backup e ripristino in formato JSON, con filtri avanzati per anno, ricerca per nome e paginazione.
 
 ---
 
@@ -29,12 +29,12 @@ Consente l'inserimento manuale, la modifica e la consultazione dell'archivio sto
 | Campo | Tipo Dato | Descrizione |
 | :--- | :--- | :--- |
 | **Data e Ora** | Data/Ora ISO | Data e orario esatto della sessione. |
-| **Nome Modella** | Testo (Autocompletamento) | Nome della performer. Recupera automaticamente link e foto salvati. |
+| **Nome Modella** | Testo (Autocompletamento) | Nome della camgirl. Recupera automaticamente link e foto salvati. |
 | **Piattaforma** | Menù a tendina custom | Opzioni: *Teams, Telegram, Skype, Zoom, Altro*. Disabilitato se "Regalo". |
-| **Costo (€)** | Numerico (Decimali) | Importo economico speso. |
+| **Costo (€)** | Numerico (Decimali) | Importo economico speso per lo show. |
 | **Voto / Punteggio** | Selezione (1-5 o TBD) | Valutazione qualitativa (1-5) o `TBD` (*To Be Decided*) per revisioni rinviate. |
-| **Regalo / Recensione**| Checkbox | Contrassegna eventi gratuiti/regalo o presenza di recensione. |
-| **URL Foto / Profilo** | URL Web | Link esterni per l'avatar e il profilo web della modella. |
+| **Regalo / Recensione**| Checkbox | Contrassegna eventi gratuiti/regalo o presenza di recensione lasciata. |
+| **URL Foto / Profilo** | URL Web | Link esterni per la foto e il profilo web della performer. |
 
 #### Funzionalità avanzate della Cronologia:
 - **Paginazione Dinamica**: Selezione di vista a 5, 10, 20 elementi o elenco completo.
@@ -44,20 +44,20 @@ Consente l'inserimento manuale, la modifica e la consultazione dell'archivio sto
 ---
 
 ### 2. Classifica Generale Modelle
-Elabora la cronologia salvata per generare indicatori prestazionali e statistici:
+Elabora la cronologia salvata per generare indicatori prestazionali e statistici sulle camgirl:
 
 - **Podio Automatico**: Assegnazione visiva delle prime posizioni (🥇 1°, 🥈 2°, 🥉 3°) per le valutazioni più alte.
 - **Media Voti**: Calcolo ponderato escludendo sessioni contrassegnate come regali o `TBD`.
-- **Scheda Dettaglio (Modal)**: Cliccando su una riga si apre il resoconto storico dettagliato con quella singola modella.
+- **Scheda Dettaglio (Modal)**: Cliccando su una riga si apre il resoconto storico dettagliato degli show effettuati con la singola modella.
 
 ---
 
 ### 3. Statistiche Mensili e Budget
-Fornisce il controllo finanziario sulle uscite e i costi operativi:
+Fornisce il controllo finanziario sulle uscite e sui costi degli show:
 
 - **Impostazione Budget**: Definisce la soglia massima di spesa mensile (€).
-- **Avanzamento e Indicatori Dynamic**: Monitoraggio percentuale in tempo reale con avvisi cromatici e messaggi contestuali tradotti in base al superamento o rispetto dei limiti impostati.
-- **Visualizzazione Tabellare Dettagliata**: Prospetto dei 12 mesi con contatore degli show, totale speso e vista espandibile per singolo mese.
+- **Avanzamento e Indicatori Dynamic**: Monitoraggio percentuale in tempo reale con avvisi cromatici e messaggi contestuali tradotti in base al superamento o rispetto del budget.
+- **Visualizzazione Tabellare Dettagliata**: Prospetto dei 12 mesi con contatore degli show effettuati, totale speso e vista espandibile per singolo mese.
 
 ---
 
@@ -65,9 +65,9 @@ Fornisce il controllo finanziario sulle uscite e i costi operativi:
 
 Accessibili direttamente dall'intestazione dell'applicazione:
 
-- **🌍 Selezione Lingua (i18n)**: Selettore orizzontale affiancato nell'header che permette lo switch istantaneo tra Italiano (`it`) e Inglese (`en`) tramite file JSON dedicati nella cartella `/locales`.
-- **🔄 Sincronizzazione Automatica MCG**: Scarica e importa in automatico le transazioni dell'area clienti web non ancora registrate localmente.
-- **💾 Esportazione / Importazione Backup**: Ripristino e salvataggio dei dati in formato JSON.
+- **🌍 Selezione Lingua (i18n)**: Selettore orizzontale affiancato nell'header per lo switch istantaneo tra Italiano (`it`) e Inglese (`en`).
+- **🔄 Sincronizzazione Automatica MCG**: Scarica e importa in automatico le transazioni dal profilo Mondo Cam Girls non ancora registrate localmente.
+- **💾 Esportazione / Importazione Backup**: Ripristino e salvataggio dell'intero archivio in formato JSON.
 - **🎨 Accessibilità e Temi**:
   - **Dimensione Testo**: Pulsanti `A+` / `A-` per modificare al volo la grandezza dei font (12px - 26px).
   - **Temi Visivi**: Selezione tra *Neve & Nebbia*, *Luce Chiara* ed *Eclissi Scura*.
