@@ -895,3 +895,43 @@ tbody tr:hover {
     align-items: center;
     gap: 15px; /* Spazio tra il selettore Lingua e il selettore Tema */
 }
+
+.mcg-status-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Pallino Semaforo */
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Verde: Online */
+.status-dot.green {
+    background-color: #2ec4b6;
+    box-shadow: 0 0 8px #2ec4b6;
+}
+
+/* Rosso: Offline / Errore */
+.status-dot.red {
+    background-color: #e71d36;
+    box-shadow: 0 0 8px #e71d36;
+}
+
+/* Giallo: In verifica */
+.status-dot.yellow {
+    background-color: #ff9f1c;
+    box-shadow: 0 0 8px #ff9f1c;
+}

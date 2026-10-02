@@ -42,7 +42,8 @@
     "notes": "Notes / Show Details",
     "ph_notes": "Enter additional notes...",
     "btn_save": "Save Record",
-    "btn_cancel": "Cancel"
+    "btn_cancel": "Cancel",
+    "btn_update": "Update Record"
   },
   "options": {
     "other": "Other",
@@ -64,7 +65,8 @@
   },
   "pagination": {
     "prev": "⬅️ Previous",
-    "next": "Next ➡️"
+    "next": "Next ➡️",
+    "page_of": "Page {page} of {total}"
   },
   "ranking": {
     "title": "🏆 General Models Ranking",

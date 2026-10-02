@@ -42,7 +42,8 @@
     "notes": "Note / Dettagli Show",
     "ph_notes": "Inserisci note aggiuntive...",
     "btn_save": "Salva Record",
-    "btn_cancel": "Annulla"
+    "btn_cancel": "Annulla",
+    "btn_update": "Aggiorna Record"
   },
   "options": {
     "other": "Altro",
@@ -64,7 +65,8 @@
   },
   "pagination": {
     "prev": "⬅️ Precedente",
-    "next": "Successiva ➡️"
+    "next": "Successiva ➡️",
+    "page_of": "Pagina {page} di {total}"
   },
   "ranking": {
     "title": "🏆 Classifica Generale Modelle",

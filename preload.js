@@ -34,5 +34,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
         return () => {
             ipcRenderer.removeListener('open-changelog-trigger', subscription);
         };
-    }
+    },
+    pingMCG: () => ipcRenderer.invoke('ping-mcg'),
 });

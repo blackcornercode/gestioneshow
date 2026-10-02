@@ -1,24 +1,34 @@
-const { app, BrowserWindow, ipcMain, dialog, shell, Menu, net } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, Menu, net, screen } = require('electron');
 const path = require('path');
 const fs = require('fs').promises;
 
 const changelogPath = path.join(__dirname, 'changelog.json');
 const dataPath = path.join(app.getPath('userData'), 'shows_data.json');
+const dataBackupPath = path.join(app.getPath('userData'), 'shows_data.bak.json');
 const windowStatePath = path.join(app.getPath('userData'), 'window_state.json');
 const logFilePath = path.join(app.getPath('userData'), 'app.log');
 
-let store = null;
+// Numero massimo di righe conservate nel file di log (le più recenti, in testa)
+const MAX_RIGHE_LOG = 5000;
+
+// Domini da cui l'app può scaricare pagine (scraping foto / stato online)
+const DOMINIO_MCG = 'mondocamgirls.com';
+
+// Protocolli che l'app può aprire all'esterno (browser, Teams, Telegram)
+const PROTOCOLLI_ESTERNI_CONSENTITI = ['http:', 'https:', 'msteams:', 'tg:'];
+
 let mainWindow = null;
 let splashWindow = null;
 let saveStateTimeout = null;
 
-// Inizializzazione Store Asincrono
-(async () => {
+// Inizializzazione Store Asincrono: la Promise permette agli handler di attenderla
+const storePronto = (async () => {
     try {
         const Store = (await import('electron-store')).default;
-        store = new Store();
+        return new Store();
     } catch (err) {
         console.error('Errore inizializzazione electron-store:', err);
+        return null;
     }
 })();
 
@@ -26,34 +36,74 @@ let saveStateTimeout = null;
    FUNZIONALITÀ UTILITY E LOGS (Scrittura in testa)
    ========================================================================== */
 
-async function logToFile(level, message, details = '') {
+// Le scritture sono messe in coda: due log ravvicinati non si sovrascrivono più a vicenda
+let codaLog = Promise.resolve();
+
+function logToFile(level, message, details = '') {
+    codaLog = codaLog.then(() => scriviRigaLog(level, message, details));
+    return codaLog;
+}
+
+async function scriviRigaLog(level, message, details) {
     try {
         const timestamp = new Date().toISOString();
         const detailsText = details ? ` - ${details}` : '';
-        const nuovaRiga = `[${timestamp}] [${level}] ${message}${detailsText}\n`;
+        const nuovaRiga = `[${timestamp}] [${level}] ${message}${detailsText}`;
 
-        let contenutoEsistente = '';
+        let righeEsistenti = [];
         try {
-            // Legge il file esistente se presente
-            contenutoEsistente = await fs.readFile(logFilePath, 'utf8');
+            const contenuto = await fs.readFile(logFilePath, 'utf8');
+            righeEsistenti = contenuto.split('\n').filter(Boolean);
         } catch {
             // Se il file non esiste ancora, verrà creato
-            contenutoEsistente = '';
         }
 
-        // Mette la nuova riga in cima (prepend) anziché in fondo (append)
-        await fs.writeFile(logFilePath, nuovaRiga + contenutoEsistente, 'utf8');
+        // Nuova riga in cima (più recenti in alto), file limitato a MAX_RIGHE_LOG righe
+        const righe = [nuovaRiga, ...righeEsistenti].slice(0, MAX_RIGHE_LOG);
+        await fs.writeFile(logFilePath, righe.join('\n') + '\n', 'utf8');
     } catch (err) {
         console.error('Errore scrittura log:', err);
     }
 }
 
+// Scrittura atomica: scrive su file temporaneo e poi rinomina, così un crash
+// a metà scrittura non lascia mai un file JSON troncato.
+async function scriviFileAtomico(percorso, contenuto) {
+    const tmp = `${percorso}.tmp`;
+    await fs.writeFile(tmp, contenuto, 'utf-8');
+    await fs.rename(tmp, percorso);
+}
+
+async function salvaDatiShow(data) {
+    if (!Array.isArray(data)) {
+        throw new Error('Dati non validi: era atteso un array di show.');
+    }
+    // Copia di sicurezza della versione precedente
+    try {
+        await fs.copyFile(dataPath, dataBackupPath);
+    } catch (err) {
+        if (err.code !== 'ENOENT') throw err;
+    }
+    await scriviFileAtomico(dataPath, JSON.stringify(data, null, 2));
+}
+
+function boundsVisibiliSuSchermo(bounds) {
+    if (bounds.x === undefined || bounds.y === undefined) return true;
+    return screen.getAllDisplays().some(({ workArea: a }) =>
+        bounds.x < a.x + a.width && bounds.x + bounds.width > a.x &&
+        bounds.y < a.y + a.height && bounds.y + bounds.height > a.y
+    );
+}
+
 async function loadWindowState() {
+    const predefinito = { width: 1350, height: 850, x: undefined, y: undefined };
     try {
         const data = await fs.readFile(windowStatePath, 'utf-8');
-        return JSON.parse(data);
+        const stato = { ...predefinito, ...JSON.parse(data) };
+        // Se il monitor su cui era la finestra non c'è più, la si ricentra
+        return boundsVisibiliSuSchermo(stato) ? stato : { ...stato, x: undefined, y: undefined };
     } catch {
-        return { width: 1350, height: 850, x: undefined, y: undefined };
+        return predefinito;
     }
 }
 
@@ -83,8 +133,28 @@ async function getChangelogJSON() {
     }
 }
 
-function downloadHtmlPage(targetUrl) {
+// Accetta solo URL https/http su mondocamgirls.com o suoi sottodomini
+function urlMcgValido(targetUrl) {
+    try {
+        const u = new URL(targetUrl);
+        const host = u.hostname.toLowerCase();
+        return ['http:', 'https:'].includes(u.protocol) &&
+            (host === DOMINIO_MCG || host.endsWith(`.${DOMINIO_MCG}`));
+    } catch {
+        return false;
+    }
+}
+
+function downloadHtmlPage(targetUrl, timeoutMs = 15000) {
     return new Promise((resolve) => {
+        let concluso = false;
+        const fine = (valore) => {
+            if (concluso) return;
+            concluso = true;
+            clearTimeout(timer);
+            resolve(valore);
+        };
+
         const request = net.request({
             method: 'GET',
             url: targetUrl,
@@ -94,12 +164,26 @@ function downloadHtmlPage(targetUrl) {
             }
         });
 
-        let body = '';
+        // Senza timeout una pagina che non risponde bloccava la galleria per sempre
+        const timer = setTimeout(() => {
+            request.abort();
+            fine('');
+        }, timeoutMs);
+
         request.on('response', (response) => {
-            response.on('data', (chunk) => body += chunk.toString('utf8'));
-            response.on('end', () => resolve(body));
+            if (response.statusCode < 200 || response.statusCode >= 300) {
+                response.on('data', () => {});
+                response.on('end', () => fine(''));
+                return;
+            }
+            // I chunk vanno uniti come Buffer prima della decodifica: convertirli
+            // uno per uno spezza i caratteri accentati a cavallo di due chunk
+            const chunks = [];
+            response.on('data', (chunk) => chunks.push(chunk));
+            response.on('end', () => fine(Buffer.concat(chunks).toString('utf8')));
+            response.on('error', () => fine(''));
         });
-        request.on('error', () => resolve(''));
+        request.on('error', () => fine(''));
         request.end();
     });
 }
@@ -142,6 +226,19 @@ async function createWindow() {
     });
 
     mainWindow.loadFile('index.html');
+
+    // La finestra principale non deve mai navigare via da index.html né aprire
+    // nuove finestre: eventuali link vengono passati al browser di sistema
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        apriUrlEsternoSicuro(url);
+        return { action: 'deny' };
+    });
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        if (url !== mainWindow.webContents.getURL()) {
+            event.preventDefault();
+            apriUrlEsternoSicuro(url);
+        }
+    });
 
     const menuTemplate = [
         { label: 'File', submenu: [{ role: 'quit', label: 'Esci' }] },
@@ -222,49 +319,74 @@ ipcMain.handle('relaunch-app', () => {
     app.exit(0);
 });
 
-ipcMain.handle('append-log', async (event, logData) => {
-    await logToFile(logData.level || 'INFO', logData.message || '', logData.details || '');
+ipcMain.handle('append-log', async (event, logData = {}) => {
+    await logToFile(String(logData.level || 'INFO'), String(logData.message || ''), String(logData.details || ''));
     return { success: true };
 });
 
 ipcMain.handle('open-data-folder', async () => {
-    try {
-        await shell.openPath(app.getPath('userData'));
-        return { success: true };
-    } catch (error) {
-        return { success: false, error: error.message };
-    }
+    // shell.openPath non lancia eccezioni: restituisce una stringa di errore (vuota se ok)
+    const errore = await shell.openPath(app.getPath('userData'));
+    return errore ? { success: false, error: errore } : { success: true };
 });
 
-ipcMain.handle('open-external', async (event, url) => {
+async function apriUrlEsternoSicuro(url) {
+    let protocollo;
+    try {
+        protocollo = new URL(url).protocol;
+    } catch {
+        return { success: false, error: 'URL non valido' };
+    }
+    // Blocca file://, javascript: ecc.: openExternal su un percorso locale può avviare eseguibili
+    if (!PROTOCOLLI_ESTERNI_CONSENTITI.includes(protocollo)) {
+        logToFile('WARN', 'Apertura link esterno bloccata', url);
+        return { success: false, error: `Protocollo non consentito: ${protocollo}` };
+    }
     try {
         await shell.openExternal(url);
         return { success: true };
     } catch (error) {
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            await shell.openExternal('https://teams.microsoft.com');
-        }
         return { success: false, error: error.message };
     }
-});
+}
+
+ipcMain.handle('open-external', (event, url) => apriUrlEsternoSicuro(String(url || '')));
 
 /* --- GESTIONE DATI E BACKUP --- */
 
 ipcMain.handle('read-data', async () => {
+    let contenuto;
     try {
-        const data = await fs.readFile(dataPath, 'utf-8');
-        return JSON.parse(data);
-    } catch {
-        await fs.writeFile(dataPath, JSON.stringify([]), 'utf-8');
-        return [];
+        contenuto = await fs.readFile(dataPath, 'utf-8');
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            // Primo avvio: nessun archivio, si parte vuoti
+            await scriviFileAtomico(dataPath, JSON.stringify([]));
+            return [];
+        }
+        throw err;
+    }
+
+    try {
+        const dati = JSON.parse(contenuto);
+        if (!Array.isArray(dati)) throw new Error('il file non contiene un array');
+        return dati;
+    } catch (err) {
+        // Archivio danneggiato: NON va sovrascritto. Se ne conserva una copia
+        // e si segnala l'errore, invece di ripartire silenziosamente da zero.
+        const copia = path.join(app.getPath('userData'), `shows_data.corrotto-${Date.now()}.json`);
+        await fs.copyFile(dataPath, copia).catch(() => {});
+        await logToFile('ERROR', 'Archivio show illeggibile', `${err.message} - copia salvata in ${copia}`);
+        throw new Error(`Archivio dati illeggibile (${err.message}). Copia salvata in: ${copia}. Puoi ripristinare da shows_data.bak.json o da un backup.`);
     }
 });
 
 ipcMain.handle('save-data', async (event, data) => {
     try {
-        await fs.writeFile(dataPath, JSON.stringify(data, null, 2), 'utf-8');
+        await salvaDatiShow(data);
         return { success: true };
     } catch (error) {
+        await logToFile('ERROR', 'Salvataggio dati fallito', error.message);
         return { success: false, error: error.message };
     }
 });
@@ -282,7 +404,7 @@ ipcMain.handle('export-data', async () => {
             await fs.writeFile(filePath, data, 'utf-8');
             return { success: true };
         }
-        return { success: false, error: 'Esportazione annullata' };
+        return { success: false, cancelled: true, error: 'Esportazione annullata' };
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -300,12 +422,13 @@ ipcMain.handle('import-data', async () => {
             const content = await fs.readFile(filePaths[0], 'utf-8');
             const parsedData = JSON.parse(content);
             if (Array.isArray(parsedData)) {
-                await fs.writeFile(dataPath, JSON.stringify(parsedData, null, 2), 'utf-8');
+                // salvaDatiShow conserva l'archivio attuale in shows_data.bak.json prima di sostituirlo
+                await salvaDatiShow(parsedData);
                 return { success: true };
             }
             return { success: false, error: 'Formato del file non valido (deve essere un array JSON).' };
         }
-        return { success: false, error: 'Importazione annullata' };
+        return { success: false, cancelled: true, error: 'Importazione annullata' };
     } catch (error) {
         return { success: false, error: error.message };
     }
@@ -345,6 +468,7 @@ ipcMain.handle('get-changelog-data', async () => {
 
 ipcMain.handle('check-for-update-changelog', async () => {
     const currentVersion = app.getVersion();
+    const store = await storePronto;
     const lastVersion = store ? store.get('last_seen_version', null) : null;
 
     if (store && lastVersion !== currentVersion) {
@@ -357,6 +481,10 @@ ipcMain.handle('check-for-update-changelog', async () => {
 /* --- SCRAPING & SINCRONIZZAZIONE --- */
 
 ipcMain.handle('fetch-transazioni-html', async (event, targetUrl) => {
+    const urlTransazioni = (targetUrl && urlMcgValido(targetUrl))
+        ? targetUrl
+        : 'https://www.mondocamgirls.com/it/areacliente_transazioni.html?pagina_vis=0';
+
     return new Promise((resolve) => {
         let isResolved = false;
         const win = new BrowserWindow({
@@ -367,6 +495,7 @@ ipcMain.handle('fetch-transazioni-html', async (event, targetUrl) => {
             webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
+                sandbox: true,
                 userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             }
         });
@@ -379,7 +508,7 @@ ipcMain.handle('fetch-transazioni-html', async (event, targetUrl) => {
             }
         };
 
-        win.loadURL(targetUrl || 'https://www.mondocamgirls.com/it/areacliente_transazioni.html?pagina_vis=0');
+        win.loadURL(urlTransazioni);
 
         win.webContents.on('did-finish-load', async () => {
             try {
@@ -398,6 +527,9 @@ ipcMain.handle('fetch-transazioni-html', async (event, targetUrl) => {
 });
 
 ipcMain.handle('check-model-online-status', async (event, urlProfilo) => {
+    if (!urlMcgValido(urlProfilo)) {
+        return { success: false, isOnline: false, error: 'URL profilo non valido' };
+    }
     try {
         const body = await downloadHtmlPage(urlProfilo);
         if (!body) return { success: false, isOnline: false, error: 'Impossibile scaricare la pagina' };
@@ -413,6 +545,11 @@ ipcMain.handle('check-model-online-status', async (event, urlProfilo) => {
 });
 
 ipcMain.handle('fetch-modella-foto', async (event, urlProfilo) => {
+    // Lo scraping è limitato a mondocamgirls.com: il renderer non può far
+    // scaricare all'app pagine di domini arbitrari
+    if (!urlMcgValido(urlProfilo)) {
+        return { success: false, images: [], error: 'URL profilo non appartenente a MondoCamGirls' };
+    }
     try {
         const baseUrl = urlProfilo.replace(/\/+$/, '');
         const hostName = new URL(baseUrl).hostname;

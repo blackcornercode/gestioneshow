@@ -2,7 +2,8 @@
   "1.10.8": [
     "Introdotta la durata degli show",
     "Introdotte le righe bicolor per migliorare la lettura",
-    "Implementazione del multilingua"
+    "Implementazione del multilingua",
+    "Revisione generale del codice"
   ], 
 
   "1.10.7": [

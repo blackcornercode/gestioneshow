@@ -41,7 +41,7 @@ const logger = {
             if (level === 'ERROR') row.style.color = '#e63946';
             else if (level === 'WARN') row.style.color = '#ffb703';
             else if (level === 'SUCCESS') row.style.color = '#2a9d8f';
-            else row.style.color = 'var(--text-main, #333)';
+            else row.style.color = 'var(--text-color, #333)';
 
             row.textContent = `${logEntry} ${details ? '- ' + JSON.stringify(details) : ''}`;
             
@@ -146,13 +146,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     inizializzaListenerChangelogMenu();
 
-    const searchCronologiaInput = document.getElementById('searchModellaCronologia');
-    if (searchCronologiaInput) {
-        searchCronologiaInput.addEventListener('input', () => {
-            filtraCronologiaPerNome();
-        });
-    }
-
     const inputNome = document.getElementById('nome');
     if (inputNome) {
         inputNome.addEventListener('input', autocompilaDatiModella);
@@ -182,9 +175,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    if (typeof initChangelogCheck === 'function') {
-        initChangelogCheck();
-    }
+    // Mostra automaticamente le novità al primo avvio dopo un aggiornamento
+    // (prima veniva cercata una funzione initChangelogCheck mai definita)
+    initChangelogCheck();
     
     logger.success("Applicazione inizializzata con successo.");
 });
@@ -212,13 +205,49 @@ function generaLinkChat(piattaforma, nickname) {
 }
 
 function escapeHtml(str) {
-    if (!str) return '';
+    if (str === null || str === undefined) return '';
     return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+}
+
+// Converte un valore in un argomento JavaScript sicuro da inserire in un
+// attributo onclick="...". escapeHtml da solo NON basta: il browser decodifica
+// &#039; in ' prima di eseguire il codice, quindi un nome come "D'Angelo"
+// spezzava la stringa (e un nome costruito ad arte poteva eseguire codice).
+function argJs(valore) {
+    return escapeHtml(JSON.stringify(valore === null || valore === undefined ? '' : String(valore)));
+}
+
+// Importo in euro sempre a 2 decimali, anche se nel JSON il costo è una stringa
+// ID univoco anche quando se ne creano molti nello stesso millisecondo
+// (la sincronizzazione usava Date.now() + random(1000): con decine di righe
+// importate insieme due show potevano ricevere lo stesso ID, e "Elimina"
+// cancellava entrambi)
+let ultimoIdGenerato = 0;
+function generaIdUnico() {
+    ultimoIdGenerato = Math.max(Date.now(), ultimoIdGenerato + 1);
+    return ultimoIdGenerato;
+}
+
+// Salva l'archivio e, se il processo principale segnala un errore, lo mostra
+// invece di proseguire come se il salvataggio fosse riuscito
+async function salvaOAvvisa(shows) {
+    const esito = await window.electronAPI.saveData(shows);
+    if (!esito || !esito.success) {
+        const msg = (esito && esito.error) || 'errore sconosciuto';
+        alert(`❌ Salvataggio non riuscito: ${msg}`);
+        throw new Error(msg);
+    }
+    return esito;
+}
+
+function formattaEuro(valore) {
+    const n = parseFloat(valore);
+    return `€ ${(isNaN(n) ? 0 : n).toFixed(2)}`;
 }
 
 function apriLinkEsterno(event, url) {
@@ -582,7 +611,7 @@ if (showForm) {
 
         let isAutoImport = false;
         if (editId) {
-            const itemEsistente = tuttiGliShow.find(s => s.id === parseInt(editId, 10));
+            const itemEsistente = tuttiGliShow.find(s => String(s.id) === String(editId));
             if (itemEsistente && itemEsistente.isAutoImport) {
                 isAutoImport = true;
             }
@@ -591,7 +620,7 @@ if (showForm) {
         const valPunteggio = punteggioSelect ? punteggioSelect.value : '';
 
         const showData = {
-            id: editId ? parseInt(editId, 10) : Date.now(),
+            id: editId ? (tuttiGliShow.find(s => String(s.id) === String(editId))?.id ?? editId) : generaIdUnico(),
             dataOraISO: dataOraValue.toISOString(),
             dataFormattata: dataOraValue.toLocaleDateString('it-IT') + ' ' + dataOraValue.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
             meseAnno: dataOraValue.toLocaleDateString('it-IT', { month: 'long', year: 'numeric' }),
@@ -613,7 +642,7 @@ if (showForm) {
             let shows = await window.electronAPI.readData();
 
             if (editId) {
-                const index = shows.findIndex(s => s.id === parseInt(editId, 10));
+                const index = shows.findIndex(s => String(s.id) === String(editId));
                 if (index !== -1) shows[index] = showData;
                 logger.success(`Show aggiornato con successo [ID: ${showData.id}]`, showData);
             } else {
@@ -621,7 +650,7 @@ if (showForm) {
                 logger.success(`Nuovo show registrato con successo [ID: ${showData.id}]`, showData);
             }
 
-            await window.electronAPI.saveData(shows);
+            await salvaOAvvisa(shows);
             resetForm();
             aggiornaInterfaccia();
         } catch (err) {
@@ -633,7 +662,7 @@ if (showForm) {
 async function modificaShow(id) {
     logger.info(`Richiesta modifica per lo show ID: ${id}`);
     let shows = await window.electronAPI.readData();
-    const item = shows.find(s => s.id === id);
+    const item = shows.find(s => String(s.id) === String(id));
     if (!item) {
         logger.warn(`Show con ID ${id} non trovato per la modifica.`);
         return;
@@ -697,7 +726,7 @@ async function modificaShow(id) {
     const btnAnnulla = document.getElementById('btnAnnulla');
 
     if (btnSalva) {
-        btnSalva.textContent = 'Aggiorna Record';
+        btnSalva.textContent = t('form.btn_update');
         btnSalva.style.backgroundColor = '#ffc107';
         btnSalva.style.color = '#212529';
     }
@@ -738,7 +767,7 @@ function resetForm() {
     gestisciStatoRegalo();
 
     if (btnSalva) {
-        btnSalva.textContent = 'Salva Record';
+        btnSalva.textContent = t('form.btn_save');
         btnSalva.style.backgroundColor = '#2563eb';
         btnSalva.style.color = 'white';
     }
@@ -754,8 +783,8 @@ async function eliminaShow(id) {
     
     try {
         let shows = await window.electronAPI.readData();
-        shows = shows.filter(s => s.id !== id);
-        await window.electronAPI.saveData(shows);
+        shows = shows.filter(s => String(s.id) !== String(id));
+        await salvaOAvvisa(shows);
         logger.success(`Show con ID ${id} eliminato.`);
         aggiornaInterfaccia();
     } catch (err) {
@@ -769,6 +798,10 @@ async function eliminaShow(id) {
 async function aggiornaInterfaccia() {
     try {
         tuttiGliShow = await window.electronAPI.readData();
+        tuttiGliShow.forEach(s => {
+            const idNum = Number(s.id);
+            if (Number.isFinite(idNum) && idNum > ultimoIdGenerato) ultimoIdGenerato = idNum;
+        });
         logger.info(`Dati letti. Totale show caricati: ${tuttiGliShow.length}`);
 
         aggiornaMappeModelle(tuttiGliShow);
@@ -776,22 +809,16 @@ async function aggiornaInterfaccia() {
         inizializzaFiltroAnni(tuttiGliShow);
         popolaSelettoreAnni(tuttiGliShow);
         
-        const inputRicerca = document.getElementById('searchModellaCronologia');
-        if (inputRicerca && inputRicerca.value.trim() !== '') {
-            caricaCronologia(tuttiGliShow);
-            if (typeof filtraCronologiaPerNome === 'function') {
-                filtraCronologiaPerNome();
-            }
-        } else {
-            caricaCronologia(tuttiGliShow);
-        }
-
+        caricaCronologia(tuttiGliShow);
         caricaStatisticheMensili(tuttiGliShow);
         caricaMedieEStoricizzazione(tuttiGliShow);
+        // Mantiene l'eventuale ricerca attiva nella classifica
+        filtraClassificaModelle();
 
         aggiornaIndicatoreBudgetHomepage(tuttiGliShow);
     } catch (err) {
         logger.error("Errore durante l'aggiornamento dell'interfaccia", err);
+        alert(`❌ Impossibile caricare i dati: ${err.message}`);
     }
 }
 
@@ -900,7 +927,7 @@ function filtraShowPerAnni(shows) {
 
 function getPiattaformaFormatted(show) {
     if (show.isRegalo) {
-        return '<span class="badge-regalo">🎁 Regalo</span>';
+        return `<span class="badge-regalo">${escapeHtml(t('form.gift'))}</span>`;
     }
     
     const nomePiattaforma = show.piattaforma || 'Teams';
@@ -912,7 +939,7 @@ function getPiattaformaFormatted(show) {
             return `
                 <div style="display: flex; flex-direction: column; gap: 2px;">
                     <span>${iconaHtml}</span>
-                    <a href="#" class="link-web" style="font-size: 0.82rem; font-weight: bold;" onclick="apriLinkEsterno(event, '${escapeHtml(urlChat)}')">
+                    <a href="#" class="link-web" style="font-size: 0.82rem; font-weight: bold;" onclick="apriLinkEsterno(event, ${argJs(urlChat)})">
                         💬 ${escapeHtml(show.nickname)}
                     </a>
                 </div>
@@ -938,7 +965,15 @@ function caricaCronologia(shows) {
     const limiteValore = limiteSelect ? limiteSelect.value : '5';
     const ordine = ordineSelect ? ordineSelect.value : 'desc';
     
-    const showsFiltrati = filtraShowPerAnni(shows);
+    // Il filtro per nome viene applicato qui, così resta attivo anche quando si
+    // cambia pagina, ordine, numero di risultati o anno (prima andava perso)
+    const inputRicerca = document.getElementById('searchModellaCronologia');
+    const filtroNome = inputRicerca ? inputRicerca.value.trim().toLowerCase() : '';
+    const showsPerNome = filtroNome
+        ? shows.filter(s => s.nome && s.nome.toLowerCase().includes(filtroNome))
+        : shows;
+
+    const showsFiltrati = filtraShowPerAnni(showsPerNome);
 
     let showsOrdinati = [...showsFiltrati];
     showsOrdinati.sort((a, b) => {
@@ -967,9 +1002,9 @@ function caricaCronologia(shows) {
     showsDaMostrare.forEach(function(item) {
         const tr = document.createElement('tr');
         
-        const fotoUrl = item.immagine || mappaImmaginiModelle[item.nome.trim().toLowerCase()] || '';
+        const fotoUrl = item.immagine || mappaImmaginiModelle[(item.nome || '').trim().toLowerCase()] || '';
         const imgHtml = fotoUrl 
-            ? `<img src="${escapeHtml(fotoUrl)}" class="thumb-img" style="cursor: pointer;" alt="foto" title="Clicca per ingrandire" onclick="event.stopPropagation(); apriModalImmagine('${escapeHtml(fotoUrl)}')" onerror="this.outerHTML='<div class=\\'no-img\\'>No Foto</div>'">`
+            ? `<img src="${escapeHtml(fotoUrl)}" class="thumb-img" style="cursor: pointer;" alt="foto" title="Clicca per ingrandire" onclick="event.stopPropagation(); apriModalImmagine(${argJs(fotoUrl)})" onerror="this.outerHTML='<div class=\\'no-img\\'>No Foto</div>'">`
             : `<div class="no-img">No Foto</div>`;
 
         const piattaformaTxt = getPiattaformaFormatted(item);
@@ -995,15 +1030,15 @@ function caricaCronologia(shows) {
             <td style="white-space: nowrap;">${escapeHtml(item.dataFormattata || item.data)}</td>
             <td><strong>${escapeHtml(item.nome)}</strong></td>
             <td>${piattaformaTxt}</td>
-            <td style="text-align: center; font-weight: bold; color: #000000; white-space: nowrap;">${durataTxt}</td>
-            <td style="white-space: nowrap;">€ ${item.costo ? item.costo.toFixed(2) : '0.00'}</td>
+            <td style="text-align: center; font-weight: bold; color: var(--text-color); white-space: nowrap;">${durataTxt}</td>
+            <td style="white-space: nowrap;">${formattaEuro(item.costo)}</td>
             <td>${votoTxt}</td>
             <td>${origineBadge}</td>
             <td style="text-align: center;">${item.recensione ? '✅' : '❌'}</td>
             <td title="${escapeHtml(item.note)}">${escapeHtml(item.note)}</td>
             <td style="white-space: nowrap; text-align: right;">
-                <button class="btn-edit" onclick="modificaShow(${item.id})">Modifica</button>
-                <button class="btn-delete" onclick="eliminaShow(${item.id})">Elimina</button>
+                <button class="btn-edit" onclick="modificaShow(${argJs(item.id)})">Modifica</button>
+                <button class="btn-delete" onclick="eliminaShow(${argJs(item.id)})">Elimina</button>
             </td>
         `;
         fragment.appendChild(tr);
@@ -1036,7 +1071,11 @@ function aggiornaControlliPaginazione(totalePagine, mostraTutti) {
     
     if (btnIndietro) btnIndietro.disabled = (paginaCorrente <= 1);
     if (btnAvanti) btnAvanti.disabled = (paginaCorrente >= totalePagine);
-    if (infoPagina) infoPagina.textContent = `Pagina ${paginaCorrente} di ${totalePagine}`;
+    if (infoPagina) {
+        infoPagina.textContent = t('pagination.page_of')
+            .replace('{page}', paginaCorrente)
+            .replace('{total}', totalePagine);
+    }
 }
 
 function resetFiltriCronologia() {
@@ -1257,9 +1296,9 @@ function caricaStatisticheMensili(shows) {
         `;
 
         elencoShowMese.forEach(item => {
-            const fotoUrl = item.immagine || mappaImmaginiModelle[item.nome.trim().toLowerCase()] || '';
+            const fotoUrl = item.immagine || mappaImmaginiModelle[(item.nome || '').trim().toLowerCase()] || '';
             const imgHtml = fotoUrl 
-                ? `<img src="${escapeHtml(fotoUrl)}" class="thumb-img" style="cursor: pointer;" alt="foto" onclick="event.stopPropagation(); apriModalImmagine('${escapeHtml(fotoUrl)}')" onerror="this.outerHTML='<div class=\\'no-img\\'>${t('table.no_photo')}</div>'">`
+                ? `<img src="${escapeHtml(fotoUrl)}" class="thumb-img" style="cursor: pointer;" alt="foto" onclick="event.stopPropagation(); apriModalImmagine(${argJs(fotoUrl)})" onerror="this.outerHTML='<div class=\\'no-img\\'>${t('table.no_photo')}</div>'">`
                 : `<div class="no-img">${t('table.no_photo')}</div>`;
 
             let votoTxt = '-';
@@ -1273,10 +1312,10 @@ function caricaStatisticheMensili(shows) {
                 <tr style="border-bottom: 1px solid var(--border-color);">
                     <td style="padding: 6px;">${imgHtml}</td>
                     <td style="white-space: nowrap; padding: 6px;">${escapeHtml(item.dataFormattata || item.data)}</td>
-                    <td style="padding: 6px;"><strong style="cursor: pointer; color: #000000;" onclick="apriModalModella('${escapeHtml(item.nome)}')">${escapeHtml(item.nome)}</strong></td>
+                    <td style="padding: 6px;"><strong style="cursor: pointer; color: var(--text-color);" onclick="apriModalModella(${argJs(item.nome)})">${escapeHtml(item.nome)}</strong></td>
                     <td style="padding: 6px;">${getPiattaformaFormatted(item)}</td>
-                    <td style="padding: 6px; text-align: center; font-weight: bold; color: 000000; white-space: nowrap;">${durataTxt}</td>
-                    <td style="white-space: nowrap; padding: 6px;">€ ${item.costo ? item.costo.toFixed(2) : '0.00'}</td>
+                    <td style="padding: 6px; text-align: center; font-weight: bold; color: var(--text-color); white-space: nowrap;">${durataTxt}</td>
+                    <td style="white-space: nowrap; padding: 6px;">${formattaEuro(item.costo)}</td>
                     <td style="padding: 6px;">${votoTxt}</td>
                     <td style="text-align: center; padding: 6px;">${item.recensione ? '✅' : '❌'}</td>
                     <td style="padding: 6px;" title="${escapeHtml(item.note)}">${escapeHtml(item.note)}</td>
@@ -1377,11 +1416,11 @@ function mostraClassifica(lista) {
         tr.onclick = () => apriModalModella(item.nome);
 
         const imgHtml = item.foto 
-            ? `<img src="${escapeHtml(item.foto)}" class="thumb-img" alt="foto" onclick="event.stopPropagation(); apriModalImmagine('${escapeHtml(item.foto)}')" onerror="this.outerHTML='<div class=\\'no-img\\'>No Foto</div>'">`
+            ? `<img src="${escapeHtml(item.foto)}" class="thumb-img" alt="foto" onclick="event.stopPropagation(); apriModalImmagine(${argJs(item.foto)})" onerror="this.outerHTML='<div class=\\'no-img\\'>No Foto</div>'">`
             : `<div class="no-img">No Foto</div>`;
 
         const linkWebHtml = item.urlProfilo 
-            ? `<a href="#" class="link-web" onclick="apriLinkEsterno(event, '${escapeHtml(item.urlProfilo)}')">🌐 Profilo Web</a>`
+            ? `<a href="#" class="link-web" onclick="apriLinkEsterno(event, ${argJs(item.urlProfilo)})">🌐 Profilo Web</a>`
             : `-`;
 
         let piattaformaHtml = '-';
@@ -1391,7 +1430,7 @@ function mostraClassifica(lista) {
                 const urlChat = generaLinkChat(item.piattaformaPrevalente, item.nicknamePrevalente);
                 if (urlChat) {
                     piattaformaHtml = `
-                        <a href="#" class="link-web" style="font-size: 0.85rem; font-weight: bold;" onclick="apriLinkEsterno(event, '${escapeHtml(urlChat)}')">
+                        <a href="#" class="link-web" style="font-size: 0.85rem; font-weight: bold;" onclick="apriLinkEsterno(event, ${argJs(urlChat)})">
                             ${iconaHtml} (${escapeHtml(item.nicknamePrevalente)})
                         </a>
                     `;
@@ -1413,8 +1452,8 @@ function mostraClassifica(lista) {
             <td>${linkWebHtml}</td>
             <td>${piattaformaHtml}</td>
             <td style="text-align: center;">${item.totaleShow}</td>
-            <td style="text-align: center; font-weight: bold; color: #000000;">${tempoTotaleTxt}</td>
-            <td style="white-space: nowrap; font-weight: bold; color: #000000;">€ ${item.spesaTotale.toFixed(2)}</td>
+            <td style="text-align: center; font-weight: bold; color: var(--text-color);">${tempoTotaleTxt}</td>
+            <td style="white-space: nowrap; font-weight: bold; color: var(--text-color);">€ ${item.spesaTotale.toFixed(2)}</td>
             <td style="text-align: center; font-weight: bold; color: #f59e0b;">${item.mediaTxt}</td>
         `;
         fragment.appendChild(tr);
@@ -1434,12 +1473,7 @@ function filtraClassificaModelle() {
 
 function filtraCronologiaPerNome() {
     paginaCorrente = 1;
-    const input = document.getElementById('searchModellaCronologia');
-    if (!input) return;
-    const filtro = input.value.trim().toLowerCase();
-
-    const filtrati = tuttiGliShow.filter(s => s.nome && s.nome.toLowerCase().includes(filtro));
-    caricaCronologia(filtrati);
+    caricaCronologia(tuttiGliShow);
 }
 
 /* ==========================================================================
@@ -1469,7 +1503,7 @@ async function apriModalModella(nomeModella) {
     const urlProfilo = mappaUrlModelle[chiaveModella] || (showsModella.find(s => s.urlProfilo || s.url) || {}).urlProfilo || '';
 
     const imgProfiloHtml = fotoProfilo 
-        ? `<img src="${escapeHtml(fotoProfilo)}" alt="${escapeHtml(nomeModella)}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%; border: 2px solid var(--accent-color, #2a9d8f); cursor: pointer;" onclick="apriModalImmagine('${escapeHtml(fotoProfilo)}')">`
+        ? `<img src="${escapeHtml(fotoProfilo)}" alt="${escapeHtml(nomeModella)}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%; border: 2px solid var(--accent-color, #2a9d8f); cursor: pointer;" onclick="apriModalImmagine(${argJs(fotoProfilo)})">`
         : `<div style="width: 70px; height: 70px; border-radius: 50%; background-color: var(--border-color, #ccc); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">👤</div>`;
 
     header.innerHTML = `
@@ -1482,7 +1516,7 @@ async function apriModalModella(nomeModella) {
                 <h2 style="margin: 0 0 5px 0;">${escapeHtml(nomeModella)}</h2>
                 ${urlProfilo ? `
                     <p style="margin: 0; font-size: 0.9em;">
-                        🌐 <a href="#" onclick="apriLinkEsterno(event, '${escapeHtml(urlProfilo)}')" style="color: #000000; text-decoration: none; font-weight: bold;">
+                        🌐 <a href="#" onclick="apriLinkEsterno(event, ${argJs(urlProfilo)})" style="color: var(--text-color); text-decoration: none; font-weight: bold;">
                             ${escapeHtml(urlProfilo)}
                         </a>
                     </p>
@@ -1492,15 +1526,15 @@ async function apriModalModella(nomeModella) {
             <div class="modella-stats-summary" style="display: flex; gap: 12px; text-align: center;">
                 <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
                     <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Show Totali</span>
-                    <strong style="font-size: 1.2em; color: var(--text-main, #333);">${totaleShow}</strong>
+                    <strong style="font-size: 1.2em; color: var(--text-color, #333);">${totaleShow}</strong>
                 </div>
                 <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
                     <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Durata Totale</span>
-                    <strong style="font-size: 1.2em; color: #000000;">${formattaTempo(tempoTotale)}</strong>
+                    <strong style="font-size: 1.2em; color: var(--text-color);">${formattaTempo(tempoTotale)}</strong>
                 </div>
                 <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
                     <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Spesa Totale</span>
-                    <strong style="font-size: 1.2em; color: #000000;">€ ${spesaTotale.toFixed(2)}</strong>
+                    <strong style="font-size: 1.2em; color: var(--text-color);">€ ${spesaTotale.toFixed(2)}</strong>
                 </div>
                 <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
                     <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Media Voti</span>
@@ -1527,8 +1561,8 @@ async function apriModalModella(nomeModella) {
         tr.innerHTML = `
             <td>${escapeHtml(item.dataFormattata || item.data)}</td>
             <td>${piattaformaTxt}</td>
-            <td style="text-align: center; font-weight: bold; color: #000000;">${durataSingola}</td>
-            <td>€ ${item.costo ? item.costo.toFixed(2) : '0.00'}</td>
+            <td style="text-align: center; font-weight: bold; color: var(--text-color);">${durataSingola}</td>
+            <td>${formattaEuro(item.costo)}</td>
             <td>${votoTxt}</td>
             <td style="text-align: center;">${item.recensione ? '✅' : '❌'}</td>
             <td>${escapeHtml(item.note)}</td>
@@ -1578,7 +1612,7 @@ async function caricaFotoDinamicheModella(nomeChiave, mappaUrl) {
                 contenitoreFoto.appendChild(img);
             });
         } else {
-            const targetUrlHtml = `<a href="#" class="link-web" style="font-weight: bold; text-decoration: underline;" onclick="apriLinkEsterno(event, '${escapeHtml(targetUrlFoto)}')">${escapeHtml(targetUrlFoto)}</a>`;
+            const targetUrlHtml = `<a href="#" class="link-web" style="font-weight: bold; text-decoration: underline;" onclick="apriLinkEsterno(event, ${argJs(targetUrlFoto)})">${escapeHtml(targetUrlFoto)}</a>`;
             
             contenitoreFoto.innerHTML = `
                 <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
@@ -1598,8 +1632,13 @@ async function caricaFotoDinamicheModella(nomeChiave, mappaUrl) {
 async function esportaDati() {
     try {
         if (window.electronAPI && window.electronAPI.exportData) {
-            await window.electronAPI.exportData();
-            logger.success("Dati esportati con successo.");
+            const esito = await window.electronAPI.exportData();
+            if (esito && esito.success) {
+                logger.success("Dati esportati con successo.");
+            } else if (esito && !esito.cancelled) {
+                logger.error("Esportazione non riuscita", esito.error);
+                alert(`❌ Esportazione non riuscita: ${esito.error}`);
+            }
         }
     } catch (err) {
         logger.error("Errore durante l'esportazione dei dati", err);
@@ -1609,10 +1648,15 @@ async function esportaDati() {
 async function importaDati() {
     try {
         if (window.electronAPI && window.electronAPI.importData) {
+            // Prima qualsiasi risposta (anche "annullata" o un errore) veniva
+            // registrata come importazione riuscita
             const esito = await window.electronAPI.importData();
-            if (esito) {
+            if (esito && esito.success) {
                 logger.success("Dati importati con successo.");
                 aggiornaInterfaccia();
+            } else if (esito && !esito.cancelled) {
+                logger.error("Importazione non riuscita", esito.error);
+                alert(`❌ Importazione non riuscita: ${esito.error}`);
             }
         }
     } catch (err) {
@@ -1630,31 +1674,28 @@ async function apriCartellaDati() {
     }
 }
 
+// "1.234,56 €" -> "1234.56". Prima veniva sostituita solo la prima virgola e i
+// punti delle migliaia restavano, quindi 1.234,56 diventava 1,234.
+function convertiImportoItaliano(testo) {
+    const pulito = String(testo).replace(/[€\s\u00a0]/g, '');
+    return pulito.includes(',')
+        ? pulito.replace(/\./g, '').replace(',', '.')
+        : pulito;
+}
+
 async function sincronizzaTransazioniMondoCamGirls() {
     try {
-        const syncApi = window.electronAPI && (window.electronAPI.syncMCG || window.electronAPI.fetchTransazioniHtml);
-        
-        if (!syncApi) {
+        if (!window.electronAPI || !window.electronAPI.fetchTransazioniHtml) {
             alert("Errore: Funzione di sincronizzazione non supportata.");
             return;
         }
 
         logger.info("Avvio sincronizzazione transazioni da MondoCamGirls...");
         
-        const rawHtml = window.electronAPI.syncMCG 
-            ? await window.electronAPI.syncMCG() 
-            : await window.electronAPI.fetchTransazioniHtml();
+        const htmlContent = await window.electronAPI.fetchTransazioniHtml();
 
-        if (!rawHtml) {
+        if (!htmlContent || typeof htmlContent !== 'string') {
             logger.warn("Sincronizzazione annullata o finestra chiusa.");
-            return;
-        }
-
-        let htmlContent = (typeof rawHtml === 'string') ? rawHtml : (rawHtml.html || '');
-        
-        if (!htmlContent && typeof rawHtml === 'object' && rawHtml.importedCount !== undefined) {
-            alert(`✅ Sincronizzazione completata!\nShow importati: ${rawHtml.importedCount}`);
-            aggiornaInterfaccia();
             return;
         }
 
@@ -1684,13 +1725,14 @@ async function sincronizzaTransazioniMondoCamGirls() {
             
             let dataStr = String(strDataOra).trim();
             
-            // Se è un formato ISO tipo "2026-09-11T21:02:00.000Z"
+            // Formato ISO tipo "2026-09-11T19:02:00.000Z": è in UTC, quindi va
+            // riportato all'ora locale (prima veniva letto così com'era e risultava
+            // sfasato di 1-2 ore rispetto all'orario mostrato da MCG)
             if (dataStr.includes('T')) {
-                const partiIso = dataStr.split('T');
-                const ymd = partiIso[0].split('-');
-                const hms = partiIso[1].split(':');
-                if (ymd.length === 3) {
-                    return `${ymd[2].padStart(2, '0')}/${ymd[1].padStart(2, '0')}/${ymd[0]} ${hms[0]}:${hms[1]}`;
+                const d = new Date(dataStr);
+                if (!isNaN(d)) {
+                    const p2 = (n) => String(n).padStart(2, '0');
+                    return `${p2(d.getDate())}/${p2(d.getMonth() + 1)}/${d.getFullYear()} ${p2(d.getHours())}:${p2(d.getMinutes())}`;
                 }
             }
 
@@ -1744,7 +1786,7 @@ async function sincronizzaTransazioniMondoCamGirls() {
             
             if (celle.length >= 5) {
                 const testoData = celle[0]?.textContent.trim() || '';
-                const testoCosto = celle[2]?.textContent.trim().replace('€', '').replace(',', '.').replace(/\s+/g, '') || '0';
+                const testoCosto = convertiImportoItaliano(celle[2]?.textContent || '0');
                 const testoNome = celle[4]?.textContent.trim() || '';
                 
                 const costoNum = Math.abs(parseFloat(testoCosto) || 0);
@@ -1776,7 +1818,7 @@ async function sincronizzaTransazioniMondoCamGirls() {
                         const { dataISO, meseAnnoStr } = estraiDettagliData(testoData);
 
                         const nuovoShow = {
-                            id: Date.now() + Math.floor(Math.random() * 1000),
+                            id: generaIdUnico(),
                             dataOraISO: dataISO,
                             dataFormattata: testoData,
                             meseAnno: meseAnnoStr,
@@ -1807,7 +1849,7 @@ async function sincronizzaTransazioniMondoCamGirls() {
         });
 
         if (nuoviShowImportati > 0) {
-            await window.electronAPI.saveData(showsEsistenti);
+            await salvaOAvvisa(showsEsistenti);
             logger.success(`Sincronizzazione completata: ${nuoviShowImportati} nuovi show trovati e salvati.`);
             alert(`✅ Sincronizzazione completata con successo!\n\nNuovi show importati: ${nuoviShowImportati}`);
             aggiornaInterfaccia();
@@ -1825,6 +1867,16 @@ async function sincronizzaTransazioniMondoCamGirls() {
 /* ==========================================================================
    CHANGELOG E MODALE NOVITÀ
    ========================================================================== */
+async function initChangelogCheck() {
+    try {
+        if (!window.electronAPI || !window.electronAPI.checkForUpdateChangelog) return;
+        const esito = await window.electronAPI.checkForUpdateChangelog();
+        if (esito && esito.shouldShow) apriModalChangelog();
+    } catch (err) {
+        logger.error("Errore nel controllo delle novità di versione", err);
+    }
+}
+
 function inizializzaListenerChangelogMenu() {
     if (window.electronAPI && window.electronAPI.onOpenChangelog) {
         window.electronAPI.onOpenChangelog(() => {
@@ -1862,7 +1914,7 @@ async function apriModalChangelog() {
 
     if (content.innerHTML.includes('Caricamento') || content.innerHTML.trim() === '') {
         content.innerHTML = `
-            <div style="font-family: inherit; line-height: 1.5; color: var(--text-main, #333);">
+            <div style="font-family: inherit; line-height: 1.5; color: var(--text-color, #333);">
                 <h3 style="margin-top: 0; color: var(--accent-color, #2a9d8f);">Novità della versione attuale</h3>
                 <ul style="padding-left: 20px; margin-bottom: 10px;">
                     <li><strong>Integrazione Changelog:</strong> Corretto il sistema di apertura modale dal menu Electron e via Web.</li>
@@ -1891,29 +1943,6 @@ function formattaTempo(minuti) {
         return `${ore}${t('units.hour')} ${mins > 0 ? mins + t('units.min') : ''}`;
     }
     return `${mins}${t('units.min')}`;
-}
-
-// --- SALVATAGGIO / AGGIORNAMENTO SHOW ---
-function salvaShow(event) {
-    event.preventDefault();
-    
-    const modella = document.getElementById('selectModella').value;
-    const guadagno = parseFloat(document.getElementById('guadagnoShow').value) || 0;
-    const durata = parseInt(document.getElementById('durataShow').value, 10) || 0;
-    const data = document.getElementById('dataShow').value;
-
-    const nuovoShow = {
-        id: Date.now().toString(),
-        modella: modella,
-        guadagno: guadagno,
-        durata: durata, // Salvataggio della durata in minuti
-        data: data
-    };
-
-    // ... salvataggio in localStorage / Array globale ...
-    elencoShow.push(nuovoShow);
-    salvaNelStorage();
-    aggiornaInterfaccia();
 }
 
 function aggiornaIndicatoreBudgetHomepage(shows) {
@@ -1987,7 +2016,7 @@ function aggiornaIndicatoreBudgetHomepage(shows) {
         // Nav Badge
         if (navBadge) {
             navBadge.style.display = 'inline-block';
-            navBadge.textContent = 'OK';
+            navBadge.textContent = 'Budget OK';
             navBadge.style.backgroundColor = '#22c55e';
             navBadge.style.color = '#ffffff';
         }
@@ -2007,7 +2036,7 @@ function aggiornaIndicatoreBudgetHomepage(shows) {
         // Nav Badge
         if (navBadge) {
             navBadge.style.display = 'inline-block';
-            navBadge.textContent = '!';
+            navBadge.textContent = 'Budget KO';
             navBadge.style.backgroundColor = '#ef4444';
             navBadge.style.color = '#ffffff';
         }
