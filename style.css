@@ -1,8 +1,6 @@
 /* ==========================================================================
-   1. IMPORT FONT ELEGANTE (Inter) & VARIABILI
+   1. VARIABILI (il font Inter è incluso in locale da index.html)
    ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
 :root {
     --bg-main: #f4f7f9;
     --bg-card: #ffffff;
@@ -30,6 +28,27 @@
     --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
 
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+
+    /* Colori di stato: ridefiniti nel tema scuro, così badge ed evidenziazioni
+       non restano chiari su sfondo scuro */
+    --bg-card-secondary: rgba(0, 0, 0, 0.03);
+    --focus-ring: rgba(37, 99, 235, 0.12);
+    --success-color: #16a34a;
+    --success-bg: #dcfce7;
+    --success-text: #15803d;
+    --danger-bg: #fee2e2;
+    --danger-text: #b91c1c;
+    --neutral-bg: #e2e8f0;
+    --neutral-text: #475569;
+    --info-bg: #e3f2fd;
+    --info-text: #0d47a1;
+    --tbd-bg: #fff3cd;
+    --tbd-text: #856404;
+    --highlight-bg: #fef9c3;
+    --highlight-border: #fde047;
+    --highlight-text: #1e293b;
+    --selected-bg: rgba(42, 157, 143, 0.15);
+    --rating-color: #f59e0b;
 }
 
 /* --- TEMA GRIGIO (Ultra Chiaro & Elegante) --- */
@@ -54,6 +73,23 @@ body.theme-dark {
     --border-color: #334155;
     --primary-color: #6366f1;
     --primary-hover: #4f46e5;
+
+    --bg-card-secondary: rgba(255, 255, 255, 0.04);
+    --focus-ring: rgba(99, 102, 241, 0.3);
+    --success-bg: #14532d;
+    --success-text: #86efac;
+    --danger-bg: #450a0a;
+    --danger-text: #fca5a5;
+    --neutral-bg: #334155;
+    --neutral-text: #cbd5e1;
+    --info-bg: #1e3a5f;
+    --info-text: #93c5fd;
+    --tbd-bg: #422006;
+    --tbd-text: #fcd34d;
+    --highlight-bg: #3a3416;
+    --highlight-border: #854d0e;
+    --highlight-text: #fde68a;
+    --selected-bg: rgba(99, 102, 241, 0.2);
 }
 
 /* ==========================================================================
@@ -359,7 +395,7 @@ textarea {
 
 input:focus, select:focus, textarea:focus, .custom-select-trigger:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .form-group.checkbox-group {
@@ -485,7 +521,9 @@ button {
    ========================================================================== */
 .table-container {
     width: 100%;
-    overflow-x: hidden !important;
+    /* Con molte colonne e finestra stretta la tabella scorre invece di tagliare
+       le ultime colonne (pulsanti Modifica/Elimina compresi) */
+    overflow-x: auto;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
 }
@@ -501,17 +539,19 @@ table {
 th {
     background-color: var(--bg-main);
     color: var(--text-muted);
-    padding: 10px 8px !important;
+    padding: 10px 6px !important;
     font-weight: 700;
     text-transform: uppercase;
     font-size: 0.72rem;
     letter-spacing: 0.04em;
     border-bottom: 1px solid var(--border-color);
-    white-space: nowrap;
+    /* Le intestazioni di più parole possono andare a capo se la finestra è stretta */
+    white-space: normal;
+    vertical-align: bottom;
 }
 
 td {
-    padding: 8px 8px !important;
+    padding: 8px 6px !important;
     border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
 }
@@ -524,12 +564,16 @@ tbody tr:hover {
     background-color: rgba(0,0,0,0.02);
 }
 
-td:nth-child(2),
-td:nth-child(5),
-td:nth-child(6),
-td:nth-child(7),
-td:last-child {
-    white-space: nowrap !important;
+/* Le colonne si stilizzano con classi e non per posizione (nth-child):
+   aggiungere una colonna spostava le regole sulla colonna sbagliata */
+td.col-nowrap {
+    white-space: nowrap;
+}
+
+/* Va messa sia sulla cella sia sull'intestazione, così valore e titolo restano in colonna */
+th.col-centro,
+td.col-centro {
+    text-align: center;
 }
 
 .thumb-img {
@@ -581,24 +625,59 @@ td:last-child {
     font-weight: 700;
 }
 
-table td:nth-child(9),
-table td.note-cell {
-    max-width: 180px;
-    white-space: nowrap !important;
+/* Note lunghe troncate con "…": il testo completo è nel tooltip (title).
+   Il limite sta sul div interno perché max-width sulle celle non è affidabile. */
+td.col-note .testo-note {
+    max-width: 140px;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-td:last-child {
+td.col-azioni {
     text-align: right;
+    white-space: nowrap;
 }
 
-td:last-child .btn-action,
-td:last-child button,
-td:last-child a {
+td.col-azioni button {
     display: inline-block;
     vertical-align: middle;
     margin-left: 2px;
+}
+
+/* --- Badge di stato (colori da variabili, quindi coerenti con il tema) --- */
+.badge-tbd,
+.badge-origine {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.badge-tbd { background-color: var(--tbd-bg); color: var(--tbd-text); border-radius: 4px; }
+.badge-origine.auto { background-color: var(--info-bg); color: var(--info-text); }
+.badge-origine.manuale { background-color: var(--neutral-bg); color: var(--neutral-text); font-weight: 600; }
+
+/* Nickname (spesso email lunghe) troncati: il testo completo è nel tooltip */
+.nick-troncato {
+    display: inline-block;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+}
+
+.link-profilo {
+    font-size: 1.15rem;
+    text-decoration: none !important;
+}
+
+.voto-medio {
+    text-align: center;
+    font-weight: bold;
+    color: var(--rating-color);
 }
 
 .costo-container, 
@@ -719,7 +798,7 @@ td.costo-cell {
 }
 
 .clickable-row { cursor: pointer; }
-.link-web { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+.link-web { color: var(--primary-color); text-decoration: none; font-weight: 600; white-space: nowrap; }
 .link-web:hover { text-decoration: underline; }
 
 .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
@@ -938,3 +1017,221 @@ body.theme-dark .mcg-status-container {
     background-color: #ff9f1c;
     box-shadow: 0 0 8px #ff9f1c;
 }
+
+/* ==========================================================================
+   INTESTAZIONE DEL MODALE MODELLA (tutto su una riga)
+   ========================================================================== */
+.modella-header-card {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    background: var(--bg-card-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+
+.modella-avatar {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-color);
+    cursor: pointer;
+}
+
+.modella-avatar-vuoto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    background-color: var(--border-color);
+    border: none;
+    cursor: default;
+}
+
+/* min-width: 0 permette al blocco di restringersi e a nome/URL di troncarsi */
+.modella-info-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.modella-nome,
+.modella-url {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.modella-nome {
+    margin: 0 0 2px 0;
+    font-size: 1.3rem;
+}
+
+.modella-url {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-decoration: none;
+}
+a.modella-url:hover { text-decoration: underline; }
+.modella-url-vuoto { color: var(--text-muted); font-weight: 400; }
+
+.modella-stats-summary {
+    display: flex;
+    flex-shrink: 0;
+    gap: 8px;
+}
+
+.stat-box {
+    padding: 6px 10px;
+    text-align: center;
+    white-space: nowrap;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-box-etichetta {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--text-muted);
+}
+
+.stat-box-valore {
+    font-size: 1.05rem;
+    color: var(--text-color);
+}
+
+/* ==========================================================================
+   MENU A TENDINA DELL'HEADER (Impostazioni / Dati)
+   ========================================================================== */
+.menu-header {
+    position: relative;
+}
+
+.menu-header-pannello {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 240px;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-header.open .menu-header-pannello {
+    display: flex;
+}
+
+.menu-header-pannello .font-size-control,
+.menu-header-pannello .lang-selector,
+.menu-header-pannello .theme-selector {
+    justify-content: space-between;
+}
+
+.menu-header-pannello select {
+    width: auto;
+    min-width: 140px;
+}
+
+.menu-header-pannello .btn-data {
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.btn-sync {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+}
+.btn-sync:hover { background: var(--primary-hover); }
+
+/* ==========================================================================
+   FORM A SCOMPARSA
+   ========================================================================== */
+.form-intestazione {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.form-intestazione h2 {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+    border-bottom: none !important;
+}
+
+.card-section.form-chiuso #showForm {
+    display: none;
+}
+
+.card-section:not(.form-chiuso) .form-intestazione {
+    margin-bottom: 18px;
+}
+
+/* Pulsante Salva in modalità modifica */
+.btn-primary.in-modifica {
+    background: var(--warning-color);
+    color: #212529;
+}
+.btn-primary.in-modifica:hover { background: var(--warning-hover); }
+
+/* ==========================================================================
+   BUDGET E STATISTICHE MENSILI (colori dal tema)
+   ========================================================================== */
+#sectionObiettivoBudget {
+    background-color: var(--highlight-bg);
+    border: 1px solid var(--highlight-border);
+    color: var(--highlight-text);
+}
+
+#sectionObiettivoBudget h2,
+#sectionObiettivoBudget label,
+#budgetStatusText {
+    color: var(--highlight-text);
+}
+
+#budgetRemainingText.stato-ok { color: var(--success-text); }
+#budgetRemainingText.stato-ko { color: var(--danger-text); }
+#budgetRemainingText.stato-neutro { color: var(--neutral-text); }
+
+#progressBar.stato-ok { background-color: var(--success-color); }
+#progressBar.stato-ko { background-color: var(--danger-color); }
+
+.nav-badge {
+    font-size: 0.72rem;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #fff;
+}
+.nav-badge.stato-ok { background-color: var(--success-color); }
+.nav-badge.stato-ko { background-color: var(--danger-color); }
+
+/* Righe della tabella mesi: dopo le regole zebra, che usano !important */
+tbody tr.riga-mese-cliccabile { cursor: pointer; }
+tbody tr.riga-mese-vuota { opacity: 0.6; }
+tbody tr.riga-mese-attiva { background-color: var(--selected-bg) !important; }
+tbody tr.riga-mese-corrente,
+tbody tr.riga-mese-corrente:hover {
+    background-color: var(--highlight-bg) !important;
+    color: var(--highlight-text);
+}
+.spesa-mese { color: var(--accent-color); }
+tr.riga-mese-corrente .spesa-mese { color: var(--highlight-text); }

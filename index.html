@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="app_title">Gestione Show MCG</title>
+    <!-- Font e icone inclusi in locale: l'app li mostra anche senza connessione -->
+    <link rel="stylesheet" href="node_modules/@fontsource/inter/400.css">
+    <link rel="stylesheet" href="node_modules/@fontsource/inter/500.css">
+    <link rel="stylesheet" href="node_modules/@fontsource/inter/600.css">
+    <link rel="stylesheet" href="node_modules/@fontsource/inter/700.css">
+    <link rel="stylesheet" href="node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="theme-grey">
 
@@ -18,42 +23,55 @@
             </h1>
 
             <div class="header-controls">
-                <div class="font-size-control">
-                    <span class="font-size-label" data-i18n="controls.font">Testo:</span>
-                    <button type="button" class="btn-font" onclick="riduciFont()">A-</button>
-                    <span id="fontBadge" class="font-size-badge">18px</span>
-                    <button type="button" class="btn-font" onclick="aumentaFont()">A+</button>
-                </div>
-
-                <!-- SELETTORE LINGUA -->
-                <div class="lang-selector">
-                    <label for="selectLingua" data-i18n="controls.language">Lingua:</label>
-                    <select id="selectLingua" onchange="cambiaLingua(this.value)">
-                        <option value="it">Italiano</option>
-                        <option value="en">English</option>
-                    </select>
-                </div>
-
-                <div class="theme-selector">
-                    <label for="selectTema" data-i18n="controls.theme">Tema:</label>
-                    <select id="selectTema" onchange="cambiaTema(this.value)">
-                        <option value="grey" data-i18n="themes.grey">Neve & Nebbia</option>
-                        <option value="light" data-i18n="themes.light">Luce Chiara</option>
-                        <option value="dark" data-i18n="themes.dark">Eclissi Scura</option>
-                    </select>
-                </div>
-
-                <div class="data-actions">
-                    <button type="button" class="btn-data" onclick="esportaDati()" title="Esporta Backup" data-i18n="actions.export">💾 Esporta</button>
-                    <button type="button" class="btn-data" onclick="importaDati()" title="Importa Backup" data-i18n="actions.import">📥 Importa</button>
-                    <button type="button" class="btn-data" onclick="apriCartellaDati()" title="Apri Cartella Dati" data-i18n="actions.folder">📁 Cartella</button>
-                    <button type="button" class="btn-data" onclick="sincronizzaTransazioniMondoCamGirls()" title="Sincronizza da MondoCamGirls" data-i18n="actions.sync">🔄 Sincronizza MCG</button>
-                </div>
+                <!-- Azione principale sempre visibile -->
+                <button type="button" class="btn-sync" onclick="sincronizzaTransazioniMondoCamGirls()" title="Sincronizza da MondoCamGirls" data-i18n="actions.sync">🔄 Sincronizza MCG</button>
 
                 <!-- Stato raggiungibilità Mondo Cam Girls (clic = nuova verifica) -->
                 <div class="mcg-status-container" id="mcgStatusContainer" role="button" tabindex="0">
                     <span class="status-dot yellow" id="mcgStatusDot"></span>
                     <span class="status-text" id="mcgStatusText">MCG: Verifica...</span>
+                </div>
+
+                <!-- MENU DATI: backup e cartella -->
+                <div class="menu-header" id="menuDati">
+                    <button type="button" class="btn-data menu-header-toggle" aria-haspopup="true" aria-expanded="false" data-i18n="menu.data">💾 Dati ▾</button>
+                    <div class="menu-header-pannello" role="menu">
+                        <button type="button" class="btn-data" role="menuitem" onclick="esportaDati()" title="Esporta Backup" data-i18n="actions.export">💾 Esporta</button>
+                        <button type="button" class="btn-data" role="menuitem" onclick="importaDati()" title="Importa Backup" data-i18n="actions.import">📥 Importa</button>
+                        <button type="button" class="btn-data" role="menuitem" onclick="apriCartellaDati()" title="Apri Cartella Dati" data-i18n="actions.folder">📁 Cartella</button>
+                    </div>
+                </div>
+
+                <!-- MENU IMPOSTAZIONI: testo, lingua, tema -->
+                <div class="menu-header" id="menuImpostazioni">
+                    <button type="button" class="btn-data menu-header-toggle" aria-haspopup="true" aria-expanded="false" data-i18n="menu.settings">⚙️ Impostazioni ▾</button>
+                    <div class="menu-header-pannello">
+                        <div class="font-size-control">
+                            <span class="font-size-label" data-i18n="controls.font">Testo:</span>
+                            <span>
+                                <button type="button" class="btn-font" onclick="riduciFont()">A-</button>
+                                <span id="fontBadge" class="font-size-badge">18px</span>
+                                <button type="button" class="btn-font" onclick="aumentaFont()">A+</button>
+                            </span>
+                        </div>
+
+                        <div class="lang-selector">
+                            <label for="selectLingua" data-i18n="controls.language">Lingua:</label>
+                            <select id="selectLingua" onchange="cambiaLingua(this.value)">
+                                <option value="it">Italiano</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+
+                        <div class="theme-selector">
+                            <label for="selectTema" data-i18n="controls.theme">Tema:</label>
+                            <select id="selectTema" onchange="cambiaTema(this.value)">
+                                <option value="grey" data-i18n="themes.grey">Neve & Nebbia</option>
+                                <option value="light" data-i18n="themes.light">Luce Chiara</option>
+                                <option value="dark" data-i18n="themes.dark">Eclissi Scura</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,7 +81,7 @@
             <button type="button" class="tab-btn" onclick="apriTab('tabClassifica', event)" data-i18n="tabs.ranking">🏆 Classifica Modelle</button>
             <button type="button" class="tab-btn" onclick="apriTab('tabStatistiche', event)" style="display: inline-flex; align-items: center; gap: 8px;">
                 <span data-i18n="tabs.stats">📈 Statistiche Mensili</span>
-                <span id="navBudgetBadge" style="font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; font-weight: bold; display: none;"></span>
+                <span id="navBudgetBadge" class="nav-badge" style="display: none;"></span>
             </button>
         </nav>
     </header>
@@ -73,8 +91,12 @@
         <!-- TAB 1: FORM E CRONOLOGIA -->
         <div id="tabDashboard" class="tab-content active">
             
-            <section class="card-section">
-                <h2 data-i18n="form.title">Aggiungi / Modifica Show</h2>
+            <!-- Il form è chiuso di default: si apre con "Nuovo show" o con "Modifica" -->
+            <section class="card-section form-chiuso" id="sezioneForm">
+                <div class="form-intestazione">
+                    <h2 id="titoloForm" data-i18n="form.title">Aggiungi / Modifica Show</h2>
+                    <button type="button" id="btnToggleForm" class="btn-primary" onclick="toggleForm()" aria-expanded="false" aria-controls="showForm" data-i18n="form.btn_new">＋ Nuovo show</button>
+                </div>
                 <form id="showForm" class="show-form-grid">
     <input type="hidden" id="editId" value="">
 
@@ -236,11 +258,12 @@
                                 <th data-i18n="table.date">Data & Ora</th>
                                 <th data-i18n="table.name">Nome</th>
                                 <th data-i18n="table.platform">Piattaforma</th>
-                                <th data-i18n="table.duration">Durata</th>
+                                <th class="col-centro" data-i18n="table.duration">Durata</th>
                                 <th data-i18n="table.cost">Costo</th>
+                                <th class="col-centro" data-i18n="table.cost_per_minute">€/min</th>
                                 <th data-i18n="table.rating">Voto</th>
                                 <th data-i18n="table.source">Origine</th>
-                                <th data-i18n="table.review">Recensione</th>
+                                <th class="col-centro" data-i18n="table.review">Recensione</th>
                                 <th data-i18n="table.notes">Note</th>
                                 <th data-i18n="table.actions">Azioni</th>
                             </tr>
@@ -289,15 +312,16 @@
                     <table>
                         <thead>
                             <tr>
-                                <th style="text-align: center;" data-i18n="table.pos">Posizione</th>
+                                <th class="col-centro" data-i18n="table.pos">Posizione</th>
                                 <th data-i18n="table.photo">Foto</th>
                                 <th data-i18n="table.model_name">Nome Modella</th>
-                                <th data-i18n="table.website">Sito Web</th>
+                                <th class="col-centro" data-i18n="table.website">Sito Web</th>
                                 <th data-i18n="table.platform">Piattaforma</th>
-                                <th data-i18n="table.total_shows">Show Totali</th>
-                                <th data-i18n="table.total_duration">Durata Totale</th>
-								<th data-i18n="table.total_spent">Spesa Totale</th>
-								<th data-i18n="table.avg_rating">Media Voti</th>
+                                <th class="col-centro" data-i18n="table.total_shows">Show Totali</th>
+                                <th class="col-centro" data-i18n="table.total_duration">Durata Totale</th>
+								<th class="col-centro" data-i18n="table.total_spent">Spesa Totale</th>
+								<th class="col-centro" data-i18n="table.avg_cost_per_minute">€/min Medio</th>
+								<th class="col-centro" data-i18n="table.avg_rating">Media Voti</th>
                             </tr>
                         </thead>
                         <tbody id="listaMedie"></tbody>
@@ -308,20 +332,20 @@
 
         <!-- TAB 3: STATISTICHE MENSILI -->
         <div id="tabStatistiche" class="tab-content">
-            <section id="sectionObiettivoBudget" class="card-section" style="background-color: #fef9c3; border: 1px solid #fde047; border-radius: 8px;">
-                <h2 style="color: #1e293b;" data-i18n="budget.title">Obiettivo e Budget Mensile</h2>
+            <section id="sectionObiettivoBudget" class="card-section">
+                <h2 data-i18n="budget.title">Obiettivo e Budget Mensile</h2>
                 <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
-                    <label for="monthlyBudgetInput" style="font-weight: 600; color: #1e293b;" data-i18n="budget.set_label">Imposta Budget Mensile (€):</label>
+                    <label for="monthlyBudgetInput" style="font-weight: 600;" data-i18n="budget.set_label">Imposta Budget Mensile (€):</label>
                     <input type="number" id="monthlyBudgetInput" placeholder="Es. 1000" step="10" min="0" style="width: 150px;">
                     <button type="button" id="saveBudgetBtn" class="btn-primary" style="padding: 6px 12px; font-size: 0.85rem;" data-i18n="budget.btn_save">Salva Budget</button>
                 </div>
 
                 <div id="budgetProgressContainer" style="margin-top: 15px;">
-                    <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 5px; color: #1e293b;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 5px;">
                         <span id="budgetStatusText">€ 0.00 / € 0.00</span>
-                        <span id="budgetRemainingText" style="color: var(--primary-color);"></span>
+                        <span id="budgetRemainingText"></span>
                     </div>
-                    <div style="width: 100%; background: rgba(255, 255, 255, 0.8); height: 16px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);">
+                    <div style="width: 100%; background: var(--bg-card); height: 16px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);">
                         <div id="progressBar" style="width: 0%; height: 100%; background: var(--accent-color); transition: width 0.4s ease;"></div>
                     </div>
                 </div>
@@ -332,8 +356,8 @@
                     <h2 data-i18n="stats.title">📈 Statistiche Mensili</h2>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <label for="selezionaAnnoStatistiche" style="font-weight: 600;" data-i18n="stats.select_year">Seleziona Anno:</label>
-                        <select id="selezionaAnnoStatistiche" onchange="aggiornaStatisticheMensili()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);">
-                            <!-- Popolato dinamicamente da js/modale-modella.js -->
+                        <select id="selezionaAnnoStatistiche" onchange="aggiornaStatisticheMensili()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-color);">
+                            <!-- Popolato dinamicamente da js/statistiche.js -->
                         </select>
                     </div>
                 </div>
@@ -364,10 +388,11 @@
                         <tr>
                             <th data-i18n="table.date">Data & Ora</th>
                             <th data-i18n="table.platform">Piattaforma</th>
-                            <th data-i18n="table.duration">Durata</th>
+                            <th class="col-centro" data-i18n="table.duration">Durata</th>
                             <th data-i18n="table.cost">Costo</th>
+                            <th class="col-centro" data-i18n="table.cost_per_minute">€/min</th>
                             <th data-i18n="table.rating">Voto</th>
-                            <th data-i18n="table.review">Recensione</th>
+                            <th class="col-centro" data-i18n="table.review">Recensione</th>
                             <th data-i18n="table.notes">Note</th>
                         </tr>
                     </thead>
@@ -423,6 +448,7 @@
     <script src="js/sincronizzazione.js"></script>
     <script src="js/changelog.js"></script>
     <script src="js/stato-mcg.js"></script>
+    <script src="js/menu-header.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

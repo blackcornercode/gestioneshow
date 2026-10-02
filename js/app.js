@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     inizializzaTema();
     inizializzaFont();
     inizializzaGestioneBudget();
+    inizializzaMenuHeader();
+    aggiornaPulsanteForm();
 
     const customTrigger = document.querySelector('.custom-select-trigger');
     const customDropdown = document.getElementById('customPiattaformaDropdown');

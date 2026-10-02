@@ -16,6 +16,10 @@
     "light": "Luce Chiara",
     "dark": "Eclissi Scura"
   },
+  "menu": {
+    "data": "💾 Dati ▾",
+    "settings": "⚙️ Impostazioni ▾"
+  },
   "actions": {
     "export": "💾 Esporta",
     "import": "📥 Importa",
@@ -49,7 +53,9 @@
     "ph_notes": "Inserisci note aggiuntive...",
     "btn_save": "Salva Record",
     "btn_cancel": "Annulla",
-    "btn_update": "Aggiorna Record"
+    "btn_update": "Aggiorna Record",
+    "btn_new": "＋ Nuovo show",
+    "btn_close": "✖ Chiudi"
   },
   "options": {
     "other": "Altro",
@@ -123,6 +129,9 @@
     "total_spent": "Spesa Totale",
     "avg_rating": "Media Voti",
     "cost": "Costo",
+    "cost_per_minute": "€/min",
+    "avg_cost_per_minute": "€/min Medio",
+    "cost_per_minute_hint": "Media calcolata solo sugli show con durata registrata (regali esclusi)",
     "rating": "Voto",
     "source": "Origine",
     "review": "Recensione",

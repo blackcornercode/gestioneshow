@@ -110,6 +110,43 @@ function formattaEuro(valore) {
     return `€ ${(isNaN(n) ? 0 : n).toFixed(2)}`;
 }
 
+function minutiDelloShow(show) {
+    return parseInt(show.durata || show.tempoShow, 10) || 0;
+}
+
+// Costo al minuto di un singolo show; null se manca la durata (show registrati
+// prima della 1.10.8) o se è un regalo, che non rappresenta un costo reale
+function costoAlMinuto(show) {
+    const minuti = minutiDelloShow(show);
+    if (minuti <= 0 || show.isRegalo) return null;
+    return (parseFloat(show.costo) || 0) / minuti;
+}
+
+// Media ponderata per un gruppo di show: spesa / minuti dei soli show con durata.
+// Dividere la spesa totale per la durata totale gonfierebbe il risultato,
+// perché conterebbe la spesa degli show senza durata ma non i loro minuti.
+function costoMedioAlMinuto(shows) {
+    let spesa = 0;
+    let minuti = 0;
+    shows.forEach(s => {
+        if (costoAlMinuto(s) === null) return;
+        spesa += parseFloat(s.costo) || 0;
+        minuti += minutiDelloShow(s);
+    });
+    return minuti > 0 ? spesa / minuti : null;
+}
+
+// Cella delle note troncata con "…" e testo completo nel tooltip. Il limite di
+// larghezza sta su un div interno: sulle celle di tabella max-width non è affidabile.
+function cellaNote(note) {
+    const testo = escapeHtml(note);
+    return `<td class="col-note" title="${testo}"><div class="testo-note">${testo}</div></td>`;
+}
+
+function formattaCostoAlMinuto(valore) {
+    return valore === null ? '–' : `€ ${valore.toFixed(2)}`;
+}
+
 function apriLinkEsterno(event, url) {
     if (event) {
         event.preventDefault();

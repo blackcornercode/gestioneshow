@@ -16,6 +16,10 @@
     "light": "Clear Light",
     "dark": "Dark Eclipse"
   },
+  "menu": {
+    "data": "💾 Data ▾",
+    "settings": "⚙️ Settings ▾"
+  },
   "actions": {
     "export": "💾 Export",
     "import": "📥 Import",
@@ -49,7 +53,9 @@
     "ph_notes": "Enter additional notes...",
     "btn_save": "Save Record",
     "btn_cancel": "Cancel",
-    "btn_update": "Update Record"
+    "btn_update": "Update Record",
+    "btn_new": "＋ New show",
+    "btn_close": "✖ Close"
   },
   "options": {
     "other": "Other",
@@ -123,6 +129,9 @@
     "total_spent": "Total Spent",
     "avg_rating": "Average Rating",
     "cost": "Cost",
+    "cost_per_minute": "€/min",
+    "avg_cost_per_minute": "Avg €/min",
+    "cost_per_minute_hint": "Average based only on shows with a recorded duration (gifts excluded)",
     "rating": "Rating",
     "source": "Source",
     "review": "Review",

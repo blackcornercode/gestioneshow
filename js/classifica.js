@@ -25,10 +25,12 @@ function caricaMedieEStoricizzazione(shows) {
                 foto: show.immagine || mappaImmaginiModelle[chiave] || '',
                 urlProfilo: show.urlProfilo || show.url || mappaUrlModelle[chiave] || '',
                 piattaformaPrevalente: show.piattaforma || '',
-                nicknamePrevalente: show.nickname || ''
+                nicknamePrevalente: show.nickname || '',
+                elencoShow: []
             };
         }
 
+        mappaModelle[chiave].elencoShow.push(show);
         mappaModelle[chiave].totaleShow += 1;
         mappaModelle[chiave].spesaTotale += (parseFloat(show.costo) || 0);
         mappaModelle[chiave].totaleDurata += (parseInt(show.durata || show.tempoShow, 10) || 0);
@@ -42,12 +44,13 @@ function caricaMedieEStoricizzazione(shows) {
         }
     });
 
-    classificaCompletaCache = Object.values(mappaModelle).map(m => {
+    classificaCompletaCache = Object.values(mappaModelle).map(({ elencoShow, ...m }) => {
         const media = m.conteggioVoti > 0 ? (m.sommaVoti / m.conteggioVoti).toFixed(2) : 'N/D';
-        return { 
-            ...m, 
-            mediaValore: media === 'N/D' ? -1 : parseFloat(media), 
-            mediaTxt: media 
+        return {
+            ...m,
+            mediaValore: media === 'N/D' ? -1 : parseFloat(media),
+            mediaTxt: media,
+            costoMedioMinuto: costoMedioAlMinuto(elencoShow)
         };
     });
 
@@ -85,41 +88,29 @@ function mostraClassifica(lista) {
             : `<div class="no-img">No Foto</div>`;
 
         const linkWebHtml = item.urlProfilo 
-            ? `<a href="#" class="link-web" onclick="apriLinkEsterno(event, ${argJs(item.urlProfilo)})">🌐 Profilo Web</a>`
+            ? `<a href="#" class="link-web link-profilo" title="Profilo Web" aria-label="Profilo Web" onclick="apriLinkEsterno(event, ${argJs(item.urlProfilo)})">🌐</a>`
             : `-`;
 
-        let piattaformaHtml = '-';
-        if (item.piattaformaPrevalente) {
-            const iconaHtml = iconePiattaformaHTML[item.piattaformaPrevalente] || `<i class="fa-solid fa-globe"></i> ${escapeHtml(item.piattaformaPrevalente)}`;
-            if (item.nicknamePrevalente) {
-                const urlChat = generaLinkChat(item.piattaformaPrevalente, item.nicknamePrevalente);
-                if (urlChat) {
-                    piattaformaHtml = `
-                        <a href="#" class="link-web" style="font-size: 0.85rem; font-weight: bold;" onclick="apriLinkEsterno(event, ${argJs(urlChat)})">
-                            ${iconaHtml} (${escapeHtml(item.nicknamePrevalente)})
-                        </a>
-                    `;
-                } else {
-                    piattaformaHtml = `${iconaHtml} <small>(${escapeHtml(item.nicknamePrevalente)})</small>`;
-                }
-            } else {
-                piattaformaHtml = iconaHtml;
-            }
-        }
+        // Stesso formato della cronologia: piattaforma e, sotto, il nickname
+        // (su una sola riga le email lunghe allargavano la tabella oltre lo schermo)
+        const piattaformaHtml = item.piattaformaPrevalente
+            ? getPiattaformaFormatted({ piattaforma: item.piattaformaPrevalente, nickname: item.nicknamePrevalente })
+            : '-';
 
         // Calcolo/Formattazione del tempo totale accumulato
         const tempoTotaleTxt = formattaTempo(item.tempoTotale || item.totaleDurata || 0);
 
         tr.innerHTML = `
-            <td style="text-align: center; font-weight: bold;">#${item.posizioneOriginale || (index + 1)}</td>
+            <td class="col-centro" style="font-weight: bold;">#${item.posizioneOriginale || (index + 1)}</td>
             <td>${imgHtml}</td>
             <td><strong>${escapeHtml(item.nome)}</strong></td>
-            <td>${linkWebHtml}</td>
+            <td class="col-centro">${linkWebHtml}</td>
             <td>${piattaformaHtml}</td>
-            <td style="text-align: center;">${item.totaleShow}</td>
-            <td style="text-align: center; font-weight: bold; color: var(--text-color);">${tempoTotaleTxt}</td>
-            <td style="white-space: nowrap; font-weight: bold; color: var(--text-color);">€ ${item.spesaTotale.toFixed(2)}</td>
-            <td style="text-align: center; font-weight: bold; color: #f59e0b;">${item.mediaTxt}</td>
+            <td class="col-centro">${item.totaleShow}</td>
+            <td class="col-nowrap col-centro" style="font-weight: bold;">${tempoTotaleTxt}</td>
+            <td class="col-nowrap col-centro" style="font-weight: bold;">€ ${item.spesaTotale.toFixed(2)}</td>
+            <td class="col-nowrap col-centro" title="${escapeHtml(t('table.cost_per_minute_hint'))}">${formattaCostoAlMinuto(item.costoMedioMinuto)}</td>
+            <td class="voto-medio">${item.mediaTxt}</td>
         `;
         fragment.appendChild(tr);
     });

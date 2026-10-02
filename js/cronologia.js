@@ -83,18 +83,18 @@ function getPiattaformaFormatted(show) {
     const iconaHtml = iconePiattaformaHTML[nomePiattaforma] || `<i class="fa-solid fa-globe"></i> ${escapeHtml(nomePiattaforma)}`;
     
     if (show.nickname) {
+        // I nickname sono spesso email lunghe: troncati con "…", completi nel tooltip
+        const nick = escapeHtml(show.nickname);
         const urlChat = generaLinkChat(nomePiattaforma, show.nickname);
-        if (urlChat) {
-            return `
-                <div style="display: flex; flex-direction: column; gap: 2px;">
-                    <span>${iconaHtml}</span>
-                    <a href="#" class="link-web" style="font-size: 0.82rem; font-weight: bold;" onclick="apriLinkEsterno(event, ${argJs(urlChat)})">
-                        💬 ${escapeHtml(show.nickname)}
-                    </a>
-                </div>
-            `;
-        }
-        return `${iconaHtml} <small>(${escapeHtml(show.nickname)})</small>`;
+        const nickHtml = urlChat
+            ? `<a href="#" class="link-web nick-troncato" style="font-size: 0.82rem;" title="${nick}" onclick="apriLinkEsterno(event, ${argJs(urlChat)})">💬 ${nick}</a>`
+            : `<small class="nick-troncato" title="${nick}">${nick}</small>`;
+        return `
+            <div style="display: flex; flex-direction: column; gap: 2px;">
+                <span>${iconaHtml}</span>
+                ${nickHtml}
+            </div>
+        `;
     }
 
     return iconaHtml;
@@ -160,33 +160,34 @@ function caricaCronologia(shows) {
         let votoTxt = '-';
         if (!item.isRegalo) {
             if (item.punteggio === 'TBD' || !item.punteggio) {
-                votoTxt = `<span style="background-color: #fff3cd; color: #856404; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 12px;">TBD</span>`;
+                votoTxt = `<span class="badge-tbd">TBD</span>`;
             } else {
                 votoTxt = `${item.punteggio} / 5`;
             }
         }
 
         const origineBadge = item.isAutoImport 
-            ? `<span style="background-color: #e3f2fd; color: #0d47a1; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; white-space: nowrap;">🤖 Auto MCG</span>` 
-            : `<span style="background-color: #f5f5f5; color: #616161; padding: 3px 8px; border-radius: 12px; font-size: 11px; white-space: nowrap;">👤 Manuale</span>`;
+            ? `<span class="badge-origine auto" title="Auto MCG">🤖 MCG</span>`
+            : `<span class="badge-origine manuale" title="Manuale">👤</span>`;
 
         // Calcolo e formattazione durata dello show
         const durataTxt = formattaTempo(item.durata || item.tempoShow || 0);
 
         tr.innerHTML = `
             <td>${imgHtml}</td>
-            <td style="white-space: nowrap;">${escapeHtml(item.dataFormattata || item.data)}</td>
+            <td class="col-nowrap">${escapeHtml(item.dataFormattata || item.data)}</td>
             <td><strong>${escapeHtml(item.nome)}</strong></td>
             <td>${piattaformaTxt}</td>
-            <td style="text-align: center; font-weight: bold; color: var(--text-color); white-space: nowrap;">${durataTxt}</td>
-            <td style="white-space: nowrap;">${formattaEuro(item.costo)}</td>
-            <td>${votoTxt}</td>
+            <td class="col-nowrap col-centro" style="font-weight: bold;">${durataTxt}</td>
+            <td class="col-nowrap">${formattaEuro(item.costo)}</td>
+            <td class="col-nowrap col-centro">${formattaCostoAlMinuto(costoAlMinuto(item))}</td>
+            <td class="col-nowrap">${votoTxt}</td>
             <td>${origineBadge}</td>
-            <td style="text-align: center;">${item.recensione ? '✅' : '❌'}</td>
-            <td title="${escapeHtml(item.note)}">${escapeHtml(item.note)}</td>
-            <td style="white-space: nowrap; text-align: right;">
-                <button class="btn-edit" onclick="modificaShow(${argJs(item.id)})">Modifica</button>
-                <button class="btn-delete" onclick="eliminaShow(${argJs(item.id)})">Elimina</button>
+            <td class="col-centro">${item.recensione ? '✅' : '❌'}</td>
+            ${cellaNote(item.note)}
+            <td class="col-azioni">
+                <button class="btn-edit" title="Modifica" aria-label="Modifica" onclick="modificaShow(${argJs(item.id)})"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-delete" title="Elimina" aria-label="Elimina" onclick="eliminaShow(${argJs(item.id)})"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         fragment.appendChild(tr);

@@ -11,7 +11,18 @@
     "Sincronizza MCG: più show con la stessa modella nello stesso minuto vengono importati tutti, invece di uno solo",
     "Sincronizza MCG: ignorate le righe senza una data valida (intestazioni, totali), prima importate con la data di oggi",
     "Il backup esportato include anche il budget mensile; i backup delle versioni precedenti restano importabili",
-    "Codice dell'interfaccia suddiviso in moduli nella cartella js/"
+    "Codice dell'interfaccia suddiviso in moduli nella cartella js/",
+    "Introdotto il costo al minuto: per ogni show e come media per modella (classifica e scheda modella), calcolato solo sugli show con durata registrata, regali esclusi",
+    "Interfaccia: header semplificato, con i menu Dati (Esporta, Importa, Cartella) e Impostazioni (testo, lingua, tema)",
+    "Interfaccia: form di inserimento a scomparsa, si apre con Nuovo show o con Modifica",
+    "Interfaccia: tema scuro completato (box budget, mese corrente, badge e pulsanti seguono i colori del tema)",
+    "Interfaccia: tabelle più compatte; pulsanti Modifica/Elimina a icona, nickname e note lunghi troncati con testo completo al passaggio del mouse",
+    "Fix: le tabelle tagliavano le ultime colonne (compresi Modifica/Elimina); ora entrano a 1280px e scorrono se la finestra è più stretta",
+    "Fix: l'evidenziazione del mese corrente nelle statistiche non era visibile",
+    "Fix: cambiando lingua durante una modifica, il pulsante tornava a Salva Record invece di Aggiorna Record",
+    "Font e icone inclusi nell'app: vengono mostrati anche senza connessione",
+    "Scheda modella: intestazione compatta su una sola riga (foto, nome, sito e statistiche), con etichette tradotte",
+    "Fix: nelle tabelle i valori centrati (durata, €/min, recensione, totali della classifica) non erano allineati alle intestazioni"
   ],
 
   "1.10.7": [

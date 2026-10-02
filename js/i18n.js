@@ -52,6 +52,7 @@ async function cambiaLingua(nuovaLingua) {
         // Ricarica le viste che generano HTML dinamicamente tramite JS
         await aggiornaInterfaccia();
         aggiornaTestoStatoMCG();
+        aggiornaPulsanteForm();
         logger.success(`Lingua aggiornata a: ${nuovaLingua}`);
     } catch (err) {
         logger.error(`Errore durante il cambio lingua a "${nuovaLingua}"`, err);

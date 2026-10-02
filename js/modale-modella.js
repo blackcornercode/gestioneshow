@@ -14,7 +14,8 @@ async function apriModalModella(nomeModella) {
     const totaleShow = showsModella.length;
     const spesaTotale = showsModella.reduce((acc, show) => acc + (parseFloat(show.costo) || 0), 0);
     const tempoTotale = showsModella.reduce((acc, show) => acc + (parseInt(show.durata || show.tempoShow, 10) || 0), 0);
-    
+    const costoMedioMinuto = costoMedioAlMinuto(showsModella);
+
     const showConVoto = showsModella.filter(s => !s.isRegalo && s.punteggio && s.punteggio !== 'TBD');
     const sommaVoti = showConVoto.reduce((acc, s) => acc + parseFloat(s.punteggio), 0);
     const mediaVoti = showConVoto.length > 0 ? (sommaVoti / showConVoto.length).toFixed(2) : 'N/D';
@@ -25,44 +26,32 @@ async function apriModalModella(nomeModella) {
     const showConUrl = showsModella.find(s => s.urlProfilo || s.url) || {};
     const urlProfilo = mappaUrlModelle[chiaveModella] || showConUrl.urlProfilo || showConUrl.url || '';
 
-    const imgProfiloHtml = fotoProfilo 
-        ? `<img src="${escapeHtml(fotoProfilo)}" alt="${escapeHtml(nomeModella)}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 50%; border: 2px solid var(--accent-color, #2a9d8f); cursor: pointer;" onclick="apriModalImmagine(${argJs(fotoProfilo)})">`
-        : `<div style="width: 70px; height: 70px; border-radius: 50%; background-color: var(--border-color, #ccc); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">👤</div>`;
+    const imgProfiloHtml = fotoProfilo
+        ? `<img src="${escapeHtml(fotoProfilo)}" alt="${escapeHtml(nomeModella)}" class="modella-avatar" onclick="apriModalImmagine(${argJs(fotoProfilo)})">`
+        : `<div class="modella-avatar modella-avatar-vuoto">👤</div>`;
 
+    // Riquadro statistico: etichetta sopra, valore sotto, entrambi senza andare a capo
+    const statBox = (etichetta, valore, extra = '') =>
+        `<div class="stat-box"${extra}><span class="stat-box-etichetta">${escapeHtml(etichetta)}</span><strong class="stat-box-valore">${valore}</strong></div>`;
+
+    const urlHtml = urlProfilo
+        ? `<a href="#" class="modella-url" title="${escapeHtml(urlProfilo)}" onclick="apriLinkEsterno(event, ${argJs(urlProfilo)})">🌐 ${escapeHtml(urlProfilo)}</a>`
+        : `<span class="modella-url modella-url-vuoto">Nessun sito web collegato</span>`;
+
+    // Tutto su una riga: avatar | nome e sito (troncati con "…" se serve) | statistiche
     header.innerHTML = `
-        <div class="modella-header-card" style="display: flex; align-items: center; gap: 20px; padding: 15px; background: var(--bg-card-secondary, rgba(0,0,0,0.03)); border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color, #ccc);">
-            <div class="modella-avatar-wrapper">
-                ${imgProfiloHtml}
+        <div class="modella-header-card">
+            ${imgProfiloHtml}
+            <div class="modella-info-main">
+                <h2 class="modella-nome" title="${escapeHtml(nomeModella)}">${escapeHtml(nomeModella)}</h2>
+                ${urlHtml}
             </div>
-            
-            <div class="modella-info-main" style="flex-grow: 1;">
-                <h2 style="margin: 0 0 5px 0;">${escapeHtml(nomeModella)}</h2>
-                ${urlProfilo ? `
-                    <p style="margin: 0; font-size: 0.9em;">
-                        🌐 <a href="#" onclick="apriLinkEsterno(event, ${argJs(urlProfilo)})" style="color: var(--text-color); text-decoration: none; font-weight: bold;">
-                            ${escapeHtml(urlProfilo)}
-                        </a>
-                    </p>
-                ` : '<p style="margin: 0; font-size: 0.85em; color: var(--text-muted, #888);">Nessun sito web collegato</p>'}
-            </div>
-
-            <div class="modella-stats-summary" style="display: flex; gap: 12px; text-align: center;">
-                <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
-                    <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Show Totali</span>
-                    <strong style="font-size: 1.2em; color: var(--text-color, #333);">${totaleShow}</strong>
-                </div>
-                <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
-                    <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Durata Totale</span>
-                    <strong style="font-size: 1.2em; color: var(--text-color);">${formattaTempo(tempoTotale)}</strong>
-                </div>
-                <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
-                    <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Spesa Totale</span>
-                    <strong style="font-size: 1.2em; color: var(--text-color);">€ ${spesaTotale.toFixed(2)}</strong>
-                </div>
-                <div class="stat-box" style="padding: 8px 12px; background: var(--bg-card, #fff); border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid var(--border-color, #ccc);">
-                    <span style="display: block; font-size: 0.8em; color: var(--text-muted, #666);">Media Voti</span>
-                    <strong style="font-size: 1.2em; color: var(--accent-color, #f59e0b);">${mediaVoti !== 'N/D' ? mediaVoti + ' / 5' : 'N/D'}</strong>
-                </div>
+            <div class="modella-stats-summary">
+                ${statBox(t('table.total_shows'), totaleShow)}
+                ${statBox(t('table.total_duration'), formattaTempo(tempoTotale))}
+                ${statBox(t('table.total_spent'), `€ ${spesaTotale.toFixed(2)}`)}
+                ${statBox(t('table.avg_cost_per_minute'), formattaCostoAlMinuto(costoMedioMinuto), ` title="${escapeHtml(t('table.cost_per_minute_hint'))}"`)}
+                ${statBox(t('table.avg_rating'), `<span class="voto-medio">${mediaVoti !== 'N/D' ? mediaVoti + ' / 5' : 'N/D'}</span>`)}
             </div>
         </div>
     `;
@@ -76,19 +65,20 @@ async function apriModalModella(nomeModella) {
         
         let votoTxt = '-';
         if (!item.isRegalo) {
-            votoTxt = (item.punteggio === 'TBD' || !item.punteggio) ? 'TBD' : `${item.punteggio} / 5`;
+            votoTxt = (item.punteggio === 'TBD' || !item.punteggio) ? '<span class="badge-tbd">TBD</span>' : `${item.punteggio} / 5`;
         }
 
         const durataSingola = formattaTempo(item.durata || item.tempoShow || 0);
 
         tr.innerHTML = `
-            <td>${escapeHtml(item.dataFormattata || item.data)}</td>
+            <td class="col-nowrap">${escapeHtml(item.dataFormattata || item.data)}</td>
             <td>${piattaformaTxt}</td>
-            <td style="text-align: center; font-weight: bold; color: var(--text-color);">${durataSingola}</td>
-            <td>${formattaEuro(item.costo)}</td>
-            <td>${votoTxt}</td>
-            <td style="text-align: center;">${item.recensione ? '✅' : '❌'}</td>
-            <td>${escapeHtml(item.note)}</td>
+            <td class="col-nowrap col-centro" style="font-weight: bold;">${durataSingola}</td>
+            <td class="col-nowrap">${formattaEuro(item.costo)}</td>
+            <td class="col-nowrap col-centro">${formattaCostoAlMinuto(costoAlMinuto(item))}</td>
+            <td class="col-nowrap">${votoTxt}</td>
+            <td class="col-centro">${item.recensione ? '✅' : '❌'}</td>
+            ${cellaNote(item.note)}
         `;
         listaBody.appendChild(tr);
     });

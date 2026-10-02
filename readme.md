@@ -26,12 +26,15 @@ L'interfaccia si sviluppa in tre sezioni principali accessibili dalla barra supe
 ### 1. Form & Cronologia
 Consente l'inserimento manuale, la modifica e la consultazione dell'archivio storico degli show.
 
+Il form è chiuso di default per lasciare spazio alla cronologia: si apre con **＋ Nuovo show** oppure con il pulsante ✏️ (Modifica) di una riga. Dopo il salvataggio si richiude; chiudendolo durante una modifica, la modifica viene annullata, mentre una bozza di nuovo show resta compilata.
+
 | Campo | Tipo Dato | Descrizione |
 | :--- | :--- | :--- |
 | **Data e Ora** | Data/Ora ISO | Data e orario esatto della sessione. Una data non valida blocca il salvataggio con un avviso. |
 | **Nome Modella** | Testo (Autocompletamento) | Nome della camgirl. Recupera automaticamente link e foto salvati. |
 | **Piattaforma** | Menù a tendina custom | Opzioni: *Teams, Telegram, Skype, Zoom, Altro*. Disabilitato se "Regalo". |
 | **Costo (€)** | Numerico (Decimali) | Importo economico speso per lo show. |
+| **Durata Show** | Numerico (minuti) | Durata della sessione, usata anche per il costo al minuto. |
 | **Voto / Punteggio** | Selezione (1-5 o TBD) | Valutazione qualitativa (1-5) o `TBD` (*To Be Decided*) per revisioni rinviate. |
 | **Regalo / Recensione**| Checkbox | Contrassegna eventi gratuiti/regalo o presenza di recensione lasciata. |
 | **URL Foto / Profilo** | URL Web | Link esterni per la foto e il profilo web della performer. |
@@ -39,7 +42,9 @@ Consente l'inserimento manuale, la modifica e la consultazione dell'archivio sto
 #### Funzionalità avanzate della Cronologia:
 - **Paginazione Dinamica**: Selezione di vista a 5, 10, 20 elementi o elenco completo.
 - **Filtri e Ricerca**: Filtro per anno (generato dinamicamente) e ricerca istantanea per testo.
-- **Badge Origine**: Distinzione visiva tra record ad inserimento `👤 Manuale` o `🤖 Auto MCG`.
+- **Badge Origine**: Distinzione visiva tra record ad inserimento manuale (`👤`) o importati da MCG (`🤖 MCG`).
+- **Righe compatte**: Modifica (✏️) ed Elimina (🗑️) sono pulsanti a icona; nickname e note lunghi sono troncati con "…" e il testo completo compare al passaggio del mouse. Se la finestra è stretta, la tabella scorre in orizzontale invece di tagliare le colonne.
+- **Costo al Minuto (€/min)**: Calcolato automaticamente come costo ÷ durata. Mostra `–` per gli show senza durata registrata e per i regali.
 
 ---
 
@@ -48,6 +53,7 @@ Elabora la cronologia salvata per generare indicatori prestazionali e statistici
 
 - **Podio Automatico**: Assegnazione visiva delle prime posizioni (🥇 1°, 🥈 2°, 🥉 3°) per le valutazioni più alte.
 - **Media Voti**: Calcolo ponderato escludendo sessioni contrassegnate come regali o `TBD`.
+- **€/min Medio**: Costo medio al minuto per modella, presente anche nella scheda dettaglio. È calcolato come spesa ÷ minuti dei soli show con durata registrata, regali esclusi, così gli show più vecchi senza durata non gonfiano il risultato.
 - **Scheda Dettaglio (Modal)**: Cliccando su una riga si apre il resoconto storico dettagliato degli show effettuati con la singola modella.
 
 ---
@@ -63,16 +69,21 @@ Fornisce il controllo finanziario sulle uscite e sui costi degli show:
 
 ## ⚙️ Funzioni di Sistema e Utility
 
-Accessibili direttamente dall'intestazione dell'applicazione:
+L'intestazione mostra sempre **🔄 Sincronizza MCG** e l'indicatore di raggiungibilità del sito. Le altre funzioni sono raccolte in due menu a tendina:
+- **💾 Dati**: Esporta, Importa, Cartella.
+- **⚙️ Impostazioni**: dimensione del testo, lingua, tema.
 
-- **🌍 Selezione Lingua (i18n)**: Selettore orizzontale affiancato nell'header per lo switch istantaneo tra Italiano (`it`) e Inglese (`en`).
+I menu si chiudono con un clic fuori o con `Esc`.
+
+- **🌍 Selezione Lingua (i18n)**: Switch istantaneo tra Italiano (`it`) e Inglese (`en`), dal menu Impostazioni.
 - **🔄 Sincronizzazione Automatica MCG**: Scarica e importa in automatico le transazioni dal profilo Mondo Cam Girls non ancora registrate localmente.
   - **Anti-duplicato**: una transazione è considerata già salvata se esiste uno show con la stessa modella e la stessa data/ora (al minuto). Se nella pagina ci sono più transazioni con la stessa modella nello stesso minuto, vengono importate tutte quelle non ancora presenti.
   - Le righe della tabella senza una data valida (intestazioni, totali) vengono ignorate.
 - **💾 Esportazione / Importazione Backup**: Ripristino e salvataggio dell'intero archivio in formato JSON, incluso il budget mensile. I backup delle versioni precedenti (solo elenco show) restano importabili; in quel caso il budget attuale non viene modificato.
 - **🎨 Accessibilità e Temi**:
   - **Dimensione Testo**: Pulsanti `A+` / `A-` per modificare al volo la grandezza dei font (12px - 26px).
-  - **Temi Visivi**: Selezione tra *Neve & Nebbia*, *Luce Chiara* ed *Eclissi Scura*.
+  - **Temi Visivi**: Selezione tra *Neve & Nebbia*, *Luce Chiara* ed *Eclissi Scura*. I colori di stato (budget, mese corrente, badge) sono definiti come variabili CSS per ogni tema in `style.css`.
+  - **Font e icone in locale**: il font Inter e le icone Font Awesome sono inclusi tra le dipendenze (`@fontsource/inter`, `@fortawesome/fontawesome-free`), quindi l'interfaccia si vede correttamente anche offline.
 - **📁 Gestione Cartella Dati**: Collegamento rapido alla cartella `userData` di sistema per consultare file JSON e log.
 
 ---
@@ -135,6 +146,7 @@ I moduli in `js/` sono script classici caricati in ordine da `index.html` e cond
 | `sincronizzazione.js` | Importazione transazioni da Mondo Cam Girls. |
 | `changelog.js` | Modale novità. |
 | `stato-mcg.js` | Indicatore di raggiungibilità di Mondo Cam Girls. |
+| `menu-header.js` | Menu a tendina Dati e Impostazioni dell'intestazione. |
 | `app.js` | Avvio dell'applicazione. |
 
 ---

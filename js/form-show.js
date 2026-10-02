@@ -205,6 +205,7 @@ if (showForm) {
 
             await salvaOAvvisa(shows);
             resetForm();
+            impostaFormAperto(false);
             aggiornaInterfaccia();
         } catch (err) {
             logger.error("Errore durante il salvataggio dello show", err);
@@ -280,17 +281,64 @@ async function modificaShow(id) {
 
     if (btnSalva) {
         btnSalva.textContent = t('form.btn_update');
-        btnSalva.style.backgroundColor = '#ffc107';
-        btnSalva.style.color = '#212529';
+        btnSalva.classList.add('in-modifica');
     }
     if (btnAnnulla) btnAnnulla.style.display = 'block';
 
+    impostaFormAperto(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function annullaModifica() {
     logger.info("Modifica annullata dall'utente.");
     resetForm();
+    impostaFormAperto(false);
+}
+
+/* --- FORM A SCOMPARSA --- */
+function formAperto() {
+    const sezione = document.getElementById('sezioneForm');
+    return Boolean(sezione) && !sezione.classList.contains('form-chiuso');
+}
+
+function impostaFormAperto(aperto) {
+    const sezione = document.getElementById('sezioneForm');
+    if (sezione) sezione.classList.toggle('form-chiuso', !aperto);
+    aggiornaPulsanteForm();
+}
+
+// Testi dei pulsanti coerenti con lo stato (richiamata anche al cambio lingua,
+// che altrimenti li riporterebbe sempre a "Nuovo show" e "Salva Record")
+function aggiornaPulsanteForm() {
+    const btnSalva = document.getElementById('btnSalva');
+    const editIdInput = document.getElementById('editId');
+    if (btnSalva) {
+        btnSalva.textContent = t(editIdInput && editIdInput.value ? 'form.btn_update' : 'form.btn_save');
+    }
+
+    const btn = document.getElementById('btnToggleForm');
+    if (!btn) return;
+    const aperto = formAperto();
+    btn.textContent = t(aperto ? 'form.btn_close' : 'form.btn_new');
+    btn.setAttribute('aria-expanded', String(aperto));
+    btn.classList.toggle('btn-secondary', aperto);
+    btn.classList.toggle('btn-primary', !aperto);
+}
+
+function toggleForm() {
+    if (!formAperto()) {
+        impostaFormAperto(true);
+        document.getElementById('nome')?.focus();
+        return;
+    }
+    // In modifica, chiudere equivale ad annullare; una bozza di nuovo show resta
+    // invece compilata per quando si riapre il form
+    const editIdInput = document.getElementById('editId');
+    if (editIdInput && editIdInput.value) {
+        annullaModifica();
+    } else {
+        impostaFormAperto(false);
+    }
 }
 
 function resetForm() {
@@ -321,8 +369,7 @@ function resetForm() {
 
     if (btnSalva) {
         btnSalva.textContent = t('form.btn_save');
-        btnSalva.style.backgroundColor = '#2563eb';
-        btnSalva.style.color = 'white';
+        btnSalva.classList.remove('in-modifica');
     }
     if (btnAnnulla) btnAnnulla.style.display = 'none';
     impostaDataOraAttuale();
