@@ -49,6 +49,12 @@
                     <button type="button" class="btn-data" onclick="apriCartellaDati()" title="Apri Cartella Dati" data-i18n="actions.folder">📁 Cartella</button>
                     <button type="button" class="btn-data" onclick="sincronizzaTransazioniMondoCamGirls()" title="Sincronizza da MondoCamGirls" data-i18n="actions.sync">🔄 Sincronizza MCG</button>
                 </div>
+
+                <!-- Stato raggiungibilità Mondo Cam Girls (clic = nuova verifica) -->
+                <div class="mcg-status-container" id="mcgStatusContainer" role="button" tabindex="0">
+                    <span class="status-dot yellow" id="mcgStatusDot"></span>
+                    <span class="status-text" id="mcgStatusText">MCG: Verifica...</span>
+                </div>
             </div>
         </div>
 
@@ -262,10 +268,14 @@
                         <i class="fa-solid fa-circle-info"></i>
                         <span data-i18n="ranking.info_title">Criteri di Ordinamento della Classifica:</span>
                     </div>
-                    <ul style="margin-left: 22px; color: var(--text-muted);">
-                        <li style="margin-bottom: 4px;" data-i18n="ranking.info_rule1"><strong>Media Voti (Criterio Primario):</strong> Le modelle vengono ordinate prima di tutto in base alla media dei voti ricevuti (da 1 a 5 stelle). Gli show regalati o contrassegnati come <em>TBD</em> non influiscono sulla media.</li>
-                        <li data-i18n="ranking.info_rule2"><strong>Numero di Show (Criterio Secondario):</strong> A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.</li>
-                    </ul>
+                    <p style="margin-bottom: 6px; color: var(--text-muted);">
+                        <strong data-i18n="ranking.info_rule1_title">Media Voti (Criterio Primario):</strong>
+                        <span data-i18n="ranking.info_rule1_text">Le modelle vengono ordinate prima di tutto in base alla media dei voti ricevuti (da 1 a 5 stelle). Gli show regalati o contrassegnati come TBD non influiscono sulla media.</span>
+                    </p>
+                    <p style="color: var(--text-muted);">
+                        <strong data-i18n="ranking.info_rule2_title">Numero di Show (Criterio Secondario):</strong>
+                        <span data-i18n="ranking.info_rule2_text">A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.</span>
+                    </p>
                 </div>
                 
                 <div class="filters-bar" style="margin-bottom: 20px;">

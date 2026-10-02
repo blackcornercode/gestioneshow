@@ -591,3 +591,31 @@ ipcMain.handle('fetch-modella-foto', async (event, urlProfilo) => {
         return { success: false, images: [], error: err.message };
     }
 });
+
+// Verifica se il sito MCG è raggiungibile (indicatore nell'header).
+// Il timeout è gestito a mano: net.request di Electron non ha un'opzione "timeout".
+ipcMain.handle('ping-mcg', () => {
+    return new Promise((resolve) => {
+        let concluso = false;
+        const fine = (esito) => {
+            if (concluso) return;
+            concluso = true;
+            clearTimeout(timer);
+            resolve(esito);
+        };
+
+        const request = net.request({ method: 'HEAD', url: 'https://www.mondocamgirls.com' });
+        const timer = setTimeout(() => {
+            request.abort();
+            fine({ online: false, error: 'timeout' });
+        }, 5000);
+
+        request.on('response', (response) => {
+            const status = response.statusCode;
+            response.on('data', () => {});
+            fine({ online: status >= 200 && status < 400, status });
+        });
+        request.on('error', (error) => fine({ online: false, error: error.message }));
+        request.end();
+    });
+});

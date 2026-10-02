@@ -179,6 +179,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     // (prima veniva cercata una funzione initChangelogCheck mai definita)
     initChangelogCheck();
     
+    // Indicatore stato MCG: verifica subito, poi ogni 60 secondi o al clic.
+    // Parte dopo caricaLingua, così i testi sono già tradotti.
+    verificaStatoMCG();
+    setInterval(verificaStatoMCG, 60000);
+    const mcgContainer = document.getElementById('mcgStatusContainer');
+    if (mcgContainer) {
+        mcgContainer.addEventListener('click', verificaStatoMCG);
+        mcgContainer.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                verificaStatoMCG();
+            }
+        });
+    }
+
     logger.success("Applicazione inizializzata con successo.");
 });
 
@@ -2085,11 +2100,69 @@ function aggiornaTestiDOM() {
 }
 
 // Handler richiamato dall'onchange del selettore nell'HTML
-function cambiaLingua(nuovaLingua) {
-    caricaLingua(nuovaLingua).then(() => {
+async function cambiaLingua(nuovaLingua) {
+    if (!nuovaLingua) return;
+    try {
+        logger.info(`Cambio lingua richiesto: ${nuovaLingua}`);
+        // caricaLingua salva già la preferenza in localStorage ('appLang')
+        await caricaLingua(nuovaLingua);
         // Ricarica le viste che generano HTML dinamicamente tramite JS
-        if (typeof aggiornaInterfaccia === 'function') {
-            aggiornaInterfaccia();
+        await aggiornaInterfaccia();
+        aggiornaTestoStatoMCG();
+        logger.success(`Lingua aggiornata a: ${nuovaLingua}`);
+    } catch (err) {
+        logger.error(`Errore durante il cambio lingua a "${nuovaLingua}"`, err);
+    }
+}
+
+/* ==========================================================================
+   INDICATORE STATO MONDO CAM GIRLS
+   ========================================================================== */
+// Ultimo esito: 'checking' | 'online' | 'offline' | 'error'
+let statoMCG = { stato: 'checking', motivo: '' };
+let pingMCGInCorso = false;
+
+function aggiornaTestoStatoMCG() {
+    const dot = document.getElementById('mcgStatusDot');
+    const text = document.getElementById('mcgStatusText');
+    const container = document.getElementById('mcgStatusContainer');
+    if (!dot || !text) return;
+
+    const colori = { checking: 'yellow', online: 'green', offline: 'red', error: 'red' };
+    const chiavi = { checking: 'controls.mcg_checking', online: 'controls.mcg_online', offline: 'controls.mcg_offline', error: 'controls.mcg_error' };
+
+    dot.className = `status-dot ${colori[statoMCG.stato]}`;
+    text.textContent = t(chiavi[statoMCG.stato]);
+
+    if (container) {
+        container.title = statoMCG.stato === 'online'
+            ? t('controls.mcg_tip_online')
+            : t('controls.mcg_tip_offline').replace('{motivo}', statoMCG.motivo || '-');
+    }
+}
+
+async function verificaStatoMCG() {
+    // Evita ping sovrapposti (clic ripetuti o timer mentre una verifica è in corso)
+    if (pingMCGInCorso) return;
+    pingMCGInCorso = true;
+
+    statoMCG = { stato: 'checking', motivo: '' };
+    aggiornaTestoStatoMCG();
+
+    try {
+        if (!window.electronAPI || typeof window.electronAPI.pingMCG !== 'function') {
+            statoMCG = { stato: 'error', motivo: 'API non disponibile' };
+            return;
         }
-    });
+        const risposta = await window.electronAPI.pingMCG();
+        statoMCG = (risposta && risposta.online)
+            ? { stato: 'online', motivo: '' }
+            : { stato: 'offline', motivo: String(risposta?.status || risposta?.error || '?') };
+    } catch (err) {
+        logger.error("Errore durante la verifica dello stato MCG", err);
+        statoMCG = { stato: 'error', motivo: err.message };
+    } finally {
+        pingMCGInCorso = false;
+        aggiornaTestoStatoMCG();
+    }
 }

@@ -896,6 +896,9 @@ tbody tr:hover {
     gap: 15px; /* Spazio tra il selettore Lingua e il selettore Tema */
 }
 
+/* ==========================================================================
+   INDICATORE STATO MONDO CAM GIRLS
+   ========================================================================== */
 .mcg-status-container {
     display: flex;
     align-items: center;
@@ -909,7 +912,10 @@ tbody tr:hover {
     user-select: none;
 }
 
-/* Pallino Semaforo */
+body.theme-dark .mcg-status-container {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
 .status-dot {
     width: 10px;
     height: 10px;
@@ -918,19 +924,16 @@ tbody tr:hover {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Verde: Online */
 .status-dot.green {
     background-color: #2ec4b6;
     box-shadow: 0 0 8px #2ec4b6;
 }
 
-/* Rosso: Offline / Errore */
 .status-dot.red {
     background-color: #e71d36;
     box-shadow: 0 0 8px #e71d36;
 }
 
-/* Giallo: In verifica */
 .status-dot.yellow {
     background-color: #ff9f1c;
     box-shadow: 0 0 8px #ff9f1c;

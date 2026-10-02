@@ -3,7 +3,13 @@
   "controls": {
     "font": "Testo:",
     "language": "Lingua:",
-    "theme": "Tema:"
+    "theme": "Tema:",
+    "mcg_online": "MCG: Online",
+    "mcg_offline": "MCG: Offline",
+    "mcg_checking": "MCG: Verifica...",
+    "mcg_error": "MCG: Errore",
+    "mcg_tip_online": "Mondo Cam Girls è raggiungibile. Clicca per verificare di nuovo.",
+    "mcg_tip_offline": "Mondo Cam Girls non raggiungibile ({motivo}). Clicca per verificare di nuovo."
   },
   "themes": {
     "grey": "Neve & Nebbia",
@@ -71,8 +77,10 @@
   "ranking": {
     "title": "🏆 Classifica Generale Modelle",
     "info_title": "Criteri di Ordinamento della Classifica:",
-    "info_rule1": "Media Voti (Criterio Primario): Le modelle vengono ordinate prima di tutto in base alla media dei voti ricevuti (da 1 a 5 stelle). Gli show regalati o contrassegnati come TBD non influiscono sulla media.",
-    "info_rule2": "Numero di Show (Criterio Secondario): A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.",
+    "info_rule1_title": "Media Voti (Criterio Primario):",
+    "info_rule1_text": "Le modelle vengono ordinate prima di tutto in base alla media dei voti ricevuti (da 1 a 5 stelle). Gli show regalati o contrassegnati come TBD non influiscono sulla media.",
+    "info_rule2_title": "Numero di Show (Criterio Secondario):",
+    "info_rule2_text": "A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.",
     "search": "🔎 Cerca Modella:",
     "ph_search": "Inserisci il nome..."
   },

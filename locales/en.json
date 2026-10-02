@@ -3,7 +3,13 @@
   "controls": {
     "font": "Text:",
     "language": "Language:",
-    "theme": "Theme:"
+    "theme": "Theme:",
+    "mcg_online": "MCG: Online",
+    "mcg_offline": "MCG: Offline",
+    "mcg_checking": "MCG: Checking...",
+    "mcg_error": "MCG: Error",
+    "mcg_tip_online": "Mondo Cam Girls is reachable. Click to check again.",
+    "mcg_tip_offline": "Mondo Cam Girls is unreachable ({motivo}). Click to check again."
   },
   "themes": {
     "grey": "Snow & Fog",
@@ -71,8 +77,10 @@
   "ranking": {
     "title": "🏆 General Models Ranking",
     "info_title": "Ranking Criteria:",
-    "info_rule1": "Average Rating (Primary Criterion): Models are ordered primarily by the average of ratings received (1 to 5 stars). Gifted shows or shows marked as TBD do not affect the average.",
-    "info_rule2": "Number of Shows (Secondary Criterion): If average ratings are equal, the model with more shows completed will be ranked higher.",
+    "info_rule1_title": "Average Rating (Primary Criterion):",
+    "info_rule1_text": "Models are ranked first by the average of the ratings they received (1 to 5 stars). Gifted shows or shows marked as TBD do not affect the average.",
+    "info_rule2_title": "Number of Shows (Secondary Criterion):",
+    "info_rule2_text": "With equal average ratings, the model with more shows is ranked higher.",
     "search": "🔎 Search Model:",
     "ph_search": "Enter name..."
   },

@@ -3,7 +3,8 @@
     "Introdotta la durata degli show",
     "Introdotte le righe bicolor per migliorare la lettura",
     "Implementazione del multilingua",
-    "Revisione generale del codice"
+    "Implementata controllo connettività MCG",
+    "Ottimizzazione generale AI"
   ], 
 
   "1.10.7": [
