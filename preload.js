@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     readData: () => ipcRenderer.invoke('read-data'),
     saveData: (data) => ipcRenderer.invoke('save-data', data),
     openDataFolder: () => ipcRenderer.invoke('open-data-folder'),
-    exportData: () => ipcRenderer.invoke('export-data'),
+    exportData: (impostazioni) => ipcRenderer.invoke('export-data', impostazioni),
     importData: () => ipcRenderer.invoke('import-data'),
 
     // Logging & Utility di Sistema

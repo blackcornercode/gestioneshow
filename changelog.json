@@ -4,8 +4,15 @@
     "Introdotte le righe bicolor per migliorare la lettura",
     "Implementazione del multilingua",
     "Implementata controllo connettività MCG",
-    "Ottimizzazione generale AI"
-  ], 
+    "Ottimizzazione generale AI",
+    "Fix: le date dei record più vecchi (formato gg/mm/aaaa) non vengono più lette con giorno e mese invertiti in filtri, statistiche, budget e ordinamenti",
+    "Fix: recupero foto delle modelle senza profilo salvato (le lettere maiuscole del nome venivano scartate dall'indirizzo)",
+    "Fix: avviso se la data dello show non è valida, invece di un salvataggio fallito senza messaggi",
+    "Sincronizza MCG: più show con la stessa modella nello stesso minuto vengono importati tutti, invece di uno solo",
+    "Sincronizza MCG: ignorate le righe senza una data valida (intestazioni, totali), prima importate con la data di oggi",
+    "Il backup esportato include anche il budget mensile; i backup delle versioni precedenti restano importabili",
+    "Codice dell'interfaccia suddiviso in moduli nella cartella js/"
+  ],
 
   "1.10.7": [
     "Ottimizzazione generale",

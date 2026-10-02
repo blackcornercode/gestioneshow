@@ -15,7 +15,7 @@
 - **Classifica Automatica Performer**: Elaborazione automatica delle metriche e delle valutazioni delle modella/camgirl in base a frequenza e punteggio medio.
 - **Controllo Finanziario e Budget**: Monitoraggio della spesa mensile con soglie configurabili, avvisi di sforamento e barre di avanzamento grafiche.
 - **Personalizzazione Visiva**: Supporto per temi multipli (*Neve & Nebbia*, *Luce Chiara*, *Eclissi Scura*) e ridimensionamento dinamico del font.
-- **Gestione Dati Integrata**: Backup e ripristino in formato JSON, con filtri avanzati per anno, ricerca per nome e paginazione.
+- **Gestione Dati Integrata**: Backup e ripristino in formato JSON (archivio show e budget mensile), con filtri avanzati per anno, ricerca per nome e paginazione.
 
 ---
 
@@ -28,7 +28,7 @@ Consente l'inserimento manuale, la modifica e la consultazione dell'archivio sto
 
 | Campo | Tipo Dato | Descrizione |
 | :--- | :--- | :--- |
-| **Data e Ora** | Data/Ora ISO | Data e orario esatto della sessione. |
+| **Data e Ora** | Data/Ora ISO | Data e orario esatto della sessione. Una data non valida blocca il salvataggio con un avviso. |
 | **Nome Modella** | Testo (Autocompletamento) | Nome della camgirl. Recupera automaticamente link e foto salvati. |
 | **Piattaforma** | Menù a tendina custom | Opzioni: *Teams, Telegram, Skype, Zoom, Altro*. Disabilitato se "Regalo". |
 | **Costo (€)** | Numerico (Decimali) | Importo economico speso per lo show. |
@@ -67,7 +67,9 @@ Accessibili direttamente dall'intestazione dell'applicazione:
 
 - **🌍 Selezione Lingua (i18n)**: Selettore orizzontale affiancato nell'header per lo switch istantaneo tra Italiano (`it`) e Inglese (`en`).
 - **🔄 Sincronizzazione Automatica MCG**: Scarica e importa in automatico le transazioni dal profilo Mondo Cam Girls non ancora registrate localmente.
-- **💾 Esportazione / Importazione Backup**: Ripristino e salvataggio dell'intero archivio in formato JSON.
+  - **Anti-duplicato**: una transazione è considerata già salvata se esiste uno show con la stessa modella e la stessa data/ora (al minuto). Se nella pagina ci sono più transazioni con la stessa modella nello stesso minuto, vengono importate tutte quelle non ancora presenti.
+  - Le righe della tabella senza una data valida (intestazioni, totali) vengono ignorate.
+- **💾 Esportazione / Importazione Backup**: Ripristino e salvataggio dell'intero archivio in formato JSON, incluso il budget mensile. I backup delle versioni precedenti (solo elenco show) restano importabili; in quel caso il budget attuale non viene modificato.
 - **🎨 Accessibilità e Temi**:
   - **Dimensione Testo**: Pulsanti `A+` / `A-` per modificare al volo la grandezza dei font (12px - 26px).
   - **Temi Visivi**: Selezione tra *Neve & Nebbia*, *Luce Chiara* ed *Eclissi Scura*.
@@ -75,10 +77,83 @@ Accessibili direttamente dall'intestazione dell'applicazione:
 
 ---
 
+## 💾 Dati e Backup
+
+I dati sono salvati nella cartella `userData` dell'applicazione (apribile dal pulsante **📁 Cartella Dati**):
+
+| File | Contenuto |
+| :--- | :--- |
+| `shows_data.json` | Archivio degli show (array JSON). Scritto in modo atomico: un crash durante il salvataggio non lo lascia mai troncato. |
+| `shows_data.bak.json` | Copia della versione precedente, aggiornata a ogni salvataggio o importazione. |
+| `shows_data.corrotto-<timestamp>.json` | Copia di un archivio illeggibile, conservata invece di sovrascriverlo. |
+| `app.log` | Log dell'applicazione (righe più recenti in alto, massimo 5000). |
+| `window_state.json` | Dimensione e posizione della finestra. |
+
+Il budget mensile, il tema, la lingua e i filtri sono salvati nel `localStorage` dell'interfaccia.
+
+Formato del file di backup esportato:
+
+```json
+{
+  "formato": "gestioneshow-backup",
+  "versione": 1,
+  "versioneApp": "1.10.8",
+  "shows": [ ... ],
+  "impostazioni": { "monthly_budget": "300" }
+}
+```
+
+---
+
+## 🗂️ Struttura del Progetto
+
+| Percorso | Ruolo |
+| :--- | :--- |
+| `main.js` | Processo principale Electron: finestre, salvataggio dati e backup, log, scaricamento pagine da Mondo Cam Girls. |
+| `preload.js` | Espone all'interfaccia le funzioni del processo principale (`window.electronAPI`). |
+| `index.html`, `style.css`, `splash.html` | Pagina principale, stili e schermata di avvio. |
+| `locales/` | Traduzioni `it.json` e `en.json`. |
+| `changelog.json` | Novità per versione, mostrate nel modale *Novità e Changelog*. |
+| `js/` | Codice dell'interfaccia, suddiviso in moduli (vedi sotto). |
+
+I moduli in `js/` sono script classici caricati in ordine da `index.html` e condividono lo scope globale, necessario per gli `onclick` inline nell'HTML. `app.js` va caricato per ultimo.
+
+| Modulo | Contenuto |
+| :--- | :--- |
+| `logger.js` | Log a console, a file e nel pannello log. |
+| `i18n.js` | Caricamento lingue e funzione `t()`. |
+| `stato.js` | Variabili globali dell'applicazione. |
+| `utils.js` | Funzioni comuni: escape HTML, ID univoci, lettura delle date (anche formato italiano `gg/mm/aaaa`), formattazione importi e durate, link esterni. |
+| `preferenze.js` | Schede, tema, dimensione font, budget, versione. |
+| `galleria.js` | Lightbox e navigazione foto. |
+| `form-show.js` | Form di inserimento/modifica, autocompilazione, eliminazione. |
+| `dati.js` | Caricamento dati, aggiornamento interfaccia, esportazione/importazione backup. |
+| `cronologia.js` | Cronologia show, filtri e paginazione. |
+| `statistiche.js` | Statistiche mensili e indicatori budget. |
+| `classifica.js` | Classifica modelle. |
+| `modale-modella.js` | Scheda dettaglio modella e foto da Mondo Cam Girls. |
+| `sincronizzazione.js` | Importazione transazioni da Mondo Cam Girls. |
+| `changelog.js` | Modale novità. |
+| `stato-mcg.js` | Indicatore di raggiungibilità di Mondo Cam Girls. |
+| `app.js` | Avvio dell'applicazione. |
+
+---
+
 ## 🛠️ Requisiti e Installazione
 
 1. Assicurati di aver installato [Node.js](https://nodejs.org/) (versione consigliata LTS).
-2. Clona il repository locale ed entra nella directory del progetto:
+2. Clona il repository ed entra nella directory del progetto:
    ```bash
-   git clone [https://github.com/blackcornercode/gestioneshow.git](https://github.com/blackcornercode/gestioneshow.git)
-   cd GestioneShow
+   git clone https://github.com/blackcornercode/gestioneshow.git
+   cd gestioneshow
+   ```
+3. Installa le dipendenze:
+   ```bash
+   npm install
+   ```
+4. Avvia l'applicazione con `npm start` (oppure con `AVVIA.bat` su Windows).
+   > Se l'avvio dal terminale di VS Code fallisce con `Cannot read properties of undefined (reading 'getPath')`, è impostata la variabile d'ambiente `ELECTRON_RUN_AS_NODE`: rimuovila prima di lanciare l'app.
+5. Per creare l'eseguibile portable per Windows:
+   ```bash
+   npm run dist
+   ```

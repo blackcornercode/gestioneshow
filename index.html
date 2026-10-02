@@ -333,7 +333,7 @@
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <label for="selezionaAnnoStatistiche" style="font-weight: 600;" data-i18n="stats.select_year">Seleziona Anno:</label>
                         <select id="selezionaAnnoStatistiche" onchange="aggiornaStatisticheMensili()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);">
-                            <!-- Popolato dinamicamente da script.js -->
+                            <!-- Popolato dinamicamente da js/modale-modella.js -->
                         </select>
                     </div>
                 </div>
@@ -406,6 +406,23 @@
         <button class="nav-btn-lightbox" onclick="event.stopPropagation(); navigaGalleria(1)" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.6); color: white; border: none; font-size: 30px; padding: 15px 20px; cursor: pointer; border-radius: 50%; z-index: 2010; user-select: none;">&#10095;</button>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Script classici caricati in ordine: condividono lo scope globale,
+         necessario per gli onclick inline. app.js va caricato per ultimo. -->
+    <script src="js/logger.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/stato.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/preferenze.js"></script>
+    <script src="js/galleria.js"></script>
+    <script src="js/form-show.js"></script>
+    <script src="js/dati.js"></script>
+    <script src="js/cronologia.js"></script>
+    <script src="js/statistiche.js"></script>
+    <script src="js/classifica.js"></script>
+    <script src="js/modale-modella.js"></script>
+    <script src="js/sincronizzazione.js"></script>
+    <script src="js/changelog.js"></script>
+    <script src="js/stato-mcg.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>

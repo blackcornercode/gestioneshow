@@ -391,7 +391,22 @@ ipcMain.handle('save-data', async (event, data) => {
     }
 });
 
-ipcMain.handle('export-data', async () => {
+// Impostazioni del renderer (in localStorage) incluse nel backup: solo chiavi note
+const IMPOSTAZIONI_IN_BACKUP = ['monthly_budget'];
+
+function filtraImpostazioni(impostazioni) {
+    const pulite = {};
+    if (impostazioni && typeof impostazioni === 'object') {
+        for (const chiave of IMPOSTAZIONI_IN_BACKUP) {
+            if (impostazioni[chiave] !== undefined && impostazioni[chiave] !== null) {
+                pulite[chiave] = String(impostazioni[chiave]);
+            }
+        }
+    }
+    return pulite;
+}
+
+ipcMain.handle('export-data', async (event, impostazioni) => {
     try {
         const { filePath } = await dialog.showSaveDialog(mainWindow, {
             title: 'Esporta Backup Dati',
@@ -400,8 +415,15 @@ ipcMain.handle('export-data', async () => {
         });
 
         if (filePath) {
-            const data = await fs.readFile(dataPath, 'utf-8');
-            await fs.writeFile(filePath, data, 'utf-8');
+            const shows = JSON.parse(await fs.readFile(dataPath, 'utf-8'));
+            const backup = {
+                formato: 'gestioneshow-backup',
+                versione: 1,
+                versioneApp: app.getVersion(),
+                shows,
+                impostazioni: filtraImpostazioni(impostazioni)
+            };
+            await fs.writeFile(filePath, JSON.stringify(backup, null, 2), 'utf-8');
             return { success: true };
         }
         return { success: false, cancelled: true, error: 'Esportazione annullata' };
@@ -421,12 +443,15 @@ ipcMain.handle('import-data', async () => {
         if (filePaths?.length > 0) {
             const content = await fs.readFile(filePaths[0], 'utf-8');
             const parsedData = JSON.parse(content);
-            if (Array.isArray(parsedData)) {
+            // Accetta sia il formato attuale { shows, impostazioni } sia i backup
+            // precedenti, che contenevano solo l'array degli show
+            const shows = Array.isArray(parsedData) ? parsedData : parsedData?.shows;
+            if (Array.isArray(shows)) {
                 // salvaDatiShow conserva l'archivio attuale in shows_data.bak.json prima di sostituirlo
-                await salvaDatiShow(parsedData);
-                return { success: true };
+                await salvaDatiShow(shows);
+                return { success: true, impostazioni: filtraImpostazioni(parsedData?.impostazioni) };
             }
-            return { success: false, error: 'Formato del file non valido (deve essere un array JSON).' };
+            return { success: false, error: 'Formato del file non valido (atteso un backup di Gestione Show).' };
         }
         return { success: false, cancelled: true, error: 'Importazione annullata' };
     } catch (error) {
