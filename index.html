@@ -299,6 +299,29 @@
                         <strong data-i18n="ranking.info_rule2_title">Numero di Show (Criterio Secondario):</strong>
                         <span data-i18n="ranking.info_rule2_text">A parità di media voti, la modella con un numero maggiore di show effettuati viene posizionata più in alto in classifica.</span>
                     </p>
+
+                    <!-- LEGENDA COLORI: i campioni usano le stesse classi delle tabelle -->
+                    <div class="legenda-colori">
+                        <strong data-i18n="ranking.colors_title">Significato dei colori:</strong>
+                        <ul>
+                            <li>
+                                <span class="legenda-campioni"><span class="costo-min-conveniente">€/min</span> <span class="costo-min-caro">€/min</span></span>
+                                <span><span data-i18n="ranking.colors_cost">€/min Medio: verde se la modella costa meno al minuto della tua media, rosso se costa di più (oltre ±10%); senza colore se è vicina alla media.</span> <span id="legendaMediaMinuto"></span></span>
+                            </li>
+                            <li>
+                                <span class="legenda-campioni"><span class="voto-medio">5.00</span></span>
+                                <span data-i18n="ranking.colors_rating">Media Voti: in ambra, per riconoscerla a colpo d'occhio.</span>
+                            </li>
+                            <li>
+                                <span class="legenda-campioni"><span class="badge-voto voto-5">5</span> <span class="badge-voto voto-4">4</span> <span class="badge-voto voto-3">3</span> <span class="badge-voto voto-basso">1-2</span> <span class="badge-tbd">TBD</span></span>
+                                <span data-i18n="ranking.colors_votes">Voto dei singoli show (scheda della modella e cronologia): verde 5, verde acqua 4, ambra 3, rosso 1-2, grigio da valutare.</span>
+                            </li>
+                            <li>
+                                <span class="legenda-campioni"><span class="dato-mancante">–</span></span>
+                                <span data-i18n="ranking.colors_missing">Dato non disponibile: durata non registrata o €/min non calcolabile (show senza durata o regali).</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
                 
                 <div class="filters-bar" style="margin-bottom: 20px;">
@@ -408,7 +431,7 @@
 			<h2 data-i18n="changelog.title">📜 Changelog / Novità</h2>
 			
 			<!-- Contenitore del testo -->
-			<div id="changelogContent" style="max-height: 300px; overflow-y: auto; margin: 15px 0;">
+			<div id="changelogContent" style="max-height: 60vh; overflow-y: auto; margin: 15px 0;">
 				<p data-i18n="changelog.loading">Caricamento novità in corso...</p>
 			</div>
 

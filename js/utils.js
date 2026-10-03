@@ -115,7 +115,7 @@ function minutiDelloShow(show) {
 }
 
 // Costo al minuto di un singolo show; null se manca la durata (show registrati
-// prima della 1.10.8) o se è un regalo, che non rappresenta un costo reale
+// prima della 1.11.0) o se è un regalo, che non rappresenta un costo reale
 function costoAlMinuto(show) {
     const minuti = minutiDelloShow(show);
     if (minuti <= 0 || show.isRegalo) return null;
@@ -140,11 +140,48 @@ function costoMedioAlMinuto(shows) {
 // larghezza sta su un div interno: sulle celle di tabella max-width non è affidabile.
 function cellaNote(note) {
     const testo = escapeHtml(note);
-    return `<td class="col-note" title="${testo}"><div class="testo-note">${testo}</div></td>`;
+    if (!testo) return '<td class="col-note"></td>';
+    // Clic (o Invio/Spazio da tastiera) mostra la nota completa, un secondo clic la richiude
+    return `<td class="col-note espandibile" title="${testo}" tabindex="0" aria-expanded="false"
+        onclick="espandiNota(event, this)" onkeydown="if (event.key === 'Enter' || event.key === ' ') espandiNota(event, this)"><div class="testo-note">${testo}</div></td>`;
 }
 
-function formattaCostoAlMinuto(valore) {
-    return valore === null ? '–' : `€ ${valore.toFixed(2)}`;
+function espandiNota(event, cella) {
+    event.preventDefault();
+    // Non deve attivare il clic sulla riga (es. apertura della scheda modella)
+    event.stopPropagation();
+    const espansa = cella.classList.toggle('espansa');
+    cella.setAttribute('aria-expanded', String(espansa));
+}
+
+const DATO_MANCANTE = '<span class="dato-mancante">–</span>';
+
+// €/min colorato rispetto alla media personale: verde se più basso, rosso se più alto.
+// Entro ±10% dalla media resta neutro, per non colorare differenze irrilevanti.
+function formattaCostoAlMinuto(valore, riferimento = costoMinutoRiferimento) {
+    if (valore === null) return DATO_MANCANTE;
+    const testo = `€ ${valore.toFixed(2)}`;
+    if (!riferimento) return testo;
+    let classe = '';
+    if (valore < riferimento * 0.9) classe = 'costo-min-conveniente';
+    else if (valore > riferimento * 1.1) classe = 'costo-min-caro';
+    const titolo = t('table.cost_per_minute_compare').replace('{media}', `€ ${riferimento.toFixed(2)}`);
+    return `<span class="${classe}" title="${escapeHtml(titolo)}">${testo}</span>`;
+}
+
+// Voto del singolo show come badge colorato (5 verde … 1-2 rosso)
+function formattaVoto(show) {
+    if (show.isRegalo) return DATO_MANCANTE;
+    const voto = parseInt(show.punteggio, 10);
+    if (show.punteggio === 'TBD' || !voto) return '<span class="badge-tbd">TBD</span>';
+    const classe = voto >= 5 ? 'voto-5' : voto === 4 ? 'voto-4' : voto === 3 ? 'voto-3' : 'voto-basso';
+    return `<span class="badge-voto ${classe}">${voto} / 5</span>`;
+}
+
+// Durata: "–" in grigio quando non è registrata (prima compariva "0m" in grassetto)
+function formattaDurata(minuti) {
+    const m = parseInt(minuti, 10) || 0;
+    return m > 0 ? formattaTempo(m) : DATO_MANCANTE;
 }
 
 function apriLinkEsterno(event, url) {

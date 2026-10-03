@@ -4,6 +4,7 @@
 async function aggiornaInterfaccia() {
     try {
         tuttiGliShow = await window.electronAPI.readData();
+        costoMinutoRiferimento = costoMedioAlMinuto(tuttiGliShow);
         tuttiGliShow.forEach(s => {
             const idNum = Number(s.id);
             if (Number.isFinite(idNum) && idNum > ultimoIdGenerato) ultimoIdGenerato = idNum;

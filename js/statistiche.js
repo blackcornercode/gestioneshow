@@ -188,12 +188,9 @@ function caricaStatisticheMensili(shows) {
                 ? `<img src="${escapeHtml(fotoUrl)}" class="thumb-img" style="cursor: pointer;" alt="foto" onclick="event.stopPropagation(); apriModalImmagine(${argJs(fotoUrl)})" onerror="this.outerHTML='<div class=\\'no-img\\'>${t('table.no_photo')}</div>'">`
                 : `<div class="no-img">${t('table.no_photo')}</div>`;
 
-            let votoTxt = '-';
-            if (!item.isRegalo) {
-                votoTxt = (item.punteggio === 'TBD' || !item.punteggio) ? '<span class="badge-tbd">TBD</span>' : `${item.punteggio} / 5`;
-            }
+            const votoTxt = formattaVoto(item);
 
-            const durataTxt = formattaTempo(item.durata || item.tempoShow || 0);
+            const durataTxt = formattaDurata(item.durata || item.tempoShow);
 
             html += `
                 <tr>
@@ -202,7 +199,7 @@ function caricaStatisticheMensili(shows) {
                     <td><strong style="cursor: pointer;" onclick="apriModalModella(${argJs(item.nome)})">${escapeHtml(item.nome)}</strong></td>
                     <td>${getPiattaformaFormatted(item)}</td>
                     <td class="col-nowrap col-centro" style="font-weight: bold;">${durataTxt}</td>
-                    <td class="col-nowrap">${formattaEuro(item.costo)}</td>
+                    <td class="col-nowrap${item.isRegalo ? ' testo-attenuato' : ''}">${formattaEuro(item.costo)}</td>
                     <td class="col-nowrap col-centro">${formattaCostoAlMinuto(costoAlMinuto(item))}</td>
                     <td class="col-nowrap">${votoTxt}</td>
                     <td class="col-centro">${item.recensione ? '✅' : '❌'}</td>

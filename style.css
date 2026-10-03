@@ -6,9 +6,10 @@
     --bg-card: #ffffff;
     --bg-input: #ffffff;
     --text-color: #1e293b;
-    --text-muted: #64748b;
+    /* #64748b scendeva a 4.4:1 sulle righe a zebra: sotto la soglia WCAG di 4.5 */
+    --text-muted: #556274;
     --border-color: #e2e8f0;
-    
+
     --primary-color: #2563eb;
     --primary-hover: #1d4ed8;
     --secondary-color: #64748b;
@@ -42,13 +43,21 @@
     --neutral-text: #475569;
     --info-bg: #e3f2fd;
     --info-text: #0d47a1;
-    --tbd-bg: #fff3cd;
-    --tbd-text: #856404;
     --highlight-bg: #fef9c3;
     --highlight-border: #fde047;
     --highlight-text: #1e293b;
     --selected-bg: rgba(42, 157, 143, 0.15);
-    --rating-color: #f59e0b;
+
+    /* Colori dei testi nelle righe degli show. Tutte le coppie testo/sfondo sono
+       verificate ad almeno 4.5:1 (WCAG AA), righe a zebra comprese. */
+    --rating-color: #92400e;        /* media voti: l'arancione #f59e0b era a 2:1 */
+    --link-color: #2563eb;          /* nickname e link nelle tabelle */
+    --conveniente-text: #166534;    /* €/min sotto la media personale */
+    --caro-text: #b91c1c;           /* €/min sopra la media personale */
+    --voto5-bg: #dcfce7;  --voto5-text: #15803d;
+    --voto4-bg: #ccfbf1;  --voto4-text: #0f766e;
+    --voto3-bg: #fef3c7;  --voto3-text: #92400e;
+    --voto-basso-bg: #fee2e2;  --voto-basso-text: #b91c1c;
 }
 
 /* --- TEMA GRIGIO (Ultra Chiaro & Elegante) --- */
@@ -61,6 +70,7 @@ body.theme-grey {
     --border-color: #cbd5e1;
     --primary-color: #0284c7;
     --primary-hover: #0369a1;
+    --link-color: #0369a1;          /* #0284c7 qui era a 3.3:1 */
 }
 
 /* --- TEMA SCURO --- */
@@ -84,12 +94,19 @@ body.theme-dark {
     --neutral-text: #cbd5e1;
     --info-bg: #1e3a5f;
     --info-text: #93c5fd;
-    --tbd-bg: #422006;
-    --tbd-text: #fcd34d;
     --highlight-bg: #3a3416;
     --highlight-border: #854d0e;
     --highlight-text: #fde68a;
     --selected-bg: rgba(99, 102, 241, 0.2);
+
+    --rating-color: #f59e0b;
+    --link-color: #a5b4fc;          /* #6366f1 qui era a 3.3:1 */
+    --conveniente-text: #86efac;
+    --caro-text: #fca5a5;
+    --voto5-bg: #14532d;  --voto5-text: #86efac;
+    --voto4-bg: #134e4a;  --voto4-text: #5eead4;
+    --voto3-bg: #422006;  --voto3-text: #fcd34d;
+    --voto-basso-bg: #450a0a;  --voto-basso-text: #fca5a5;
 }
 
 /* ==========================================================================
@@ -634,6 +651,20 @@ td.col-note .testo-note {
     text-overflow: ellipsis;
 }
 
+td.col-note.espandibile { cursor: pointer; }
+
+/* Nota espansa: testo completo che va a capo, stessa larghezza della colonna */
+td.col-note.espansa .testo-note {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+}
+
+td.col-note.espandibile:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+}
+
 td.col-azioni {
     text-align: right;
     white-space: nowrap;
@@ -647,6 +678,7 @@ td.col-azioni button {
 
 /* --- Badge di stato (colori da variabili, quindi coerenti con il tema) --- */
 .badge-tbd,
+.badge-voto,
 .badge-origine {
     padding: 2px 8px;
     border-radius: 12px;
@@ -655,7 +687,29 @@ td.col-azioni button {
     white-space: nowrap;
 }
 
-.badge-tbd { background-color: var(--tbd-bg); color: var(--tbd-text); border-radius: 4px; }
+/* TBD in grigio: l'ambra ora indica il voto 3 */
+/* Bordo: nel tema grigio lo sfondo del badge coincide con quello delle righe a zebra */
+.badge-tbd { background-color: var(--neutral-bg); color: var(--neutral-text); border-radius: 4px; border: 1px solid var(--border-color); }
+
+/* Voto del singolo show: 5 verde, 4 verde acqua, 3 ambra, 1-2 rosso */
+.badge-voto { border-radius: 4px; }
+.badge-voto.voto-5 { background-color: var(--voto5-bg); color: var(--voto5-text); }
+.badge-voto.voto-4 { background-color: var(--voto4-bg); color: var(--voto4-text); }
+.badge-voto.voto-3 { background-color: var(--voto3-bg); color: var(--voto3-text); }
+.badge-voto.voto-basso { background-color: var(--voto-basso-bg); color: var(--voto-basso-text); }
+
+/* €/min rispetto alla media personale (fascia neutra del ±10% senza colore) */
+.costo-min-conveniente { color: var(--conveniente-text); font-weight: 600; }
+.costo-min-caro { color: var(--caro-text); font-weight: 600; }
+
+/* Dati mancanti (durata non registrata, €/min non calcolabile) e valori dei regali:
+   in grigio e senza grassetto, così non attirano l'attenzione */
+.dato-mancante,
+.testo-attenuato,
+td.testo-attenuato {
+    color: var(--text-muted);
+    font-weight: 400 !important;
+}
 .badge-origine.auto { background-color: var(--info-bg); color: var(--info-text); }
 .badge-origine.manuale { background-color: var(--neutral-bg); color: var(--neutral-text); font-weight: 600; }
 
@@ -798,7 +852,7 @@ td.costo-cell {
 }
 
 .clickable-row { cursor: pointer; }
-.link-web { color: var(--primary-color); text-decoration: none; font-weight: 600; white-space: nowrap; }
+.link-web { color: var(--link-color); text-decoration: none; font-weight: 600; white-space: nowrap; }
 .link-web:hover { text-decoration: underline; }
 
 .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
@@ -1016,6 +1070,43 @@ body.theme-dark .mcg-status-container {
 .status-dot.yellow {
     background-color: #ff9f1c;
     box-shadow: 0 0 8px #ff9f1c;
+}
+
+/* ==========================================================================
+   LEGENDA COLORI (riquadro criteri della classifica)
+   ========================================================================== */
+.legenda-colori {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+}
+
+.legenda-colori ul {
+    list-style: none;
+    margin-top: 6px;
+    display: grid;
+    gap: 6px;
+}
+
+/* Campioni in una colonna a larghezza fissa, testo allineato a fianco */
+.legenda-colori li {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    align-items: center;
+    gap: 10px;
+}
+
+.legenda-campioni {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+#legendaMediaMinuto {
+    font-weight: 600;
+    color: var(--text-color);
 }
 
 /* ==========================================================================

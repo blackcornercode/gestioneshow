@@ -1,11 +1,12 @@
 {
   "name": "gestioneshow",
-  "version": "1.10.8",
+  "version": "1.11.0",
   "description": "Gestione Show MCG",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder"
+    "pack": "electron-builder --win --dir --publish never",
+    "dist": "electron-builder --win portable --publish never"
   },
   "keywords": [],
   "author": "",
@@ -13,8 +14,7 @@
   "type": "commonjs",
   "devDependencies": {
     "electron": "^44.3.0",
-    "electron-builder": "^26.15.3",
-    "electron-reload": "^2.0.0-alpha.1"
+    "electron-builder": "^26.15.3"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",
@@ -24,12 +24,30 @@
   "build": {
     "appId": "com.gestioneshow.app",
     "productName": "Gestione Show MCG",
+    "artifactName": "GestioneShowMCG-${version}-portable.${ext}",
+    "directories": {
+      "output": "dist"
+    },
     "files": [
-      "**/*",
-      "!app.log",
-      "!shows_data.json",
-      "!window_state.json",
-      "!node_modules/electron/**/*"
+      "main.js",
+      "preload.js",
+      "index.html",
+      "splash.html",
+      "style.css",
+      "icon.ico",
+      "changelog.json",
+      "js/**/*",
+      "locales/**/*",
+      "!node_modules/@fortawesome/fontawesome-free/{js,svgs,sprites,scss,less,metadata}/**",
+      "!node_modules/@fortawesome/fontawesome-free/webfonts/*.ttf",
+      "!node_modules/@fontsource/inter/files/*.woff",
+      "!node_modules/@fontsource/inter/files/*-{100,200,300,800,900}-*",
+      "!node_modules/@fontsource/inter/files/*-italic.*",
+      "!node_modules/**/*.{md,map,ts}"
+    ],
+    "electronLanguages": [
+      "it",
+      "en-US"
     ],
     "portable": {
       "useZip": false

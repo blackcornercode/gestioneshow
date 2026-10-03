@@ -157,21 +157,14 @@ function caricaCronologia(shows) {
 
         const piattaformaTxt = getPiattaformaFormatted(item);
         
-        let votoTxt = '-';
-        if (!item.isRegalo) {
-            if (item.punteggio === 'TBD' || !item.punteggio) {
-                votoTxt = `<span class="badge-tbd">TBD</span>`;
-            } else {
-                votoTxt = `${item.punteggio} / 5`;
-            }
-        }
+        const votoTxt = formattaVoto(item);
 
         const origineBadge = item.isAutoImport 
             ? `<span class="badge-origine auto" title="Auto MCG">🤖 MCG</span>`
             : `<span class="badge-origine manuale" title="Manuale">👤</span>`;
 
         // Calcolo e formattazione durata dello show
-        const durataTxt = formattaTempo(item.durata || item.tempoShow || 0);
+        const durataTxt = formattaDurata(item.durata || item.tempoShow);
 
         tr.innerHTML = `
             <td>${imgHtml}</td>
@@ -179,7 +172,7 @@ function caricaCronologia(shows) {
             <td><strong>${escapeHtml(item.nome)}</strong></td>
             <td>${piattaformaTxt}</td>
             <td class="col-nowrap col-centro" style="font-weight: bold;">${durataTxt}</td>
-            <td class="col-nowrap">${formattaEuro(item.costo)}</td>
+            <td class="col-nowrap${item.isRegalo ? ' testo-attenuato' : ''}">${formattaEuro(item.costo)}</td>
             <td class="col-nowrap col-centro">${formattaCostoAlMinuto(costoAlMinuto(item))}</td>
             <td class="col-nowrap">${votoTxt}</td>
             <td>${origineBadge}</td>

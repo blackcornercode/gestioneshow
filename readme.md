@@ -1,6 +1,6 @@
 # Gestione Show MCG V2
 
-![Version](https://img.shields.io/badge/version-v1.10.8-blue.svg)
+![Version](https://img.shields.io/badge/version-v1.11.0-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Electron-brightgreen.svg)
 
 **Gestione Show MCG** è un'applicazione desktop basata sull'architettura **Electron**, progettata per il monitoraggio, l'organizzazione e la storicizzazione degli show con **camgirl**. Il sistema offre un tracciamento avanzato delle sessioni e della spesa rispetto a budget mensili prefissati, fornendo metriche, statistiche economiche e classifiche automatiche. È nativamente integrata con il portale web **Mondo Cam Girls**.
@@ -43,8 +43,13 @@ Il form è chiuso di default per lasciare spazio alla cronologia: si apre con **
 - **Paginazione Dinamica**: Selezione di vista a 5, 10, 20 elementi o elenco completo.
 - **Filtri e Ricerca**: Filtro per anno (generato dinamicamente) e ricerca istantanea per testo.
 - **Badge Origine**: Distinzione visiva tra record ad inserimento manuale (`👤`) o importati da MCG (`🤖 MCG`).
-- **Righe compatte**: Modifica (✏️) ed Elimina (🗑️) sono pulsanti a icona; nickname e note lunghi sono troncati con "…" e il testo completo compare al passaggio del mouse. Se la finestra è stretta, la tabella scorre in orizzontale invece di tagliare le colonne.
+- **Righe compatte**: Modifica (✏️) ed Elimina (🗑️) sono pulsanti a icona; nickname e note lunghi sono troncati con "…" e il testo completo compare al passaggio del mouse. Cliccando su una nota (o premendo Invio quando è selezionata) la si espande per leggerla tutta; un secondo clic la richiude. Se la finestra è stretta, la tabella scorre in orizzontale invece di tagliare le colonne.
 - **Costo al Minuto (€/min)**: Calcolato automaticamente come costo ÷ durata. Mostra `–` per gli show senza durata registrata e per i regali.
+- **Colori con significato** (gli stessi in cronologia, scheda modella e dettaglio del mese):
+  - **Voto**: badge verde (5), verde acqua (4), ambra (3), rosso (1-2); `TBD` in grigio.
+  - **€/min**: verde se lo show è costato meno al minuto della tua media su tutti gli show, rosso se di più; entro ±10% dalla media resta neutro. Il valore della media compare passando il mouse.
+  - **Dati mancanti e regali**: durata non registrata mostrata come `–` in grigio; costo e voto dei regali attenuati.
+  - Tutte le coppie testo/sfondo rispettano il contrasto minimo WCAG di 4.5:1 in ogni tema, righe a zebra comprese.
 
 ---
 
@@ -108,7 +113,7 @@ Formato del file di backup esportato:
 {
   "formato": "gestioneshow-backup",
   "versione": 1,
-  "versioneApp": "1.10.8",
+  "versioneApp": "1.11.0",
   "shows": [ ... ],
   "impostazioni": { "monthly_budget": "300" }
 }
@@ -169,3 +174,19 @@ I moduli in `js/` sono script classici caricati in ordine da `index.html` e cond
    ```bash
    npm run dist
    ```
+   Il file viene creato in `dist/GestioneShowMCG-<versione>-portable.exe`.
+   Per una prova veloce senza creare l'eseguibile, `npm run pack` prepara solo la cartella `dist/win-unpacked/` (circa 10 secondi invece di quasi 2 minuti); l'app si avvia da `dist/win-unpacked/Gestione Show MCG.exe`.
+
+### Cosa include la build
+La configurazione è nella sezione `build` di `package.json` ed è pensata per tenere l'eseguibile leggero:
+- **Solo i file dell'app**: `files` elenca esplicitamente i file necessari (`main.js`, `preload.js`, pagine, stili, `js/`, `locales/`, `changelog.json`, icona). File di sviluppo come `.vscode/`, `AVVIA.bat` e `readme.md` restano fuori. Un nuovo file usato dall'app va aggiunto a questo elenco.
+- **Dipendenze ridotte al necessario**: di Font Awesome vengono inclusi solo il CSS e i font `.woff2`; del font Inter solo i pesi usati (400, 500, 600, 700), senza corsivo e solo in formato `.woff2`.
+- **Lingue di Chromium**: `electronLanguages` mantiene solo italiano e inglese invece di 55 lingue.
+
+| | Prima | Dopo |
+| :--- | ---: | ---: |
+| Eseguibile portable | 106 MB | 93 MB |
+| Codice e risorse dell'app (`app.asar`) | 25 MB, 3220 file | 2.4 MB |
+| Lingue di Chromium | 49 MB | 1.3 MB |
+
+La parte restante dell'eseguibile è il runtime di Electron, che non si può ridurre.

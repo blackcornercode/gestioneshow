@@ -69,6 +69,16 @@ function caricaMedieEStoricizzazione(shows) {
     });
 
     mostraClassifica(classificaCompletaCache);
+    aggiornaLegendaMediaMinuto();
+}
+
+// Nella legenda dei colori mostra il valore attuale della media €/min di riferimento
+function aggiornaLegendaMediaMinuto() {
+    const elem = document.getElementById('legendaMediaMinuto');
+    if (!elem) return;
+    elem.textContent = costoMinutoRiferimento
+        ? t('ranking.colors_your_avg').replace('{media}', `€ ${costoMinutoRiferimento.toFixed(2)}`)
+        : '';
 }
 
 function mostraClassifica(lista) {
@@ -98,7 +108,7 @@ function mostraClassifica(lista) {
             : '-';
 
         // Calcolo/Formattazione del tempo totale accumulato
-        const tempoTotaleTxt = formattaTempo(item.tempoTotale || item.totaleDurata || 0);
+        const tempoTotaleTxt = formattaDurata(item.tempoTotale || item.totaleDurata);
 
         tr.innerHTML = `
             <td class="col-centro" style="font-weight: bold;">#${item.posizioneOriginale || (index + 1)}</td>

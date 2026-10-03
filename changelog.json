@@ -1,61 +1,56 @@
 {
-  "1.10.8": [
-    "Introdotta la durata degli show",
-    "Introdotte le righe bicolor per migliorare la lettura",
-    "Implementazione del multilingua",
-    "Implementata controllo connettività MCG",
-    "Ottimizzazione generale AI",
-    "Fix: le date dei record più vecchi (formato gg/mm/aaaa) non vengono più lette con giorno e mese invertiti in filtri, statistiche, budget e ordinamenti",
-    "Fix: recupero foto delle modelle senza profilo salvato (le lettere maiuscole del nome venivano scartate dall'indirizzo)",
-    "Fix: avviso se la data dello show non è valida, invece di un salvataggio fallito senza messaggi",
-    "Sincronizza MCG: più show con la stessa modella nello stesso minuto vengono importati tutti, invece di uno solo",
-    "Sincronizza MCG: ignorate le righe senza una data valida (intestazioni, totali), prima importate con la data di oggi",
-    "Il backup esportato include anche il budget mensile; i backup delle versioni precedenti restano importabili",
-    "Codice dell'interfaccia suddiviso in moduli nella cartella js/",
-    "Introdotto il costo al minuto: per ogni show e come media per modella (classifica e scheda modella), calcolato solo sugli show con durata registrata, regali esclusi",
-    "Interfaccia: header semplificato, con i menu Dati (Esporta, Importa, Cartella) e Impostazioni (testo, lingua, tema)",
-    "Interfaccia: form di inserimento a scomparsa, si apre con Nuovo show o con Modifica",
-    "Interfaccia: tema scuro completato (box budget, mese corrente, badge e pulsanti seguono i colori del tema)",
-    "Interfaccia: tabelle più compatte; pulsanti Modifica/Elimina a icona, nickname e note lunghi troncati con testo completo al passaggio del mouse",
-    "Fix: le tabelle tagliavano le ultime colonne (compresi Modifica/Elimina); ora entrano a 1280px e scorrono se la finestra è più stretta",
-    "Fix: l'evidenziazione del mese corrente nelle statistiche non era visibile",
-    "Fix: cambiando lingua durante una modifica, il pulsante tornava a Salva Record invece di Aggiorna Record",
-    "Font e icone inclusi nell'app: vengono mostrati anche senza connessione",
-    "Scheda modella: intestazione compatta su una sola riga (foto, nome, sito e statistiche), con etichette tradotte",
-    "Fix: nelle tabelle i valori centrati (durata, €/min, recensione, totali della classifica) non erano allineati alle intestazioni"
+  "1.11.0": [
+    "Novità: durata degli show e costo al minuto (€/min), per singolo show e come media per modella; la media considera solo gli show con durata registrata, regali esclusi",
+    "Novità: interfaccia multilingua (italiano e inglese)",
+    "Novità: indicatore di raggiungibilità di Mondo Cam Girls nell'intestazione",
+    "Novità: colori con significato, cioè voto di ogni show come badge (5 verde, 4 verde acqua, 3 ambra, 1-2 rosso, TBD grigio) e €/min verde o rosso rispetto alla tua media (oltre ±10%)",
+    "Novità: legenda dei colori nella classifica, con il valore attuale della tua media €/min",
+    "Novità: il backup esportato include anche il budget mensile; i backup delle versioni precedenti restano importabili",
+    "Interfaccia: intestazione semplificata, con i menu Dati (Esporta, Importa, Cartella) e Impostazioni (testo, lingua, tema)",
+    "Interfaccia: form di inserimento a scomparsa, che si apre con Nuovo show o con Modifica",
+    "Interfaccia: tabelle più compatte e leggibili, con righe bicolore, pulsanti Modifica/Elimina a icona, nickname e note lunghi troncati (clic sulla nota per leggerla tutta), dati mancanti mostrati come – in grigio e regali attenuati",
+    "Interfaccia: scheda modella con intestazione compatta su una sola riga",
+    "Interfaccia: tema scuro completato e contrasto dei testi di almeno 4.5:1 (WCAG) in tutti i temi",
+    "Interfaccia: font e icone inclusi nell'app, visibili anche senza connessione",
+    "Sincronizza MCG: vengono importati tutti gli show con la stessa modella nello stesso minuto (prima solo uno) e ignorate le righe senza una data valida (prima importate con la data di oggi)",
+    "Fix: le date dei record più vecchi (gg/mm/aaaa) venivano lette con giorno e mese invertiti in filtri, statistiche, budget e ordinamenti",
+    "Fix: le foto delle modelle senza profilo salvato non venivano trovate (le maiuscole del nome sparivano dall'indirizzo)",
+    "Fix: con una data non valida il salvataggio falliva senza alcun messaggio",
+    "Fix: le tabelle tagliavano le ultime colonne, compresi i pulsanti Modifica/Elimina",
+    "Fix: nelle tabelle i valori centrati non erano allineati alle intestazioni",
+    "Fix: l'evidenziazione del mese corrente nelle statistiche non era visibile, e cambiando lingua durante una modifica il pulsante tornava a Salva Record",
+    "Tecnico: codice dell'interfaccia suddiviso in moduli nella cartella js/ e ottimizzazione generale con l'IA",
+    "Tecnico: build ottimizzata, con eseguibile più leggero (93 MB invece di 106) che include solo i file necessari e le lingue italiano e inglese; nuovo nome del file GestioneShowMCG-<versione>-portable.exe"
   ],
-
   "1.10.7": [
-    "Ottimizzazione generale",
-    "Aggiunta sezione Criteri di Ordinamento della Classifica",
-    "Introdotto controllo Git di versione",
-    "Ripristino funzione Sincronizza MCG",
-    "Introduzione Nickname e sistema di collegamento veloce con piattaforma"
-  ],  
-	"1.10.6": [
-	"FIX ingrandimento testo automatico a seguito di apertura pagina web",
-	"Ottimizzazione generale del codice",
-	"Introduzione del filtro per anni",
-	"Introdotto ingrandimento immagine delle modelle",
-	"Introdotto carosello con recupero foto modelle",
-	"Revisione delle statistiche con l'introduzione del filtro per anno"
+    "Novità: nickname della modella con collegamento rapido alla piattaforma di chat",
+    "Novità: sezione Criteri di Ordinamento nella classifica",
+    "Fix: ripristinata la funzione Sincronizza MCG",
+    "Tecnico: progetto sotto controllo di versione Git e ottimizzazione generale"
   ],
-	"1.10.5": [
-    "Ottimizzazione IA",
-	"Introduzione del sistema di verifica online delle modelle (non funzionante al momento)",
-	"Sistemazione di alcuni titoli"
+  "1.10.6": [
+    "Novità: filtro per anno nella cronologia e nelle statistiche",
+    "Novità: ingrandimento delle foto delle modelle",
+    "Novità: carosello con le foto recuperate dal profilo della modella",
+    "Fix: il testo si ingrandiva da solo dopo l'apertura di una pagina web",
+    "Tecnico: ottimizzazione generale del codice"
   ],
-   "1.10.3": [
-    "Aggiunto sistema di changelog",
-	"Fix importazione da MCG che si bloccava",
-	"Fix dei modali di dettaglio delle modelle"
+  "1.10.5": [
+    "Novità: verifica dello stato online delle modelle (non ancora funzionante)",
+    "Interfaccia: sistemati alcuni titoli",
+    "Tecnico: ottimizzazione del codice con l'IA"
+  ],
+  "1.10.3": [
+    "Novità: sistema di changelog",
+    "Fix: l'importazione da MCG si bloccava",
+    "Fix: modali di dettaglio delle modelle"
   ],
   "1.10.2": [
-    "Aggiunta barra di caricamento (Splash Screen) all'avvio dell'app.",
-    "Aggiunto il log della versione corrente all'avvio.",
-    "Corretto l'errore di sintassi nell'importazione dei dati e il gestore append-log."
+    "Novità: schermata di caricamento (splash screen) all'avvio",
+    "Novità: la versione corrente viene registrata nel log all'avvio",
+    "Fix: errore di sintassi nell'importazione dei dati e nel gestore append-log"
   ],
   "1.10.1": [
-    "Configurazione iniziale per la build dell'eseguibile portatile."
+    "Tecnico: configurazione iniziale per la build dell'eseguibile portable"
   ]
 }

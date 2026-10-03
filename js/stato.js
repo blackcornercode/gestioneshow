@@ -16,6 +16,9 @@ let indiceFotoCorrente = 0;
 
 let meseSelezionatoDettaglio = null;
 
+// Costo medio al minuto di tutti gli show: riferimento per colorare i €/min
+let costoMinutoRiferimento = null;
+
 const iconePiattaformaHTML = {
     'Teams': '<i class="fa-solid fa-users-rectangle" style="color: #6264A7;"></i> Teams',
     'Telegram': '<i class="fa-brands fa-telegram" style="color: #2AABEE;"></i> Telegram',

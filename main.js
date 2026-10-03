@@ -474,13 +474,21 @@ ipcMain.handle('get-changelog', async () => {
             </div>`;
     }
 
-    let htmlContent = `<div style="font-family: inherit; line-height: 1.5; color: var(--text-main, #333);">`;
+    // Le voci sono testo semplice: si fa l'escape e si mette in grassetto la
+    // categoria iniziale ("Novità:", "Fix:", ...)
+    const escape = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const formattaVoce = (voce) => {
+        const m = /^([^:]{1,25}):\s+(.*)$/s.exec(String(voce));
+        return m ? `<strong>${escape(m[1])}:</strong> ${escape(m[2])}` : escape(voce);
+    };
+
+    let htmlContent = `<div style="font-family: inherit; line-height: 1.5; color: var(--text-color, #333);">`;
     for (const [version, changes] of Object.entries(data)) {
         htmlContent += `
-            <div style="margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 10px;">
-                <h3 style="margin: 0 0 8px 0; color: var(--accent-color, #2a9d8f);">Versione ${version}</h3>
+            <div style="margin-bottom: 20px; border-bottom: 1px solid var(--border-color, rgba(0,0,0,0.1)); padding-bottom: 10px;">
+                <h3 style="margin: 0 0 8px 0; color: var(--link-color, #2563eb);">Versione ${escape(version)}</h3>
                 <ul style="padding-left: 20px; margin: 0;">
-                    ${changes.map(item => `<li style="margin-bottom: 4px;">${item}</li>`).join('')}
+                    ${changes.map(item => `<li style="margin-bottom: 4px;">${formattaVoce(item)}</li>`).join('')}
                 </ul>
             </div>`;
     }

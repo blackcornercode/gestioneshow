@@ -48,7 +48,7 @@ async function apriModalModella(nomeModella) {
             </div>
             <div class="modella-stats-summary">
                 ${statBox(t('table.total_shows'), totaleShow)}
-                ${statBox(t('table.total_duration'), formattaTempo(tempoTotale))}
+                ${statBox(t('table.total_duration'), formattaDurata(tempoTotale))}
                 ${statBox(t('table.total_spent'), `€ ${spesaTotale.toFixed(2)}`)}
                 ${statBox(t('table.avg_cost_per_minute'), formattaCostoAlMinuto(costoMedioMinuto), ` title="${escapeHtml(t('table.cost_per_minute_hint'))}"`)}
                 ${statBox(t('table.avg_rating'), `<span class="voto-medio">${mediaVoti !== 'N/D' ? mediaVoti + ' / 5' : 'N/D'}</span>`)}
@@ -63,18 +63,15 @@ async function apriModalModella(nomeModella) {
         const tr = document.createElement('tr');
         const piattaformaTxt = getPiattaformaFormatted(item);
         
-        let votoTxt = '-';
-        if (!item.isRegalo) {
-            votoTxt = (item.punteggio === 'TBD' || !item.punteggio) ? '<span class="badge-tbd">TBD</span>' : `${item.punteggio} / 5`;
-        }
+        const votoTxt = formattaVoto(item);
 
-        const durataSingola = formattaTempo(item.durata || item.tempoShow || 0);
+        const durataSingola = formattaDurata(item.durata || item.tempoShow);
 
         tr.innerHTML = `
             <td class="col-nowrap">${escapeHtml(item.dataFormattata || item.data)}</td>
             <td>${piattaformaTxt}</td>
             <td class="col-nowrap col-centro" style="font-weight: bold;">${durataSingola}</td>
-            <td class="col-nowrap">${formattaEuro(item.costo)}</td>
+            <td class="col-nowrap${item.isRegalo ? ' testo-attenuato' : ''}">${formattaEuro(item.costo)}</td>
             <td class="col-nowrap col-centro">${formattaCostoAlMinuto(costoAlMinuto(item))}</td>
             <td class="col-nowrap">${votoTxt}</td>
             <td class="col-centro">${item.recensione ? '✅' : '❌'}</td>
