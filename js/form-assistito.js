@@ -1,4 +1,4 @@
-import { chiaveModella, schedaRapidaModella } from './calcoli.js';
+import { chiaveModella, schedaRapidaModella, prezzoSuggerito } from './calcoli.js';
 import { t } from './i18n.js';
 import { suggerisciSitoForm, sitoSceltoForm } from './gestione-siti.js';
 import { badgeSospesa } from './profili-sospesi.js';
@@ -100,6 +100,24 @@ export function aggiornaAnteprimaCostoMinuto() {
         : `<strong>${formattaCostoAlMinuto(valore)}</strong>` +
           (riferimento ? ` <span class="anteprima-media">${escapeHtml(t('form.per_min_avg').replace('{media}', euro(riferimento)))}</span>` : '');
     aggiornaEquivalenteEuro();
+    aggiornaPrezzoAtteso();
+}
+
+// Prezzo atteso per la durata scelta, prima ancora di scrivere il costo: con il €/min
+// suggerito della modella sul sito del form (preventivo) e con la media generale
+export function aggiornaPrezzoAtteso() {
+    const box = el('prezzoAttesoForm');
+    if (!box) return;
+    const nome = el('nome')?.value.trim() || '';
+    const minuti = parseInt(el('durataShow')?.value, 10) || 0;
+    const media = stato.costoMinutoRiferimento;
+    const suggerito = nome && minuti > 0 ? prezzoSuggerito(stato.tuttiGliShow, nome, { sito: sitoSceltoForm() }) : null;
+    box.hidden = !nome || !(minuti > 0) || Boolean(el('isRegalo')?.checked) || (!suggerito && !media);
+    if (box.hidden) return;
+    const tua = media ? euro(media * minuti) : '–';
+    box.textContent = suggerito
+        ? t('quote.form_expected').replace('{min}', minuti).replace('{sua}', euro(suggerito.costoMinuto * minuti)).replace('{tua}', tua)
+        : t('quote.form_expected_general').replace('{min}', minuti).replace('{tua}', tua);
 }
 
 /* --- Mini-scheda della modella --- */
@@ -118,6 +136,7 @@ export function aggiornaMiniScheda() {
     impostaTagSuggeriti(schedaCorrente?.tagFrequenti || []);
     // Per uno show nuovo il sito diventa quello dell'ultimo show con lei (se non scelto a mano)
     if (!inModifica) suggerisciSitoForm(schedaCorrente?.sitoUltimo);
+    aggiornaPrezzoAtteso();
     const notaTag = el('notaTagSuggeriti');
     if (notaTag) notaTag.hidden = !schedaCorrente?.tagFrequenti.length;
 
@@ -272,6 +291,8 @@ export function nascondiNuovoTag() {
 
 export function inizializzaConvertitoreValuta() {
     document.addEventListener('sito-form-cambiato', aggiornaConvertitoreValuta);
+    // Il €/min suggerito dipende dal sito (preventivo)
+    document.addEventListener('sito-form-cambiato', aggiornaPrezzoAtteso);
 }
 
 export function sincronizzaFormAssistito() {

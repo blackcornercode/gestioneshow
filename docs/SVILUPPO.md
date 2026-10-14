@@ -15,7 +15,7 @@ Architettura, struttura del codice, test e build. Le regole per chi modifica il 
 | `main/ipc-privacy.js`, `main/privacy.js` | Privacy: nome e icona neutri della finestra, PIN di sblocco (verificato solo nel processo principale), riduzione a icona rapida. |
 | `main/ipc-connettori.js` | Canali generici dei connettori: l'interfaccia indica il sito e la funzione (transazioni, copia diagnostica, modelle online, stato del profilo, foto, raggiungibilità). |
 | `main/connettori/index.js` | Registro dei connettori e delle funzioni che ciascuno offre. Per un nuovo sito: `main/connettori/<id>/index.js` che esporta `{ id, capacita }`. |
-| `main/connettori/mcg/` | Connettore di Mondo Cam Girls: `index.js` (lettura delle transazioni con login, modelle online, profili sospesi o rimossi, foto, ping), `indirizzi.js` (URL dei profili e pagina sospesa, funzioni pure), `pagine.js` (lettura pagina per pagina della cronologia transazioni). |
+| `main/connettori/mcg/` | Connettore di Mondo Cam Girls: `index.js` (lettura delle transazioni con login, modelle online, profili sospesi o rimossi, foto, ping, credito residuo dell'area clienti), `indirizzi.js` (URL dei profili, pagina sospesa e credito disponibile, funzioni pure), `pagine.js` (lettura pagina per pagina della cronologia transazioni). |
 | `main/canali.js` | Nomi dei canali IPC tra interfaccia e processo principale. |
 | `main/log.js`, `main/rete.js`, `main/file.js`, `main/percorsi.js` | Supporto: log, download di pagine e ping con timeout (comuni ai connettori), scrittura atomica dei file e lettura del testo dei CSV (UTF-8 o Windows-1252), percorsi dei dati. |
 | `tests/` | Test automatici (`npm test`), esclusi dalla build. |
@@ -43,7 +43,8 @@ I file di `js/` sono **moduli ES** (`import`/`export`): `index.html` carica solo
 | `calcoli.js` | Calcoli puri sugli show, senza accesso alla pagina: classifica, totali di una modella, statistiche per anno, budget, filtri e pagine della cronologia, modifica di più show insieme, mappe di foto e profili. Verificati dai test. |
 | `righe-show.js` | Disegnatore unico delle righe degli show: ogni colonna (intestazione e cella) è definita una volta; cronologia, dettaglio del mese e scheda modella sono elenchi di colonne. |
 | `archivio.js` | Archivio in memoria: letto da disco solo all'avvio e dopo un'importazione; aggiunte, modifiche ed eliminazioni (anche di più show insieme) salvano su disco e ridisegnano le viste senza rileggere il file. |
-| `preferenze.js` | Schede, tema, dimensione font, budget, versione. |
+| `preferenze.js` | Schede, tema, dimensione font, note per intero (classe `note-complete` sul body), budget, versione. |
+| `filtri-salvati.js` | Ordine e filtri delle tabelle ricordati alla riapertura (localStorage); la ricerca per nome resta esclusa. |
 | `galleria.js` | Lightbox e navigazione foto. |
 | `form-show.js` | Form di inserimento/modifica, autocompilazione, eliminazione. |
 | `dati.js` | Esportazione e importazione dei backup, apertura della cartella dati. |
@@ -57,6 +58,7 @@ I file di `js/` sono **moduli ES** (`import`/`export`): `index.html` carica solo
 | `grafico-spesa.js` | Grafico a barre della spesa (per mese o per anno), disegnato in SVG senza librerie esterne. |
 | `statistiche.js` | Statistiche mensili e indicatori budget. |
 | `classifica.js` | Classifica modelle. |
+| `preventivo.js` | Scheda Preventivo (prezzo atteso, confronto del prezzo chiesto con la media della modella e con quella generale), tabella dei prezzi suggeriti e riquadro nella scheda della modella; i calcoli (`prezzoSuggerito`, `valutaPrezzo`, `prezziSuggeriti`) sono in `calcoli.js`. |
 | `modale-modella.js` | Scheda dettaglio modella: profili e totali per sito, foto dal sito che le offre. |
 | `unisci-modelle.js` | Unisci / separa modelle dalla scheda (rinomina degli show con `rinominaModella` di `calcoli.js`, che salva il nome di acquisto in `nomeOriginale`). |
 | `connettori.js` | Funzioni dei connettori ricevute dal processo principale (`caricaConnettori`) e `funzioneDisponibile(sito, funzione)`, da controllare prima di contattare un sito; profilo di una modella su un sito (`urlProfiloSulSito`, `urlModelleDelSito`). |
@@ -64,6 +66,7 @@ I file di `js/` sono **moduli ES** (`import`/`export`): `index.html` carica solo
 | `sincronizzazione.js` | Importazione transazioni da Mondo Cam Girls. |
 | `changelog.js` | Modale novità. |
 | `stato-mcg.js` | Indicatore di raggiungibilità di Mondo Cam Girls. |
+| `credito-mcg.js` | Credito residuo su Mondo Cam Girls nell'intestazione: letto a ogni sincronizzazione e in background con il login salvato (funzione `credito` del connettore), ultimo valore in localStorage. |
 | `profili-sospesi.js` | Profili sospesi o rimossi su Mondo Cam Girls: verifica in background e badge in classifica e nella scheda. |
 | `stato-online.js` | Modelle online su Mondo Cam Girls: badge e filtro in classifica e nella scheda. |
 | `privacy.js` | Sfocatura delle foto, schermata di blocco con PIN, blocco per inattività, tasto rapido personalizzabile per nascondere l'app, opzioni di privacy del menu Impostazioni. |

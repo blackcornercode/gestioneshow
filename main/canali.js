@@ -30,6 +30,7 @@ module.exports = Object.freeze({
     STATO_PROFILO: 'connector-profile-status',
     FOTO_MODELLA: 'connector-model-photos',
     PING_SITO: 'connector-ping',
+    CREDITO_SITO: 'connector-credit',
 
     // Privacy (ipc-privacy.js)
     LEGGI_PREFERENZE: 'read-preferences',

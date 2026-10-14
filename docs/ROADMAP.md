@@ -46,7 +46,7 @@ Prima della Fase 3 il codice che comunicava con MCG era concentrato in pochi mod
 
 ## ✅ Fase 3: architettura a connettori
 
-- [x] Un modulo per ogni sito con le funzioni che offre (`transazioni`, `copia`, `online`, `profilo`, `foto`, `ping`), registrato in `main/connettori/index.js`; l'interfaccia riceve l'elenco all'avvio (`stato.connettori`).
+- [x] Un modulo per ogni sito con le funzioni che offre (`transazioni`, `copia`, `online`, `profilo`, `foto`, `ping`, `credito`), registrato in `main/connettori/index.js`; l'interfaccia riceve l'elenco all'avvio (`stato.connettori`).
 - [x] Codice MCG spostato in `main/connettori/mcg/` (`index.js`, `indirizzi.js`, `pagine.js`) e `js/connettore-mcg.js` senza cambiarne il comportamento, verificato nell'app su una copia dei dati reali. Il file dell'interfaccia sta direttamente in `js/` (non in `js/connettori/`) perché il controllo dei moduli (`tests/moduli.test.js`) esamina solo quella cartella; la lettura delle pagine delle transazioni MCG resta in `js/sincronizzazione.js`. `main/rete.js` contiene solo funzioni comuni (download, ping).
 - [x] Canali IPC generici con l'ID del sito come primo argomento (`main/ipc-connettori.js`): un sito senza connettore o senza quella funzione riceve `{ success: false }`.
 - [x] Badge Online/Sospesa, galleria e indicatore di raggiungibilità solo se il sito è in uso e il suo connettore offre la funzione (`funzioneDisponibile()` di `js/connettori.js`); la galleria compare per il primo sito della modella che offre le foto.

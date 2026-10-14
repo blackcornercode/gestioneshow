@@ -37,8 +37,16 @@ setImmediate(() => {
                 const tema = (nome) => js(`(() => { const s = document.getElementById('selectTema'); s.value = '${nome}'; s.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`);
                 const scheda = (id) => js(`document.querySelector('[data-tab="${id}"]').click(); window.scrollTo(0, 0); true`);
                 await js(`document.getElementById('confirmChangelogBtn')?.click(); true`);
-                // Lascia il tempo alla verifica di raggiungibilità di MCG e alla chiusura del popup
+                // Lascia il tempo alla verifica di raggiungibilità di MCG, alla lettura del credito e alla chiusura del popup
                 await pausa(2500);
+                // Inglese anche se il primo caricamento ha salvato la lingua di sistema dopo
+                // l'impostazione qui sopra; credito dimostrativo (nessun login MCG nei dati inventati)
+                await js(`(async () => {
+                    const s = document.getElementById('selectLingua');
+                    if (s.value !== 'en') { s.value = 'en'; s.dispatchEvent(new Event('change', { bubbles: true })); }
+                    await new Promise(r => setTimeout(r, 800));
+                    (await import('./js/credito-mcg.js')).registraCredito({ success: true, credito: 42.5 });
+                    return true; })()`);
 
                 // 1. Cronologia (tema Neve & Nebbia)
                 await tema('grey');

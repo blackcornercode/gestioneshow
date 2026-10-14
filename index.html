@@ -36,6 +36,8 @@
                     <span class="status-dot yellow" id="mcgStatusDot"></span>
                     <span class="status-text" id="mcgStatusText">MCG: Verifica...</span>
                 </div>
+                <!-- Credito residuo su Mondo Cam Girls (js/credito-mcg.js): clic = nuova lettura -->
+                <button type="button" class="credito-mcg solo-mcg" id="creditoMcg" data-azione="aggiorna-credito" hidden>💳 <span id="creditoMcgValore">–</span></button>
 
                 <!-- MENU DATI: importazione da Mondo Cam Girls, backup e cartella -->
                 <div class="menu-header" id="menuDati">
@@ -81,16 +83,12 @@
                 <!-- MENU IMPOSTAZIONI: testo, lingua, tema -->
                 <div class="menu-header" id="menuImpostazioni">
                     <button type="button" class="btn-data menu-header-toggle" aria-haspopup="true" aria-expanded="false" data-i18n="menu.settings">⚙️ Impostazioni ▾</button>
-                    <div class="menu-header-pannello">
-                        <div class="font-size-control">
-                            <span class="font-size-label" data-i18n="controls.font">Testo:</span>
-                            <span>
-                                <button type="button" class="btn-font" data-azione="riduci-testo">A-</button>
-                                <span id="fontBadge" class="font-size-badge">18px</span>
-                                <button type="button" class="btn-font" data-azione="aumenta-testo">A+</button>
-                            </span>
-                        </div>
-
+                    <!-- Impostazioni in sezioni su due colonne: a sinistra aspetto, tabelle, siti
+                         e tag; a destra la privacy. Ogni scelta si salva da sola -->
+                    <div class="menu-header-pannello pannello-impostazioni">
+                      <div class="colonna-impostazioni">
+                       <section class="sezione-impostazioni" aria-labelledby="titoloImpAspetto">
+                        <h3 id="titoloImpAspetto" class="titolo-impostazioni" data-i18n="settings.appearance">🎨 Aspetto</h3>
                         <div class="lang-selector">
                             <label for="selectLingua" data-i18n="controls.language">Lingua:</label>
                             <select id="selectLingua" data-al-cambio="cambia-lingua">
@@ -115,12 +113,37 @@
                             </select>
                         </div>
 
-                        <button type="button" class="btn-data" data-azione="apri-gestione-tag" data-i18n="tags.manage">🏷️ Gestisci tag</button>
-                        <button type="button" class="btn-data" data-azione="apri-gestione-siti" data-i18n="sites.manage">🌐 Gestisci siti</button>
+                        <div class="font-size-control">
+                            <span class="font-size-label" data-i18n="controls.font">Testo:</span>
+                            <span>
+                                <button type="button" class="btn-font" data-azione="riduci-testo">A-</button>
+                                <span id="fontBadge" class="font-size-badge">18px</span>
+                                <button type="button" class="btn-font" data-azione="aumenta-testo">A+</button>
+                            </span>
+                        </div>
+                       </section>
 
+                       <!-- Tabelle degli show (js/preferenze.js, classe note-complete in style.css) -->
+                       <section class="sezione-impostazioni" aria-labelledby="titoloImpTabelle">
+                        <h3 id="titoloImpTabelle" class="titolo-impostazioni" data-i18n="settings.tables">📋 Tabelle</h3>
+                        <label class="checkbox-label" for="opzNoteComplete">
+                            <input type="checkbox" id="opzNoteComplete" data-al-cambio="cambia-note-complete">
+                            <span data-i18n="settings.notes_full">Mostra le note per intero</span>
+                        </label>
+                        <small class="nota-impostazione" data-i18n="settings.notes_full_hint">Note e tag completi in cronologia, dettaglio del mese e scheda modella, senza dover cliccare.</small>
+                       </section>
+
+                       <section class="sezione-impostazioni" aria-labelledby="titoloImpSiti">
+                        <h3 id="titoloImpSiti" class="titolo-impostazioni" data-i18n="settings.sites_tags">🗂️ Siti e tag</h3>
+                        <button type="button" class="btn-data" data-azione="apri-gestione-siti" data-i18n="sites.manage">🌐 Gestisci siti</button>
+                        <button type="button" class="btn-data" data-azione="apri-gestione-tag" data-i18n="tags.manage">🏷️ Gestisci tag</button>
+                       </section>
+                      </div>
+
+                      <div class="colonna-impostazioni">
                         <!-- Privacy (js/privacy.js, main/ipc-privacy.js) -->
-                        <div class="impostazioni-privacy">
-                            <span class="titolo-sezione-menu" data-i18n="privacy.section">🔒 Privacy</span>
+                        <section class="sezione-impostazioni impostazioni-privacy" aria-labelledby="titoloImpPrivacy">
+                            <h3 id="titoloImpPrivacy" class="titolo-impostazioni" data-i18n="privacy.section">🔒 Privacy</h3>
                             <label class="checkbox-label" for="opzSfocatura">
                                 <input type="checkbox" id="opzSfocatura" data-al-cambio="cambia-sfocatura">
                                 <span data-i18n="privacy.blur">Sfoca le foto</span>
@@ -151,7 +174,10 @@
                                 <button type="button" id="btnTastoRapidoPredefinito" class="btn-data" data-azione="ripristina-tasto-rapido" title="Ctrl+Shift+H" aria-label="Ripristina" hidden>↺</button>
                             </div>
                             <small id="avvisoTastoRapido" class="avviso-tasto-rapido" role="alert"></small>
-                        </div>
+                        </section>
+                      </div>
+
+                      <p class="piede-impostazioni" data-i18n="settings.autosave">💾 Le impostazioni si salvano da sole e restano alla riapertura dell'app, come l'ordine e i filtri delle tabelle.</p>
                     </div>
                 </div>
             </div>
@@ -160,6 +186,7 @@
         <nav class="tabs-nav">
             <button type="button" class="tab-btn active" data-azione="apri-tab" data-tab="tabDashboard" data-i18n="tabs.dashboard">📹 Show & Cronologia</button>
             <button type="button" class="tab-btn" data-azione="apri-tab" data-tab="tabClassifica" data-i18n="tabs.ranking">🏆 Classifica Modelle</button>
+            <button type="button" class="tab-btn" data-azione="apri-tab" data-tab="tabPreventivo" data-i18n="tabs.quote">💶 Preventivo</button>
             <button type="button" class="tab-btn" data-azione="apri-tab" data-tab="tabStatistiche" style="display: inline-flex; align-items: center; gap: 8px;">
                 <span data-i18n="tabs.stats">📈 Statistiche Mensili</span>
                 <span id="navBudgetBadge" class="nav-badge" style="display: none;"></span>
@@ -258,6 +285,8 @@
             <div class="form-group solo-show">
                 <span class="etichetta-campo" data-i18n="form.cost_per_minute_label">Costo al minuto</span>
                 <div id="anteprimaCostoMinuto" class="anteprima-costo-minuto" aria-live="polite"></div>
+                <!-- Prezzo atteso per la durata scelta (preventivo: form-assistito.js) -->
+                <small id="prezzoAttesoForm" class="prezzo-atteso-form" hidden></small>
             </div>
         </div>
     </section>
@@ -531,7 +560,67 @@
             </section>
         </div>
 
-        <!-- TAB 3: STATISTICHE MENSILI -->
+        <!-- TAB 3: PREVENTIVO (js/preventivo.js): prezzo atteso di uno show prima di
+             comprarlo e prezzi suggeriti per modella (calcoli in calcoli.js) -->
+        <div id="tabPreventivo" class="tab-content">
+            <section class="card-section">
+                <h2 data-i18n="quote.title">💶 Preventivo</h2>
+                <p class="nota-preventivo" data-i18n="quote.intro">Quanto dovrebbe costare uno show prima di comprarlo, in base ai tuoi show precedenti con la modella e alla tua media su tutti gli show.</p>
+                <div class="griglia-preventivo">
+                    <div class="campi-preventivo">
+                        <div class="form-group campo-pieno">
+                            <label for="prevModella" data-i18n="quote.model">Modella</label>
+                            <input type="text" id="prevModella" list="listaModelleSuggerite" autocomplete="off" placeholder="Es. Anna" data-i18n-ph="form.ph_name" data-al-input="prev-modella">
+                        </div>
+                        <div class="form-group campo-pieno">
+                            <label for="prevMinutiAltro" data-i18n="quote.duration">Durata (minuti)</label>
+                            <div class="durata-rapida" role="group">
+                                <button type="button" class="btn-data" data-azione="prev-durata" data-minuti="10">10</button>
+                                <button type="button" class="btn-data" data-azione="prev-durata" data-minuti="15">15</button>
+                                <button type="button" class="btn-data" data-azione="prev-durata" data-minuti="20">20</button>
+                                <button type="button" class="btn-data" data-azione="prev-durata" data-minuti="30">30</button>
+                                <button type="button" class="btn-data" data-azione="prev-durata" data-minuti="45">45</button>
+                                <button type="button" class="btn-data" data-azione="prev-durata" data-minuti="60">60</button>
+                                <!-- Durata libera (vuota se è scelto un valore rapido); il valore usato è prevMinuti -->
+                                <input type="number" id="prevMinutiAltro" min="1" placeholder="altro…" data-i18n-ph="form.ph_other_minutes" aria-label="Durata (minuti)" data-al-input="prev-durata-libera">
+                                <input type="hidden" id="prevMinuti" value="30">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="prevPrezzo" id="etichettaPrevPrezzo" data-i18n="quote.price">Prezzo chiesto (facoltativo)</label>
+                            <input type="number" id="prevPrezzo" min="0" step="any" data-al-input="prev-aggiorna">
+                            <small id="prevEquivalente" class="nota-preventivo"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="prevSito" data-i18n="quote.site">Sito</label>
+                            <select id="prevSito" data-al-cambio="prev-aggiorna"></select>
+                        </div>
+                    </div>
+                    <div id="esitoPreventivo" class="esito-preventivo" aria-live="polite"></div>
+                </div>
+            </section>
+
+            <section class="card-section">
+                <h2 data-i18n="quote.table_title">📋 Prezzi suggeriti per modella</h2>
+                <p class="nota-preventivo" data-i18n="quote.table_hint">Prezzo suggerito = €/min medio degli ultimi 5 show con durata (regali e rimborsi esclusi). Clic su un'intestazione per ordinare (es. dal più costoso), su una riga per usarla nel preventivo, su 👤 per aprire la scheda della modella.</p>
+                <!-- Stato online da Mondo Cam Girls (stato-online.js): come il filtro della classifica -->
+                <div class="filtri-preventivo solo-mcg">
+                    <label class="checkbox-label" for="filtroSoloOnlinePreventivo">
+                        <input type="checkbox" id="filtroSoloOnlinePreventivo" data-al-cambio="prev-filtra">
+                        <span data-i18n="ranking.only_online">Solo online</span>
+                    </label>
+                </div>
+                <div class="table-container">
+                    <table class="tabella-preventivo">
+                        <!-- Intestazioni cliccabili per ordinare (preventivo.js) -->
+                        <thead id="intestazionePrezzi"></thead>
+                        <tbody id="listaPrezziSuggeriti"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- TAB 4: STATISTICHE MENSILI -->
         <div id="tabStatistiche" class="tab-content">
             <section id="sectionObiettivoBudget" class="card-section">
                 <!-- Chiuso, si apre con un clic sul titolo (details/summary). Il badge accanto

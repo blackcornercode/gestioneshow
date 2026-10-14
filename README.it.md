@@ -20,6 +20,7 @@
 ## ✨ Funzioni
 
 - 📝 **Registro degli show assistito**: mini-scheda della modella con i suoi dati, *ripeti ultimo show*, durate rapide, **€/min** calcolato mentre scrivi e confrontato con la tua media, voti colorati.
+- 💶 **Preventivo prima di comprare**: un €/min suggerito per ogni modella (dai suoi ultimi 5 show, per sito), il prezzo atteso per qualsiasi durata e il confronto del prezzo chiesto con la sua media e con la tua media generale.
 - 🏆 **Classifica delle modelle**: media voti, numero di show, tempo e spesa totali, €/min medio, e una scheda dettagliata per ogni modella.
 - 🏷️ **Tag personalizzabili**: tag colorati per il tipo di show, filtri, modifica in blocco e riepilogo dei «tipi di show» di ogni modella.
 - 🌐 **Qualsiasi sito di cam**: ogni show ricorda il sito su cui l'hai acquistato (Mondo Cam Girls, Chaturbate, Stripchat… o uno tuo), con badge colorati, filtri, classifica per sito e grafico della spesa per sito.

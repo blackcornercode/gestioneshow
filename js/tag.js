@@ -1,6 +1,7 @@
 import { salvaCatalogoTag, eliminaTagDalCatalogo } from './archivio.js';
 import { conteggioTag } from './calcoli.js';
 import { t } from './i18n.js';
+import { filtroSalvato } from './filtri-salvati.js';
 import { logger } from './logger.js';
 import { stato } from './stato.js';
 import { escapeHtml } from './utils.js';
@@ -156,7 +157,9 @@ export function alternaTagModificaMultipla(el) {
 export function aggiornaFiltroTag() {
     const select = document.getElementById('filtroTagCronologia');
     if (!select) return;
-    const scelto = tagDaId(select.value) ? select.value : '';
+    // Al primo disegno il select è vuoto: vale il filtro salvato (filtri-salvati.js)
+    const candidato = select.value || filtroSalvato('filtroTagCronologia');
+    const scelto = tagDaId(candidato) ? candidato : '';
     select.innerHTML = `<option value="">${escapeHtml(t('tags.all'))}</option>` +
         stato.catalogoTag.map(tag => `<option value="${escapeHtml(tag.id)}">${escapeHtml(tag.nome)}</option>`).join('');
     select.value = scelto;

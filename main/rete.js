@@ -6,7 +6,9 @@ const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 
 // Scarica una pagina e ne restituisce il testo, o '' in caso di errore,
 // risposta non 2xx o timeout
-function downloadHtmlPage(targetUrl, timeoutMs = 15000) {
+// conCookie: invia i cookie della sessione dell'app, cioè il login fatto nella
+// finestra di sincronizzazione (pagine riservate come l'area clienti)
+function downloadHtmlPage(targetUrl, timeoutMs = 15000, { conCookie = false } = {}) {
     return new Promise((resolve) => {
         let concluso = false;
         const fine = (valore) => {
@@ -19,6 +21,7 @@ function downloadHtmlPage(targetUrl, timeoutMs = 15000) {
         const request = net.request({
             method: 'GET',
             url: targetUrl,
+            useSessionCookies: conCookie,
             headers: {
                 'User-Agent': USER_AGENT,
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'

@@ -32,4 +32,20 @@ function profiloSospeso(html) {
     return /class="[^"]*\bmp-top__/.test(html) ? false : null;
 }
 
-module.exports = { DOMINIO_MCG, urlMcgValido, slugProfiloMcg, profiloSospeso };
+// Credito dell'area clienti (https://www.mondocamgirls.com/it/areacliente.html), che
+// mostra "Credito disponibile: 16.51 €". Restituisce il numero in euro, oppure null
+// se la pagina non lo contiene (login non fatto o struttura cambiata).
+function creditoDisponibile(html) {
+    const testo = String(html || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;|&#160;/g, ' ').replace(/&euro;/g, '€');
+    const m = /credito\s+disponibile\s*:?\s*(?:€\s*)?(-?[\d.,]+)/i.exec(testo);
+    if (!m) return null;
+    // "1.234,56" all'italiana oppure "16.51" con il punto decimale (come nelle transazioni)
+    const numero = m[1].includes(',') ? m[1].replace(/\./g, '').replace(',', '.') : m[1];
+    const valore = parseFloat(numero);
+    return Number.isFinite(valore) ? valore : null;
+}
+
+// La pagina chiede di accedere (modulo con la password)
+const richiedeLogin = (html) => /<input[^>]+type\s*=\s*["']?password/i.test(String(html || ''));
+
+module.exports = { DOMINIO_MCG, urlMcgValido, slugProfiloMcg, profiloSospeso, creditoDisponibile, richiedeLogin };

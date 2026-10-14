@@ -380,3 +380,70 @@ test('unisci / separa modelle: rinomina con il nome originale ricordato', () => 
     assert.equal(ritorno.shows[2].nomeOriginale, undefined, 'tornata al nome originale: il campo sparisce');
     assert.equal(f.rinominaModella(shows, 'Anna', '').modificati, 0);
 });
+
+test('preventivo: prezzo suggerito dagli ultimi 5 show, per sito se ce ne sono almeno 2', () => {
+    // Anna: 7 show con durata (dal più vecchio 1 €/min al più recente 7 €/min), un regalo, uno senza durata
+    const anna = [1, 2, 3, 4, 5, 6, 7].map(i => ({
+        id: i, nome: 'Anna', durata: 10, costo: i * 10, sito: i === 7 ? 'stripchat' : 'mcg',
+        dataOraISO: new Date(2026, 0, i).toISOString()
+    }));
+    const altri = [
+        { id: 20, nome: 'anna', isRegalo: true, costo: 50, durata: 0, sito: 'mcg', dataOraISO: new Date(2026, 1, 1).toISOString() },
+        { id: 21, nome: 'Anna', costo: 99, durata: 0, sito: 'mcg', dataOraISO: new Date(2026, 1, 2).toISOString() },
+        { id: 22, nome: 'Bea', costo: 30, durata: 10, sito: 'mcg', dataOraISO: new Date(2026, 0, 3).toISOString() }
+    ];
+    const shows = [...anna, ...altri];
+
+    const tutti = f.prezzoSuggerito(shows, 'ANNA');
+    assert.equal(tutti.showConDurata, 7);
+    assert.equal(tutti.showUsati, 5);
+    assert.equal(tutti.costoMinuto, 5, 'ultimi 5: 3..7 €/min, media 5');
+    assert.equal(tutti.mediaTutti, 4);
+    assert.equal(tutti.tendenza, 'su');
+    assert.equal(tutti.sito, '');
+
+    const mcg = f.prezzoSuggerito(shows, 'Anna', { sito: 'mcg' });
+    assert.equal(mcg.sito, 'mcg');
+    assert.equal(mcg.costoMinuto, 4, 'su MCG gli ultimi 5 sono 2..6 €/min');
+    const sc = f.prezzoSuggerito(shows, 'Anna', { sito: 'stripchat' });
+    assert.equal(sc.sito, '', 'un solo show su Stripchat: si usano tutti i siti');
+    assert.equal(sc.costoMinuto, 5);
+
+    assert.equal(f.prezzoSuggerito(shows, 'Nessuna'), null);
+    assert.equal(f.ultimoShowConDurata(shows, 'Anna', 10).id, 7);
+    assert.equal(f.ultimoShowConDurata(shows, 'Anna', 10, { sito: 'mcg' }).id, 6);
+    assert.equal(f.ultimoShowConDurata(shows, 'Anna', 30), null);
+
+    const tabella = f.prezziSuggeriti(shows);
+    assert.deepEqual(tabella.map(v => [v.nome, v.showConDurata]), [['Anna', 7], ['Bea', 1]]);
+});
+
+test('preventivo: prezzo chiesto in linea entro ±10%, altrimenti caro o conveniente', () => {
+    assert.equal(f.valutaPrezzo(60, 30, 2).esito, 'in-linea');
+    assert.equal(f.valutaPrezzo(66, 30, 2).esito, 'in-linea', '+10% è ancora in linea');
+    const caro = f.valutaPrezzo(75, 30, 2);
+    assert.equal(caro.esito, 'caro');
+    assert.equal(Math.round(caro.scarto), 25);
+    assert.equal(caro.costoMinuto, 2.5);
+    assert.equal(f.valutaPrezzo(45, 30, 2).esito, 'conveniente');
+    assert.equal(f.valutaPrezzo(0, 30, 2), null);
+    assert.equal(f.valutaPrezzo(60, 0, 2), null);
+    assert.equal(f.valutaPrezzo(60, 30, null), null);
+});
+
+test('preventivo: tabella dei prezzi ordinabile per colonna', () => {
+    const voci = [
+        { nome: 'Bea', showConDurata: 3, mediaTutti: 2, costoMinuto: 2.5, tendenza: 'su' },
+        { nome: 'Anna', showConDurata: 7, mediaTutti: 3, costoMinuto: 1.5, tendenza: 'giu' },
+        { nome: 'Cleo', showConDurata: 3, mediaTutti: 1, costoMinuto: 2.5, tendenza: 'stabile' }
+    ];
+    const nomi = (elenco) => elenco.map(v => v.nome).join(',');
+    assert.equal(nomi(f.ordinaPrezziSuggeriti(voci, 'p30', 'desc')), 'Bea,Cleo,Anna', 'dal più costoso, a pari prezzo per nome');
+    assert.equal(nomi(f.ordinaPrezziSuggeriti(voci, 'suggerito', 'asc')), 'Anna,Bea,Cleo', 'dal meno costoso');
+    assert.equal(nomi(f.ordinaPrezziSuggeriti(voci, 'media', 'desc')), 'Anna,Bea,Cleo');
+    assert.equal(nomi(f.ordinaPrezziSuggeriti(voci, 'nome', 'asc')), 'Anna,Bea,Cleo');
+    assert.equal(nomi(f.ordinaPrezziSuggeriti(voci, 'show', 'desc')), 'Anna,Bea,Cleo');
+    assert.equal(nomi(f.ordinaPrezziSuggeriti(voci, 'tendenza', 'desc')), 'Bea,Cleo,Anna');
+    assert.equal(nomi(f.ordinaPrezziSuggeriti(voci, 'sconosciuta')), 'Bea,Anna,Cleo', 'colonna sconosciuta: ordine invariato');
+    assert.equal(nomi(voci), 'Bea,Anna,Cleo', "l'elenco ricevuto non cambia");
+});

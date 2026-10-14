@@ -1,4 +1,5 @@
 import { copiaArchivio, salvaArchivio } from './archivio.js';
+import { registraCredito } from './credito-mcg.js';
 import { t } from './i18n.js';
 import { logger } from './logger.js';
 import { slugProfiloMcg, urlProfiloPredefinito } from './connettore-mcg.js';
@@ -301,6 +302,9 @@ export async function sincronizzaTransazioniMondoCamGirls(opzioni = {}) {
             alert("ℹ️ Sincronizzazione annullata: la finestra di MondoCamGirls è stata chiusa prima di leggere le transazioni.");
             return;
         }
+
+        // Credito letto dall'area clienti subito dopo le transazioni (login appena fatto)
+        registraCredito(lettura.credito);
 
         const doc = unisciPagineMcg(lettura.pagine);
 

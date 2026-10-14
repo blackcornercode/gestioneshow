@@ -30,6 +30,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     statoProfilo: (sito, urlProfilo) => ipcRenderer.invoke('connector-profile-status', sito, urlProfilo),
     fotoModella: (sito, urlProfilo) => ipcRenderer.invoke('connector-model-photos', sito, urlProfilo),
     pingSito: (sito) => ipcRenderer.invoke('connector-ping', sito),
+    creditoSito: (sito) => ipcRenderer.invoke('connector-credit', sito),
 
     // Apertura Link Esterni
     openExternal: (url) => ipcRenderer.invoke('open-external', url),

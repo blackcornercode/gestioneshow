@@ -6,6 +6,7 @@ import { sitoDaId, siglaSito, sitoPredefinito, impostaSitoPredefinito, sitiVisib
 import { stato } from './stato.js';
 import { COLORI_TAG } from './tag.js';
 import { escapeHtml } from './utils.js';
+import { filtroSalvato } from './filtri-salvati.js';
 
 /* ==========================================================================
    SITI NELL'INTERFACCIA (roadmap multi-sito, fase 2)
@@ -102,7 +103,9 @@ const opzioniSiti = () => sitiVisibili([...conteggioPerSito(stato.tuttiGliShow).
 function riempiSelect(id, primaVoce) {
     const select = el(id);
     if (!select) return;
-    const scelto = sitoDaId(select.value) ? select.value : '';
+    // Al primo disegno il select è vuoto: vale il filtro salvato (filtri-salvati.js)
+    const candidato = select.value || filtroSalvato(id);
+    const scelto = sitoDaId(candidato) ? candidato : '';
     select.innerHTML = `<option value="">${escapeHtml(primaVoce)}</option>${opzioniSiti()}`;
     select.value = scelto;
 }

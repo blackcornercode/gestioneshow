@@ -19,6 +19,7 @@ function registra() {
     ipcMain.handle(canali.STATO_PROFILO, (event, sito, urlProfilo) => esegui(sito, 'profilo', urlProfilo));
     ipcMain.handle(canali.FOTO_MODELLA, (event, sito, urlProfilo) => esegui(sito, 'foto', urlProfilo));
     ipcMain.handle(canali.PING_SITO, (event, sito) => esegui(sito, 'ping'));
+    ipcMain.handle(canali.CREDITO_SITO, (event, sito) => esegui(sito, 'credito'));
 }
 
 module.exports = { registra, esegui };

@@ -9,8 +9,10 @@ import { inizializzaAzioni, registraAzioni } from './azioni.js';
 import { initChangelogCheck, inizializzaListenerChangelogMenu, apriModalChangelog, chiudiModalChangelog } from './changelog.js';
 import { caricaMedieEStoricizzazione, filtraClassificaModelle } from './classifica.js';
 import { caricaConnettori } from './connettori.js';
+import { inizializzaCredito, aggiornaCredito, aggiornaTestoCredito } from './credito-mcg.js';
 import { inizializzaFiltriCronologia, inizializzaFiltroAnni, caricaCronologia, cambiaPagina, resetFiltriCronologia, filtraCronologiaPerNome } from './cronologia.js';
 import { esportaDati, importaDati, apriCartellaDati } from './dati.js';
+import { inizializzaFiltriSalvati } from './filtri-salvati.js';
 import { impostaTipo, cliccaVoto, durataRapida, aggiornaAnteprimaCostoMinuto, aggiornaRiepilogoDettagli, sincronizzaFormAssistito, ultimoShowModella, convertiImportoValuta, inizializzaConvertitoreValuta, alternaCostoInEuro, mostraNuovoTag, durataLibera } from './form-assistito.js';
 import { inizializzaUrlProfiloForm, impostaDataOraAttuale, autocompilaDatiModella, aggiornaPulsanteForm, aggiornaDatalistModelle, toggleForm, annullaModifica, gestisciStatoRegalo, modificaShow, eliminaShow, ripetiUltimoShow, inizializzaScorciatoieForm, svuotaForm } from './form-show.js';
 import { apriModalImmagine, chiudiModalImmagine, navigaGalleria } from './galleria.js';
@@ -22,9 +24,10 @@ import { logger } from './logger.js';
 import { inizializzaMenuHeader } from './menu-header.js';
 import { apriModalModella, chiudiModalModella, aggiornaBadgeSchedaModella } from './modale-modella.js';
 import { verificaProfiliSospesi, inizializzaProfiliSospesi } from './profili-sospesi.js';
+import { ridisegnaPreventivo, aggiornaPreventivo, cambiaModellaPreventivo, durataPreventivo, durataLiberaPreventivo, usaNelPreventivo, aggiornaPreventivoScheda, apriPreventivoDaScheda, ordinaPrezzi, disegnaPrezziSuggeriti } from './preventivo.js';
 import { apriUnisciModella, chiudiUnisciModella, cambiaSitoSepara, aggiornaAnteprimaUnisci, confermaUnisciModella } from './unisci-modelle.js';
 import { inizializzaPrivacy, aggiornaTestiPrivacy, cambiaSfocatura, cambiaAspettoNeutro, cambiaBloccoMinuti, apriFinestraPin, chiudiFinestraPin, salvaPin, sblocca, registraTastoRapido, ripristinaTastoRapido } from './privacy.js';
-import { mostraVersioneApp, inizializzaTema, inizializzaFont, inizializzaGestioneBudget, apriTab, cambiaTema, aumentaFont, riduciFont } from './preferenze.js';
+import { mostraVersioneApp, inizializzaTema, inizializzaFont, inizializzaGestioneBudget, apriTab, cambiaTema, aumentaFont, riduciFont, inizializzaNoteComplete, cambiaNoteComplete } from './preferenze.js';
 import { selezionaShow, selezionaPagina, selezionaTuttiFiltrati, deselezionaTutti, eliminaSelezionati, apriModificaMultipla, applicaModificaMultipla, chiudiModificaMultipla } from './selezione.js';
 import { sincronizzaTransazioniMondoCamGirls, importaCronologiaCompletaMcg } from './sincronizzazione.js';
 import { stato } from './stato.js';
@@ -48,6 +51,7 @@ registraAzioni({
     'aumenta-testo': () => aumentaFont(),
     'cambia-lingua': (el) => cambiaLingua(el.value),
     'cambia-tema': (el) => cambiaTema(el.value),
+    'cambia-note-complete': (el) => cambiaNoteComplete(el),
     'apri-tab': (el) => apriTab(el.dataset.tab, el),
 
     // Form e cronologia
@@ -129,6 +133,17 @@ registraAzioni({
     'vista-grafico-spesa': (el) => { impostaVistaGraficoSpesa(el.dataset.vista); caricaStatisticheMensili(stato.tuttiGliShow); },
     'seleziona-mese': (el) => selezionaMeseDettaglio(el.dataset.mese === '' ? null : Number(el.dataset.mese)),
     'apri-scheda-modella': (el) => apriModalModella(el.dataset.nome),
+
+    // Preventivo (scheda Preventivo e riquadro nella scheda della modella)
+    'prev-modella': () => cambiaModellaPreventivo(),
+    'prev-aggiorna': () => aggiornaPreventivo(),
+    'prev-durata': (el) => durataPreventivo(el),
+    'prev-durata-libera': (el) => durataLiberaPreventivo(el),
+    'prev-usa-modella': (el) => { usaNelPreventivo(el.dataset.nome); window.scrollTo({ top: 0, behavior: 'smooth' }); },
+    'prev-ordina': (el) => ordinaPrezzi(el),
+    'prev-filtra': () => disegnaPrezziSuggeriti(),
+    'scheda-preventivo': (el) => aggiornaPreventivoScheda(el),
+    'apri-preventivo': (el, e) => { e.preventDefault(); apriPreventivoDaScheda(el); },
     'chiudi-scheda-modella': () => chiudiModalModella(),
     'apri-unisci-modella': (el) => apriUnisciModella(el),
     'chiudi-unisci-modella': () => chiudiUnisciModella(),
@@ -150,6 +165,7 @@ registraAzioni({
     // Foto, link e lightbox
     'ingrandisci-foto': (el) => apriModalImmagine(el.dataset.url),
     'apri-link': (el, e) => { e.preventDefault(); apriLinkEsterno(el.dataset.url); },
+    'aggiorna-credito': () => aggiornaCredito(),
     'copia-apri-teams': (el, e) => { e.preventDefault(); copiaEApriTeams(el.dataset.nick); },
     'chiudi-lightbox': () => chiudiModalImmagine(),
     'naviga-galleria': (el) => navigaGalleria(Number(el.dataset.direzione)),
@@ -178,6 +194,7 @@ function ridisegnaViste() {
     caricaCronologia(stato.tuttiGliShow);
     caricaStatisticheMensili(stato.tuttiGliShow);
     caricaMedieEStoricizzazione(stato.tuttiGliShow);
+    ridisegnaPreventivo();
     // Mantiene l'eventuale ricerca e il filtro "Solo online" della classifica
     filtraClassificaModelle();
     aggiornaIndicatoreBudgetHomepage(stato.tuttiGliShow);
@@ -192,11 +209,13 @@ alCambioArchivio(ridisegnaViste);
 document.addEventListener('modelle-online-aggiornate', () => {
     filtraClassificaModelle();
     aggiornaBadgeSchedaModella();
+    disegnaPrezziSuggeriti();
 });
 // Esito della verifica dei profili sospesi (profili-sospesi.js)
 document.addEventListener('profili-sospesi-aggiornati', () => {
     filtraClassificaModelle();
     aggiornaBadgeSchedaModella();
+    disegnaPrezziSuggeriti();
 });
 
 async function cambiaLingua(nuovaLingua) {
@@ -208,6 +227,7 @@ async function cambiaLingua(nuovaLingua) {
         // Ridisegna le viste generate da JS (dalla memoria, senza rileggere il disco)
         aggiornaViste();
         aggiornaTestoStatoMCG();
+        aggiornaTestoCredito();
         aggiornaPulsanteForm();
         aggiornaTestiPrivacy();
         sincronizzaFormAssistito();
@@ -304,6 +324,9 @@ async function avvia() {
     mostraVersioneApp();
     impostaDataOraAttuale();
     inizializzaFiltriCronologia();
+    // Ordine e filtri ricordati: prima del primo disegno di cronologia e classifica
+    inizializzaFiltriSalvati();
+    inizializzaNoteComplete();
     aggiornaInterfaccia();
     inizializzaTema();
     inizializzaFont();
@@ -323,6 +346,8 @@ async function avvia() {
     // Mostra automaticamente le novità al primo avvio dopo un aggiornamento
     initChangelogCheck();
     inizializzaIndicatoreMCG();
+    // Credito residuo su MCG: ultimo valore noto subito, poi lettura con il login salvato
+    inizializzaCredito();
     // Modelle online su MCG: subito, poi ogni 3 minuti
     inizializzaStatoOnline();
     // Profili sospesi su MCG: ricontrollo orario dei profili verificati da più di 12 ore

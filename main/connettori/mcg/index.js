@@ -7,12 +7,25 @@ const percorsi = require('../../percorsi');
 const { scriviFileAtomico } = require('../../file');
 const { logToFile } = require('../../log');
 const { downloadHtmlPage, ping, USER_AGENT } = require('../../rete');
-const { urlMcgValido, slugProfiloMcg, profiloSospeso } = require('./indirizzi');
+const { urlMcgValido, slugProfiloMcg, profiloSospeso, creditoDisponibile, richiedeLogin } = require('./indirizzi');
 const { leggiPaginaCorrente, leggiTutteLePagine } = require('./pagine');
 
 const SITO_MCG = 'mcg';   // ID del sito nel catalogo (main/catalogo-siti.js)
 
 const URL_TRANSAZIONI = 'https://www.mondocamgirls.com/it/areacliente_transazioni.html?pagina_vis=0';
+const URL_AREA_CLIENTE = 'https://www.mondocamgirls.com/it/areacliente.html';
+
+// Credito disponibile nell'area clienti: { success, credito, letto } oppure
+// { success: false, loginRichiesto, error }. Non apre finestre: usa i cookie del
+// login fatto nella finestra di sincronizzazione (stessa sessione dell'app).
+async function leggiCredito() {
+    const html = await downloadHtmlPage(URL_AREA_CLIENTE, 15000, { conCookie: true });
+    if (!html) return { success: false, loginRichiesto: false, error: 'pagina non scaricata' };
+    const credito = creditoDisponibile(html);
+    if (credito !== null) return { success: true, credito, letto: new Date().toISOString() };
+    const login = richiedeLogin(html);
+    return { success: false, loginRichiesto: login, error: login ? 'login richiesto' : 'credito non trovato nella pagina' };
+}
 
 // Modelle online su MCG. Si usa il servizio pubblico con cui il sito riempie la
 // griglia delle modelle (getdata.html, filtro online=si, senza login): restituisce
@@ -53,6 +66,15 @@ function leggiTransazioni(opzioni = {}) {
                 resolve(data);
             }
         };
+        // Transazioni lette: a login appena fatto si legge anche il credito. La finestra
+        // si chiude prima, così la sua chiusura non può più annullare la lettura
+        const concludi = async (data) => {
+            if (isResolved) return;
+            isResolved = true;
+            if (!win.isDestroyed()) win.close();
+            const credito = await leggiCredito().catch(err => ({ success: false, error: err.message }));
+            resolve({ ...data, credito });
+        };
 
         win.loadURL(urlTransazioni);
 
@@ -72,7 +94,7 @@ function leggiTransazioni(opzioni = {}) {
                 // Senza transazioni riconoscibili si restituisce comunque la pagina:
                 // l'interfaccia segnala che la struttura di MCG è cambiata
                 if (!tutteLePagine || prima.codici.length === 0) {
-                    safeResolve({ pagine: [prima.html], transazioni: prima.codici.length, completa: false, motivoFine: 'solo la prima pagina' });
+                    await concludi({ pagine: [prima.html], transazioni: prima.codici.length, completa: false, motivoFine: 'solo la prima pagina' });
                     return;
                 }
 
@@ -80,7 +102,7 @@ function leggiTransazioni(opzioni = {}) {
                     if (!win.isDestroyed()) win.setTitle(`MondoCamGirls - Lettura pagina ${pagina} (${lette} transazioni lette)…`);
                 });
                 await logToFile('INFO', 'Cronologia MCG letta', `${risultato.pagine.length} pagine, ${risultato.transazioni} transazioni, passo ${risultato.passo}: ${risultato.motivoFine}`);
-                safeResolve(risultato);
+                await concludi(risultato);
             } catch (err) {
                 console.error("Errore lettura HTML sincronizzazione:", err);
                 await logToFile('ERROR', 'Lettura pagine MCG non riuscita', err.message);
@@ -221,6 +243,8 @@ module.exports = {
         profilo: statoSospensioneProfilo,
         foto: fotoModella,
         // Raggiungibilità del sito (indicatore nell'header)
-        ping: () => ping('https://www.mondocamgirls.com')
+        ping: () => ping('https://www.mondocamgirls.com'),
+        // Credito disponibile nell'area clienti (serve il login già fatto)
+        credito: leggiCredito
     }
 };

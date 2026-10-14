@@ -20,7 +20,8 @@ export const FUNZIONI = Object.freeze({
     ONLINE: 'online',
     PROFILO: 'profilo',
     FOTO: 'foto',
-    PING: 'ping'
+    PING: 'ping',
+    CREDITO: 'credito'
 });
 
 // Da chiamare all'avvio, prima di indicatore, stato online e profili sospesi

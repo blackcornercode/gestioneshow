@@ -7,6 +7,7 @@
 //   profilo(url)          stato del profilo -> { success, sospeso, rimosso }
 //   foto(url)             foto pubbliche del profilo -> { success, images }
 //   ping()                raggiungibilità del sito -> { online, status?, error? }
+//   credito()             credito residuo sul sito (serve il login) -> { success, credito, letto } o { success: false, loginRichiesto }
 // L'interfaccia chiede l'elenco con le capacità (ipc-connettori.js) e mostra
 // badge, galleria e indicatori solo per i siti che le supportano.
 // Per aggiungere un sito: creare main/connettori/<id>/index.js e registrarlo qui.

@@ -42,6 +42,35 @@ export function inizializzaGestioneBudget() {
     }
 }
 
+/* ==========================================================================
+   NOTE PER INTERO
+   ==========================================================================
+   Con l'opzione attiva la classe "note-complete" sul body (style.css) mostra
+   note e tag completi in tutte le tabelle degli show, senza cliccare. */
+const CHIAVE_NOTE_COMPLETE = 'noteComplete';
+
+function applicaNoteComplete(attiva) {
+    document.body.classList.toggle('note-complete', attiva);
+    const casella = document.getElementById('opzNoteComplete');
+    if (casella) casella.checked = attiva;
+}
+
+export function inizializzaNoteComplete() {
+    let attiva = false;
+    try {
+        attiva = localStorage.getItem(CHIAVE_NOTE_COMPLETE) === '1';
+    } catch { /* localStorage non disponibile: note troncate */ }
+    applicaNoteComplete(attiva);
+}
+
+export function cambiaNoteComplete(casella) {
+    try {
+        localStorage.setItem(CHIAVE_NOTE_COMPLETE, casella.checked ? '1' : '0');
+    } catch { /* preferenza valida solo per questa sessione */ }
+    applicaNoteComplete(casella.checked);
+    logger.info(`Note per intero ${casella.checked ? 'attivate' : 'disattivate'}`);
+}
+
 export function inizializzaFont() {
     const fontSalvato = localStorage.getItem('appFontSize');
     if (fontSalvato) {

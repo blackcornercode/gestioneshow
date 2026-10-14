@@ -49,6 +49,18 @@ test('profilo sospeso riconosciuto dall\'avviso della pagina MCG', () => {
     assert.equal(profiloSospeso('<html>pagina di errore</html>'), null, 'pagina non riconosciuta');
 });
 
+test('credito disponibile letto dall\'area clienti MCG', () => {
+    const { creditoDisponibile, richiedeLogin } = require('../main/connettori/mcg/indirizzi');
+    assert.equal(creditoDisponibile('<p><b>Credito disponibile:</b> 16.51 €</p>'), 16.51);
+    assert.equal(creditoDisponibile('<div>Credito disponibile: 16.51&nbsp;&euro;</div>'), 16.51);
+    assert.equal(creditoDisponibile('Credito disponibile: 1.234,56 €'), 1234.56);
+    assert.equal(creditoDisponibile('Credito disponibile: 0.00 €'), 0);
+    assert.equal(creditoDisponibile('<h1>Area cliente</h1><input type="password" name="pwd">'), null, 'login non fatto');
+    assert.equal(creditoDisponibile(''), null);
+    assert.equal(richiedeLogin('<form><input type="password" name="pwd"></form>'), true);
+    assert.equal(richiedeLogin('<p>Credito disponibile: 16.51 €</p>'), false);
+});
+
 test('privacy: PIN di 4-8 cifre, verificato senza conservarlo in chiaro', () => {
     const p = require('../main/privacy');
     assert.ok(p.pinValido('1234') && p.pinValido('12345678'));
@@ -131,7 +143,7 @@ test('connettori: elenco con le capacità, siti senza connettore o senza la funz
     require.cache[require.resolve('electron')] = { exports: { app: { getPath: () => require('os').tmpdir() }, ipcMain: { handle() {} }, net: {}, BrowserWindow: class {} } };
     const { elencoConnettori, gestore } = require('../main/connettori');
     const { esegui } = require('../main/ipc-connettori');
-    assert.deepEqual(elencoConnettori(), [{ id: 'mcg', capacita: ['transazioni', 'copia', 'online', 'profilo', 'foto', 'ping'] }]);
+    assert.deepEqual(elencoConnettori(), [{ id: 'mcg', capacita: ['transazioni', 'copia', 'online', 'profilo', 'foto', 'ping', 'credito'] }]);
     assert.equal(typeof gestore('mcg', 'online'), 'function');
     assert.equal(gestore('stripchat', 'online'), null, 'sito senza connettore');
     assert.equal(gestore('mcg', 'toString'), null, 'solo le capacità dichiarate');

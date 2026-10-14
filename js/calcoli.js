@@ -1,5 +1,5 @@
 import { stato } from './stato.js';
-import { dataDelloShow, annoDelloShow, timestampShow, minutiDelloShow, costoMedioAlMinuto } from './utils.js';
+import { dataDelloShow, annoDelloShow, timestampShow, minutiDelloShow, costoMedioAlMinuto, costoAlMinuto } from './utils.js';
 
 /* ==========================================================================
    CALCOLI SUGLI SHOW (funzioni pure)
@@ -356,6 +356,102 @@ export function togliTagDaShows(shows, id) {
         return { ...s, tag: s.tag.filter(altro => altro !== id) };
     });
     return { shows: risultato, modificati };
+}
+
+/* --------------------------------------------------------------------------
+   PREVENTIVO: prezzo al minuto suggerito per una modella e confronto di un
+   prezzo chiesto con la sua media e con la media generale (preventivo.js)
+   -------------------------------------------------------------------------- */
+export const SHOW_PER_SUGGERITO = 5;     // il suggerito è la media degli ultimi N show
+export const MINIMO_SHOW_SITO = 2;       // show sul sito scelto per calcolare solo su quello
+const SOGLIA_IN_LINEA = 10;              // ±10%, come i colori del €/min
+const SOGLIA_TENDENZA = 5;               // ±5% tra ultimi show e media di sempre
+
+// Show della modella che contano per il €/min (con durata, regali e rimborsi esclusi), dal più recente
+function showConPrezzo(shows, nome) {
+    return showsDiModella(shows, nome).filter(s => costoAlMinuto(s) !== null);
+}
+
+// €/min suggerito per la modella: media ponderata degli ultimi SHOW_PER_SUGGERITO show.
+// Con un sito si usano solo gli show su quel sito, se sono almeno MINIMO_SHOW_SITO;
+// altrimenti tutti i siti. null se la modella non ha show con durata.
+// { costoMinuto, mediaTutti, showUsati, showConDurata, sito ('' = tutti i siti), tendenza: 'su'|'giu'|'stabile' }
+export function prezzoSuggerito(shows, nome, { sito = '' } = {}) {
+    const tutti = showConPrezzo(shows, nome);
+    const delSito = sito ? tutti.filter(s => s.sito === sito) : [];
+    const suSito = Boolean(sito) && delSito.length >= MINIMO_SHOW_SITO;
+    const base = suSito ? delSito : tutti;
+    if (base.length === 0) return null;
+    const recenti = base.slice(0, SHOW_PER_SUGGERITO);
+    const costoMinuto = costoMedioAlMinuto(recenti);
+    const mediaTutti = costoMedioAlMinuto(base);
+    const scarto = mediaTutti ? (costoMinuto / mediaTutti - 1) * 100 : 0;
+    return {
+        costoMinuto,
+        mediaTutti,
+        showUsati: recenti.length,
+        showConDurata: base.length,
+        sito: suSito ? sito : '',
+        tendenza: scarto > SOGLIA_TENDENZA ? 'su' : scarto < -SOGLIA_TENDENZA ? 'giu' : 'stabile'
+    };
+}
+
+// Ultimo show della modella con esattamente quella durata (stesso criterio del sito
+// di prezzoSuggerito), per chi ha un listino a pacchetti; null se non c'è
+export function ultimoShowConDurata(shows, nome, minuti, { sito = '' } = {}) {
+    const tutti = showConPrezzo(shows, nome);
+    const delSito = sito ? tutti.filter(s => s.sito === sito) : [];
+    const base = sito && delSito.length >= MINIMO_SHOW_SITO ? delSito : tutti;
+    return base.find(s => minutiDelloShow(s) === Number(minuti)) || null;
+}
+
+// Prezzo chiesto per una durata rispetto a un €/min di riferimento:
+// { costoMinuto, scarto (in %), esito: 'in-linea' | 'caro' | 'conveniente' }; null se mancano i dati
+export function valutaPrezzo(prezzo, minuti, riferimento) {
+    if (!(prezzo > 0) || !(minuti > 0) || !(riferimento > 0)) return null;
+    const costoMinuto = prezzo / minuti;
+    const scarto = (costoMinuto / riferimento - 1) * 100;
+    // Stesso confronto di formattaCostoAlMinuto (utils.js): con lo scarto in % i decimali
+    // facevano risultare "caro" un +10% esatto
+    const limite = SOGLIA_IN_LINEA / 100;
+    const esito = costoMinuto > riferimento * (1 + limite) ? 'caro' : costoMinuto < riferimento * (1 - limite) ? 'conveniente' : 'in-linea';
+    return { costoMinuto, scarto, esito };
+}
+
+// Tabella dei prezzi suggeriti: una voce per modella con show di durata nota,
+// dalla modella con più show con durata (a pari merito in ordine di nome)
+export function prezziSuggeriti(shows) {
+    const nomi = new Map();
+    shows.forEach(s => { if (s.nome && !nomi.has(chiaveModella(s.nome))) nomi.set(chiaveModella(s.nome), s.nome.trim()); });
+    return [...nomi.values()]
+        .map(nome => ({ nome, ...prezzoSuggerito(shows, nome) }))
+        .filter(voce => voce.costoMinuto !== undefined && voce.costoMinuto !== null)
+        .sort((a, b) => (b.showConDurata - a.showConDurata) || a.nome.localeCompare(b.nome));
+}
+
+// Ordinamento della tabella dei prezzi suggeriti per colonna ('asc' o 'desc').
+// Le colonne dei prezzi (10, 15, 30, 60 min) sono proporzionali al €/min suggerito;
+// a pari valore vale il nome. Una colonna sconosciuta lascia l'ordine ricevuto.
+const VALORE_TENDENZA = { su: 1, stabile: 0, giu: -1 };
+const CHIAVI_PREZZI = {
+    nome: v => v.nome.toLowerCase(),
+    show: v => v.showConDurata,
+    media: v => v.mediaTutti,
+    suggerito: v => v.costoMinuto,
+    tendenza: v => VALORE_TENDENZA[v.tendenza] ?? 0,
+    p10: v => v.costoMinuto, p15: v => v.costoMinuto, p30: v => v.costoMinuto, p60: v => v.costoMinuto
+};
+export const COLONNE_PREZZI = Object.keys(CHIAVI_PREZZI);
+
+export function ordinaPrezziSuggeriti(voci, colonna, verso = 'desc') {
+    const chiave = CHIAVI_PREZZI[colonna];
+    if (!chiave) return [...voci];
+    const segno = verso === 'asc' ? 1 : -1;
+    return [...voci].sort((a, b) => {
+        const va = chiave(a), vb = chiave(b);
+        const diff = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
+        return segno * diff || a.nome.localeCompare(b.nome);
+    });
 }
 
 // Una pagina di un elenco. limite 'all' = tutto in una pagina; la pagina

@@ -19,7 +19,7 @@ Guida completa di tutte le funzioni dell'app. Per una presentazione rapida vedi 
 
 Diario Privato funziona con **qualsiasi sito di cam**. Al primo avvio, con l'archivio vuoto, una finestra di benvenuto chiede la **lingua** (proposta in base a quella di Windows se è tra le otto disponibili, altrimenti inglese; cambiandola la finestra si traduce subito), **su quali siti acquisti gli show** e qual è il **sito principale** (predefinito per gli show nuovi). La scelta si cambia in qualsiasi momento in **⚙️ Impostazioni › 🌐 Gestisci siti** con la casella accanto alla sigla di ogni sito:
 - nel form compaiono solo i **siti in uso** (più quello dello show che stai modificando); nei filtri anche i siti che hanno già degli show;
-- le funzioni collegate a **Mondo Cam Girls** (indicatore «MCG: Online», sezione *Importa da Mondo Cam Girls* del menu Dati, filtro *Solo online*, badge Online/Sospesa, galleria foto della scheda) compaiono e contattano il sito **solo se Mondo Cam Girls è in uso**; la galleria della scheda solo per le modelle con show su MCG;
+- le funzioni collegate a **Mondo Cam Girls** (indicatore «MCG: Online», credito residuo, sezione *Importa da Mondo Cam Girls* del menu Dati, filtro *Solo online*, badge Online/Sospesa, galleria foto della scheda) compaiono e contattano il sito **solo se Mondo Cam Girls è in uso**; la galleria della scheda solo per le modelle con show su MCG;
 - per gli altri siti lo storico si importa da **CSV** (vedi sotto).
 
 Chi aggiorna da una versione precedente non vede il benvenuto: tutti i siti restano in uso e l'app funziona come prima.
@@ -28,7 +28,7 @@ Chi aggiorna da una versione precedente non vede il benvenuto: tutti i siti rest
 
 Sotto il nome dell'app, nell'intestazione, una riga ne riassume lo scopo: *Ogni show registrato, ogni euro sotto controllo, ogni modella al posto giusto in classifica.*
 
-L'interfaccia si sviluppa in tre sezioni principali accessibili dalla barra superiore:
+L'interfaccia si sviluppa in quattro sezioni principali accessibili dalla barra superiore:
 
 ### 1. Show & Cronologia
 Consente l'inserimento manuale, la modifica e la consultazione dell'archivio storico degli show.
@@ -95,12 +95,29 @@ Elabora la cronologia salvata per generare indicatori prestazionali e statistici
   - **Unisci** sposta su questa modella gli show registrati con un altro nome: la stessa modella su un altro sito, o un nome scritto in modo diverso. Si sceglie il nome tra quelli suggeriti e l'anteprima indica quanti show passano.
   - **Separa** (solo per le modelle con show su più siti) sposta gli show di un sito su un'altra modella, quando lo stesso nome indica persone diverse; il nome proposto è «Nome (SIGLA)» e, se esiste già, gli show si aggiungono ai suoi.
   - Ogni show ricorda il nome con cui è stato acquistato: la sincronizzazione con Mondo Cam Girls riconosce gli show già importati (nessun doppione) e assegna quelli nuovi alla modella giusta.
-- **Modelle online**: accanto al nome compare il badge verde **● Online** se la modella è online su Mondo Cam Girls (anche nella scheda dettaglio); il filtro **Solo online** mostra solo quelle. Lo stato si aggiorna all'avvio e ogni 3 minuti, leggendo l'elenco delle modelle online dal servizio pubblico del sito (`getdata.html?online=si`, senza login). La modella viene riconosciuta dall'indirizzo del suo profilo (`https://<nome>.mondocamgirls.com`): senza un indirizzo valido lo stato non è verificabile e il badge non compare. Se il sito non risponde, i badge non compaiono e l'errore viene annotato nel log.
-- **Profili sospesi o rimossi**: accanto al nome (in classifica e nella scheda) compare il badge rosso **⛔ Sospesa** se il profilo su MCG è temporaneamente sospeso (la pagina mostra l'avviso «PROFILE TEMPORARYLY SUSPENDED»: non si possono acquistare show), oppure il badge grigio **🚫 Rimossa** se il profilo non esiste più (il suo sottodominio non esiste più, mentre il sito risponde). MCG non lo indica nell'elenco delle modelle, quindi l'app legge in background la pagina di ogni profilo, tre alla volta. L'esito di ogni profilo vale 12 ore ed è conservato tra un avvio e l'altro: si riverificano solo i profili controllati da più di 12 ore (all'avvio e poi ogni ora). Il tooltip del badge indica quando è stato verificato.
+- **Modelle online**: accanto al nome compare il badge verde **● Online** se la modella è online su Mondo Cam Girls (anche nella scheda dettaglio e nella tabella del Preventivo); il filtro **Solo online** mostra solo quelle. Lo stato si aggiorna all'avvio e ogni 3 minuti, leggendo l'elenco delle modelle online dal servizio pubblico del sito (`getdata.html?online=si`, senza login). La modella viene riconosciuta dall'indirizzo del suo profilo (`https://<nome>.mondocamgirls.com`): senza un indirizzo valido lo stato non è verificabile e il badge non compare. Se il sito non risponde, i badge non compaiono e l'errore viene annotato nel log.
+- **Profili sospesi o rimossi**: accanto al nome (in classifica, nella scheda e nella tabella del Preventivo) compare il badge rosso **⛔ Sospesa** se il profilo su MCG è temporaneamente sospeso (la pagina mostra l'avviso «PROFILE TEMPORARYLY SUSPENDED»: non si possono acquistare show), oppure il badge grigio **🚫 Rimossa** se il profilo non esiste più (il suo sottodominio non esiste più, mentre il sito risponde). MCG non lo indica nell'elenco delle modelle, quindi l'app legge in background la pagina di ogni profilo, tre alla volta. L'esito di ogni profilo vale 12 ore ed è conservato tra un avvio e l'altro: si riverificano solo i profili controllati da più di 12 ore (all'avvio e poi ogni ora). Il tooltip del badge indica quando è stato verificato.
 
 ---
 
-### 3. Statistiche Mensili e Budget
+### 3. Preventivo
+Quanto dovrebbe costare uno show **prima di comprarlo**, per capire se il prezzo che ti chiede la modella è in linea.
+
+- **Calcolatore**: scrivi la modella, scegli la durata (10-60 minuti o «altro…») e, se vuoi, il **prezzo chiesto**. Ottieni:
+  - il **prezzo atteso** con il suo **€/min suggerito**, cioè la media degli **ultimi 5 show** con durata (regali e rimborsi esclusi): i prezzi cambiano nel tempo, quindi contano gli show recenti;
+  - l'ultimo show con lei della **stessa durata**, con il prezzo pagato (utile se usa un listino a pacchetti);
+  - il prezzo con la **tua media generale** su tutti gli show;
+  - con un prezzo chiesto, i due confronti: **rispetto alla sua media** e **rispetto alla tua media generale**, ciascuno con un verdetto colorato («in linea» entro ±10%, «+X% più caro» in rosso, «X% più conveniente» in verde, la stessa soglia dei colori del €/min).
+- **Sito**: la stessa modella può costare diversamente su siti diversi. Scegliendo un sito il calcolo usa solo gli show su quel sito, se lei ne ha almeno 2; altrimenti tutti i siti, e il riquadro lo dice. Viene proposto il sito del suo ultimo show, se lì ne ha almeno 2. Sui siti che fanno pagare in token, dollari o crediti il prezzo chiesto si scrive in quella valuta e viene convertito in euro con il tasso del sito.
+- **Apri la scheda**: sotto il risultato del calcolatore, il pulsante **Apri la scheda di …** (solo per le modelle già registrate).
+- **Modelle senza dati**: se non hai show con durata con lei, il riferimento è la tua media generale e il riquadro avvisa «dati insufficienti».
+- **Prezzi suggeriti per modella**: tabella con, per ogni modella (con i badge **● Online** e **⛔ Sospesa** / **🚫 Rimossa** accanto al nome, come in classifica), gli show con durata, il €/min medio di sempre, quello degli ultimi 5 show, la **tendenza** (▲ in aumento, → stabile, ▼ in calo, oltre ±5%) e i prezzi già pronti per 10, 15, 30 e 60 minuti. Un clic su un'**intestazione** ordina la tabella per quella colonna (per i prezzi si parte dal più costoso, un secondo clic parte dal meno costoso; ▲/▼ indica la colonna e il verso; anche da tastiera con Invio); l'ordine scelto resta alla riapertura dell'app. Un clic su una riga porta la modella nel calcolatore, il pulsante **👤** apre direttamente la sua scheda. La casella **Solo online** mostra solo le modelle online in questo momento su Mondo Cam Girls (compare solo se MCG è in uso).
+- **Nella scheda della modella** un riquadro *Preventivo* calcola il prezzo atteso per la durata scritta, con il link **apri nel Preventivo** per il calcolatore completo.
+- **Nel form**, appena scegli modella e durata, sotto il costo al minuto compare il prezzo atteso («Atteso per 30 min: … (sua media) · … (tua media)»), calcolato sul sito scelto nel form, prima ancora di scrivere il costo.
+
+---
+
+### 4. Statistiche Mensili e Budget
 Fornisce il controllo finanziario sulle uscite e sui costi degli show:
 
 - **Impostazione Budget**: Definisce la soglia massima di spesa mensile (€).
@@ -122,11 +139,23 @@ Dal menu **⚙️ Impostazioni › 🔒 Privacy**:
 
 ## ⚙️ Funzioni di Sistema e Utility
 
-L'intestazione mostra l'indicatore di raggiungibilità di Mondo Cam Girls; le funzioni sono raccolte in due menu a tendina:
+L'intestazione mostra l'indicatore di raggiungibilità di Mondo Cam Girls e, accanto, il **💳 credito residuo** sul tuo account MCG (es. «💳 € 16.51»). Il credito si vede solo dopo il login, quindi viene letto:
+- a ogni **Sincronizza MCG** o **Cronologia completa MCG**, subito dopo le transazioni;
+- all'avvio, ogni 15 minuti e con un clic sul badge, senza aprire finestre, usando il login salvato nella finestra di sincronizzazione.
+
+Se MCG chiede di nuovo il login resta l'ultimo valore letto, attenuato e in corsivo, con la data nel tooltip; basta una sincronizzazione per aggiornarlo. Prima della prima lettura il badge mostra «💳 –».
+
+Le funzioni sono raccolte in due menu a tendina:
 - **💾 Dati**, in due sezioni:
   - **🌐 Importa da Mondo Cam Girls** (evidenziata): **🔄 Sincronizza MCG** (ultime transazioni, rapida: da usare dopo ogni show) e **📜 Cronologia completa MCG** (tutte le pagine, più lenta: la prima volta o per recuperare show vecchi). Sotto ogni voce c'è una descrizione breve; il tooltip spiega la differenza per intero.
   - **💾 Backup e dati**: Esporta, Importa, Cartella.
-- **⚙️ Impostazioni**: dimensione del testo, lingua, tema, gestione dei tag, **gestione dei siti**, privacy.
+- **⚙️ Impostazioni**, in sezioni su due colonne:
+  - **🎨 Aspetto**: lingua, tema, dimensione del testo.
+  - **📋 Tabelle**: **Mostra le note per intero**, che in cronologia, dettaglio del mese e scheda modella mostra note e tag completi, a capo, senza doverli aprire con un clic (spenta, la nota resta su una riga troncata con «…» e i tag oltre il terzo diventano «+N»).
+  - **🗂️ Siti e tag**: Gestisci siti, Gestisci tag.
+  - **🔒 Privacy** (seconda colonna): vedi la sezione [Privacy](#-privacy).
+
+  Ogni scelta si salva da sola e resta alla riapertura dell'app.
   - **🌐 Gestisci siti**: nome, sigla (fino a 6 caratteri), colore, **valuta** (euro, dollari, sterline, token, crediti) e **tasso** in euro di ogni sito (i tassi iniziali sono indicativi: controllali), aggiunta di nuovi siti e **sito predefinito** per gli show nuovi (salvato anche nel backup). Mondo Cam Girls e i siti usati da almeno uno show non si possono eliminare: prima vanno spostati su un altro sito con la modifica multipla.
 
 I menu si chiudono con un clic fuori o con `Esc`.
@@ -181,7 +210,7 @@ I dati sono salvati nella cartella `userData` dell'applicazione (apribile dal pu
 | `preferenze.json` | Preferenze di privacy: nome e icona neutri, PIN di sblocco (solo hash e sale), minuti del blocco automatico. |
 | `mcg_ultima_sincronizzazione.json` | Copia della tabella letta nell'ultima sincronizzazione MCG, con l'esito di ogni riga. |
 
-Il budget mensile, il tema, la lingua e i filtri sono salvati nel `localStorage` dell'interfaccia.
+Il budget mensile, il tema, la lingua, la dimensione del testo, le note per intero, la sfocatura, il tasto rapido e il sito predefinito sono salvati nel `localStorage` dell'interfaccia, come l'ordine e i filtri delle tabelle: in cronologia ordine, numero di risultati, anni, sito e tag; in classifica sito e «Solo online»; nel Preventivo «Solo online» e l'ordine della tabella dei prezzi; nelle statistiche la vista del grafico. La ricerca per nome no: di solito serve una volta sola. **Reset Filtri** riporta la cronologia ai valori predefiniti anche per le aperture successive.
 
 Formato del file di backup esportato:
 
@@ -189,7 +218,7 @@ Formato del file di backup esportato:
 {
   "formato": "gestioneshow-backup",
   "versione": 2,
-  "versioneApp": "2.0.0",
+  "versioneApp": "2.0.1",
   "shows": [ ... ],
   "tag": [ { "id": "lush", "nome": "Lush", "colore": "viola" } ],
   "siti": [ { "id": "mcg", "nome": "Mondo Cam Girls", "sigla": "MCG", "colore": "rosso" } ],

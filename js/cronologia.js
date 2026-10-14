@@ -1,4 +1,5 @@
 import { anniDisponibili, filtraOrdinaShows, paginaDi } from './calcoli.js';
+import { dimenticaFiltri } from './filtri-salvati.js';
 import { t } from './i18n.js';
 import { logger } from './logger.js';
 import { COLONNE_CRONOLOGIA, intestazioneShow, righeShow } from './righe-show.js';
@@ -172,6 +173,7 @@ export function resetFiltriCronologia() {
     inizializzaFiltroAnni(stato.tuttiGliShow);
 
     localStorage.removeItem('limiteRisultati');
+    dimenticaFiltri(['ordineData', 'filtroSitoCronologia', 'filtroTagCronologia']);
     stato.paginaCorrente = 1;
     caricaCronologia(stato.tuttiGliShow);
 }

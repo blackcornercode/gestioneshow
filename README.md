@@ -20,6 +20,7 @@
 ## ✨ Features
 
 - 📝 **Smart show log**: model mini-card with her stats, *repeat last show*, quick durations, live **€/min** compared with your average, colour-coded ratings.
+- 💶 **Quote before you buy**: a suggested €/min for every model (from her last 5 shows, per site), the expected price for any duration and a check of the asked price against her average and your overall average.
 - 🏆 **Model ranking**: average rating, number of shows, total time and spending, average €/min, plus a detailed card for every model.
 - 🏷️ **Custom tags**: colour tags for the type of show, filters, bulk editing and a "show types" summary for each model.
 - 🌐 **Any cam site**: every show records the site you bought it on (Mondo Cam Girls, Chaturbate, Stripchat… or your own), with colour badges, filters, per-site ranking and a spending chart by site.

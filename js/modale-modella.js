@@ -3,6 +3,7 @@ import { badgeSito } from './gestione-siti.js';
 import { apriModalImmagine } from './galleria.js';
 import { t } from './i18n.js';
 import { COLONNE_SCHEDA, intestazioneShow, righeShow } from './righe-show.js';
+import { htmlPreventivoScheda } from './preventivo.js';
 import { badgeSospesa } from './profili-sospesi.js';
 import { badgeOnline } from './stato-online.js';
 import { stato } from './stato.js';
@@ -144,6 +145,7 @@ export async function apriModalModella(nomeModella) {
         ${tipiShowHtml}
         ${perSitoHtml}
         ${azioniHtml}
+        ${htmlPreventivoScheda(nomeModella)}
     `;
 
     // Galleria dal profilo: solo se la modella ha show su un sito in uso il cui connettore offre le foto

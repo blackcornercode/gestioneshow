@@ -35,6 +35,8 @@ export async function caricaLingua(lang) {
         traduzioniCorrenti = await response.json();
         linguaCorrente = lang;
         localStorage.setItem('appLang', lang);
+        // Lingua della pagina: lettori di schermo e sillabazione (hyphens: auto in style.css)
+        document.documentElement.lang = lang;
 
         aggiornaTestiDOM();
 

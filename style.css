@@ -729,6 +729,15 @@ td.col-note.espansa .testo-note {
     text-overflow: clip;
 }
 
+/* Opzione "Mostra le note per intero" (Impostazioni › Tabelle): come una nota
+   espansa, in tutte le righe e senza bisogno di cliccare */
+body.note-complete td.col-note .testo-note {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    text-overflow: clip;
+}
+body.note-complete td.col-note.espandibile { cursor: default; }
+
 td.col-note.espandibile:focus-visible {
     outline: 2px solid var(--primary-color);
     outline-offset: -2px;
@@ -1325,6 +1334,27 @@ body.theme-dark .mcg-status-container {
     background-color: rgba(255, 255, 255, 0.08);
 }
 
+/* Credito residuo su MCG (js/credito-mcg.js): stessa pillola dell'indicatore */
+.credito-mcg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 0;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: inherit;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.credito-mcg[hidden] { display: none; }
+body.theme-dark .credito-mcg { background-color: rgba(255, 255, 255, 0.08); }
+/* Login scaduto: resta l'ultimo valore, attenuato */
+.credito-mcg.credito-da-aggiornare { color: var(--text-muted); font-style: italic; }
+.credito-mcg.in-aggiornamento { opacity: 0.6; }
+
 .status-dot {
     width: 10px;
     height: 10px;
@@ -1903,6 +1933,9 @@ td.col-note .tag-show { display: flex; flex-wrap: wrap; }
 td.col-note .tag-show + .testo-note { margin-top: 2px; }
 td.col-note:not(.espansa) .tag-extra,
 td.col-note.espansa .tag-altri { display: none; }
+/* Note per intero: tutti i tag visibili, senza "+N" */
+body.note-complete td.col-note:not(.espansa) .tag-extra { display: inline-flex; }
+body.note-complete td.col-note .tag-altri { display: none; }
 .tag-altri {
     background-color: var(--neutral-bg);
     color: var(--neutral-text);
@@ -2164,6 +2197,83 @@ button.campione-colore.attivo { box-shadow: 0 0 0 2px var(--text-color); }
     font-size: 1.05rem;
 }
 .anteprima-costo-minuto.vuota { font-size: 0.85rem; }
+/* Prezzo atteso per la durata scelta (preventivo) */
+.prezzo-atteso-form { display: block; margin-top: 6px; color: var(--text-muted); font-size: 0.8rem; }
+.prezzo-atteso-form[hidden] { display: none; }
+
+/* ==========================================================================
+   PREVENTIVO (js/preventivo.js)
+   ========================================================================== */
+.nota-preventivo { color: var(--text-muted); font-size: 0.82rem; }
+.griglia-preventivo { display: grid; grid-template-columns: 1.1fr 1fr; gap: 20px; align-items: start; margin-top: 12px; }
+.campi-preventivo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.campi-preventivo .campo-pieno { grid-column: 1 / -1; }
+.campi-preventivo .durata-rapida input[type="number"] {
+    flex: 1.5;
+    min-width: 56px;
+    min-height: 0;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    text-align: center;
+    box-shadow: none;
+}
+.esito-preventivo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-card-secondary);
+}
+.prezzo-atteso { font-size: 1.7rem; font-weight: 800; }
+.prezzo-atteso small { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+.prezzo-chiesto { margin-top: 4px; font-weight: 700; }
+.riga-preventivo {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--bg-card);
+}
+.avviso-preventivo { padding: 8px 10px; border-radius: 8px; background: var(--danger-bg); color: var(--danger-text); font-size: 0.85rem; }
+.verdetto-preventivo { padding: 2px 8px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+.verdetto-in-linea { background: var(--bg-card-secondary); color: var(--text-muted); border: 1px solid var(--border-color); }
+.verdetto-caro { background: var(--danger-bg); color: var(--caro-text); }
+.verdetto-conveniente { background: var(--success-bg, rgba(22, 163, 74, 0.15)); color: var(--conveniente-text); }
+.tabella-preventivo td, .tabella-preventivo th { padding: 8px 10px; }
+.tabella-preventivo th.col-destra { text-align: right; }
+.tabella-preventivo td { white-space: nowrap; }
+/* Intestazioni cliccabili per ordinare; quella attiva mostra ▲/▼ */
+.tabella-preventivo th.ordinabile { cursor: pointer; user-select: none; white-space: nowrap; }
+.tabella-preventivo th.ordinabile:hover { color: var(--primary-color); }
+.tabella-preventivo th.ordinata { color: var(--primary-color); }
+.tabella-preventivo th.ordinabile:focus-visible { outline: 2px solid var(--primary-color); outline-offset: -2px; }
+.apri-scheda-preventivo { align-self: flex-start; }
+.filtri-preventivo { display: flex; gap: 16px; align-items: center; margin: 4px 0 10px; }
+.filtri-preventivo .checkbox-label { height: auto; }
+.tendenza-su { color: var(--caro-text); }
+.tendenza-giu { color: var(--conveniente-text); }
+
+/* Riquadro nella scheda della modella */
+.preventivo-scheda {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    margin: 12px 0;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-card-secondary);
+}
+.preventivo-scheda input { width: 80px; }
+.preventivo-scheda-esito { display: inline-flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.preventivo-scheda-esito .prezzo-atteso { font-size: 1.3rem; }
+.preventivo-scheda-link { margin-left: auto; font-weight: 600; }
 .anteprima-media { color: var(--text-muted); font-size: 0.8rem; font-weight: 500; }
 
 /* Voto: contorno neutro finché non scelto, poi i colori della cronologia */
@@ -2346,13 +2456,38 @@ body.modalita-discreta img.modella-avatar:hover,
 body.modalita-discreta img.galleria-miniatura:hover,
 body.modalita-discreta #imgIngrandita:hover { filter: none; }
 
-.impostazioni-privacy {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-top: 10px;
-    border-top: 1px solid var(--border-color);
+/* Menu Impostazioni: sezioni su due colonne (aspetto, tabelle, siti e tag | privacy) */
+.menu-header.open .menu-header-pannello.pannello-impostazioni {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 22px;
+    min-width: 660px;
+    padding: 16px 18px;
 }
+.colonna-impostazioni { display: flex; flex-direction: column; gap: 16px; }
+.sezione-impostazioni { display: flex; flex-direction: column; gap: 9px; }
+.titolo-impostazioni {
+    margin: 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.nota-impostazione { margin: -4px 0 0 26px; color: var(--text-muted); font-size: 0.75rem; line-height: 1.35; }
+.piede-impostazioni {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+.sezione-impostazioni .checkbox-label { height: auto; }
+
+.impostazioni-privacy { gap: 8px; }
 .titolo-sezione-menu { font-weight: 700; font-size: 0.85rem; }
 .impostazioni-privacy .checkbox-label { height: auto; }
 .riga-pin { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -2546,12 +2681,15 @@ body.senza-mcg .menu-sezione-mcg + .menu-sezione { padding-top: 0; border-top: n
     background: var(--primary-color);
     opacity: 0.6;
 }
+/* Celle larghe quanto la loro etichetta, mai spezzata: con colonne fisse le etichette
+   lunghe (in inglese "TOTAL DURATION", in tedesco "DURCHSCHNITTSBEWERTUNG")
+   sconfinavano nella colonna accanto. Se non stanno su una riga, le ultime vanno sotto */
 .scheda-sito-stat {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
-    gap: 8px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
 }
-.sito-stat { display: flex; flex-direction: column; font-size: 0.88rem; white-space: nowrap; }
+.sito-stat { flex: 1 0 auto; display: flex; flex-direction: column; gap: 2px; font-size: 0.88rem; white-space: nowrap; }
 .sito-stat small { color: var(--text-muted); font-weight: 400; }
 .sito-stat-etichetta {
     color: var(--text-muted);
