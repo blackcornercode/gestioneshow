@@ -205,8 +205,12 @@ async function createWindow() {
         mainWindow.show();
     });
 
+    mainWindow.webContents.on('render-process-gone', (event, dettagli) => {
+        logToFile('ERROR', "Processo dell'interfaccia terminato", `${dettagli.reason} (codice ${dettagli.exitCode})`);
+    });
+
     mainWindow.webContents.on('did-finish-load', () => {
-        logToFile('INFO', `Applicazione avviata (v${app.getVersion()})`);
+        logToFile('AVVIO', `Applicazione avviata (v${app.getVersion()})`, `Electron ${process.versions.electron}, ${process.platform} ${process.arch}`);
     });
 
     mainWindow.on('resize', debouncedSaveWindowState);
@@ -216,6 +220,11 @@ async function createWindow() {
 /* ==========================================================================
    AVVIO
    ========================================================================== */
+
+// Errori che nessun try/catch ha intercettato: senza questi non resterebbe traccia
+const descriviErrore = (err) => (err instanceof Error ? err.stack || err.message : String(err));
+process.on('uncaughtException', (err) => { logToFile('ERROR', 'Errore non gestito nel processo principale', descriviErrore(err)); });
+process.on('unhandledRejection', (motivo) => { logToFile('ERROR', 'Promise rifiutata e non gestita nel processo principale', descriviErrore(motivo)); });
 
 // I gestori IPC vanno registrati una sola volta, prima di aprire le finestre
 const finestraPrincipale = () => mainWindow;

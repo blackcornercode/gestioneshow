@@ -208,7 +208,7 @@ export function preparaImportazione(righe, mappatura, opzioni, showEsistenti = [
    reimportabile (intestazioni riconosciute da indovinaColonne)
    -------------------------------------------------------------------------- */
 const INTESTAZIONI_EXPORT = ['Data', 'Ora', 'Modella', 'Sito', 'Piattaforma', 'Durata (min)', 'Costo (€)', '€/min', 'Voto',
-    'Recensione', 'Regalo', 'Tag', 'Note', 'Nickname', 'Importato da', 'Importo originale', 'Valuta'];
+    'Recensione', 'Regalo', 'Tag', 'Note', 'Nickname', 'Importato da', 'Importo originale', 'Valuta', 'Qualità', 'Inquadratura'];
 
 const campoCsv = (valore) => {
     const s = String(valore ?? '');
@@ -232,7 +232,9 @@ export function esportaCsv(shows, { siti = [], tag = [] } = {}) {
             s.isRegalo ? '' : (s.punteggio ?? ''), s.recensione ? 'sì' : 'no', s.isRegalo ? 'sì' : 'no',
             (s.tag || []).map(nomeTag).join(', '), s.note || '', s.nickname || '',
             s.importatoDa ? nomeSito(s.importatoDa) : '',
-            s.importoOriginale ? decimale(s.importoOriginale.valore) : '', s.importoOriginale?.valuta || ''
+            s.importoOriginale ? decimale(s.importoOriginale.valore) : '', s.importoOriginale?.valuta || '',
+            // In fondo, così le colonne precedenti restano dove erano
+            s.isRegalo ? '' : (s.qualita || ''), s.isRegalo ? '' : (s.camera || '')
         ].map(campoCsv).join(';');
     });
     return '﻿' + [INTESTAZIONI_EXPORT.map(campoCsv).join(';'), ...righe].join('\r\n') + '\r\n';

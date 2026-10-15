@@ -29,20 +29,25 @@
     "data": "💾 Date ▾",
     "settings": "⚙️ Setări ▾",
     "mcg_title": "🌐 Import din Mondo Cam Girls",
-    "backup_title": "💾 Copie de rezervă și date",
+    "backup_title": "💾 Backup",
     "csv_title": "📄 Fișiere CSV (orice site)"
   },
   "actions": {
     "export": "💾 Exportă",
     "import": "📥 Importă",
-    "folder": "📁 Dosar",
+    "folder": "📁 Folder de date",
     "sync": "🔄 Sincronizează MCG",
     "sync_all": "📜 Istoric MCG complet",
     "close_details": "Închide detaliile",
     "sync_desc": "Ultimele tranzacții · rapid",
     "sync_all_desc": "Toate paginile · mai lent",
     "sync_hint": "Citește doar prima pagină a tranzacțiilor tale MCG (ultimele 100) și importă show-urile noi. Este rapid: folosește-l după fiecare show. Trebuie să te autentifici în fereastra MCG.",
-    "sync_all_hint": "Citește toate paginile tranzacțiilor tale MCG, de la cea mai nouă la cea mai veche, și importă tot ce lipsește. Folosește-l prima dată sau pentru a recupera show-uri vechi: poate dura câteva minute și afișează un rezumat de confirmat înainte de salvare. Trebuie să te autentifici în fereastra MCG."
+    "sync_all_hint": "Citește toate paginile tranzacțiilor tale MCG, de la cea mai nouă la cea mai veche, și importă tot ce lipsește. Folosește-l prima dată sau pentru a recupera show-uri vechi: poate dura câteva minute și afișează un rezumat de confirmat înainte de salvare. Trebuie să te autentifici în fereastra MCG.",
+    "folder_hint": "Deschide folderul cu arhiva, setările și jurnalul",
+    "export_desc": "Toate datele într-un fișier",
+    "export_hint": "Salvează o copie de siguranță a tuturor datelor",
+    "import_desc": "Restaurează dintr-o copie",
+    "import_hint": "Restaurează datele dintr-un fișier de backup"
   },
   "tabs": {
     "dashboard": "📹 Show-uri și istoric",
@@ -110,7 +115,15 @@
     "shortcut_save": "salvează",
     "shortcut_close": "închide",
     "key_enter": "Enter",
-    "teams_email_hint": "Cu adresa de email Teams a modelului, un clic pe nickname deschide direct chatul; cu un nume de utilizator, clicul îl copiază și deschide Teams, unde trebuie căutat."
+    "teams_email_hint": "Cu adresa de email Teams a modelului, un clic pe nickname deschide direct chatul; cu un nume de utilizator, clicul îl copiază și deschide Teams, unde trebuie căutat.",
+    "quality": "Calitate (video și audio)",
+    "camera": "Încadrare",
+    "note_rating": "Un al doilea clic șterge nota; fără notă rămâne TBD.",
+    "note_quality": "Video și audio. Opțional.",
+    "note_camera": "Cum ținea camera. Opțional.",
+    "note_review": "Ai lăsat recenzia pe site?",
+    "review_yes": "Făcută",
+    "review_no": "Nefăcută"
   },
   "options": {
     "other": "Altă",
@@ -146,7 +159,7 @@
     "confirm_hidden": "Atenție: unele sunt ascunse de filtrele actuale ({n}).",
     "edit_title": "✏️ Editează show-urile selectate",
     "edit_info": "Show-uri cărora li se aplică modificările: {n}",
-    "edit_note": "Câmpurile lăsate pe „nu modifica” rămân neschimbate. Platforma și nota nu se aplică cadourilor.",
+    "edit_note": "Câmpurile lăsate pe „nu modifica” rămân neschimbate. Platforma, nota, calitatea și încadrarea nu se aplică cadourilor.",
     "no_change": "— nu modifica —",
     "review_yes": "✅ Făcută",
     "review_no": "❌ Nefăcută",
@@ -154,7 +167,8 @@
     "nothing_to_change": "Alege cel puțin un câmp de modificat.",
     "invalid_duration": "Durata trebuie să fie un număr întreg de minute (0 sau mai mult).",
     "edit_none": "Niciun show modificat: aveau deja aceste valori.",
-    "edit_done_gifts": "Show-uri actualizate: {n}. Platforma și nota nu au fost aplicate cadourilor selectate ({regali})."
+    "edit_done_gifts": "Show-uri actualizate: {n}. Platforma, nota, calitatea și încadrarea nu au fost aplicate cadourilor selectate ({regali}).",
+    "not_set": "— neindicată —"
   },
   "tags": {
     "label": "🏷️ Etichete",
@@ -462,7 +476,23 @@
     "sites_tags": "🗂️ Site-uri și etichete",
     "notes_full": "Afișează notele întregi",
     "notes_full_hint": "Note și etichete complete în istoric, în detaliul lunii și în fișa modelului, fără clic.",
-    "autosave": "💾 Setările se salvează singure și rămân la redeschiderea aplicației, la fel ca ordinea și filtrele tabelelor."
+    "autosave": "💾 Setările se salvează singure și rămân la redeschiderea aplicației, la fel ca ordinea și filtrele tabelelor.",
+    "data": "💾 Date"
+  },
+  "log": {
+    "section": "📝 Jurnal (log)",
+    "level": "Ce se înregistrează:",
+    "off": "Nimic",
+    "error": "Doar erori",
+    "warn": "Erori și avertismente",
+    "info": "Tot (erori, avertismente, informații)",
+    "hint": "Jurnalul nu este protejat de PIN: la nivelul «Tot» notează și acțiunile efectuate.",
+    "open": "Deschide jurnalul",
+    "clear": "Șterge jurnalul",
+    "confirm_clear": "Ștergi jurnalul? Acțiunea nu poate fi anulată.",
+    "save_error": "Nu s-a putut salva nivelul jurnalului",
+    "open_error": "Nu s-a putut deschide jurnalul (poate este încă gol)",
+    "clear_error": "Nu s-a putut șterge jurnalul"
   },
   "credit": {
     "tip": "Credit disponibil pe Mondo Cam Girls (citit pe {data})",
@@ -519,5 +549,14 @@
     "sort_hint": "Fă clic pentru a sorta; încă un clic inversează ordinea",
     "open_card": "Deschide fișa lui {nome}",
     "no_online": "Niciunul dintre aceste modele nu este online pe Mondo Cam Girls în acest moment."
+  },
+  "quality": {
+    "alta": "Ridicată",
+    "media": "Medie",
+    "bassa": "Scăzută"
+  },
+  "camera": {
+    "orizzontale": "Orizontală",
+    "verticale": "Verticală"
   }
 }

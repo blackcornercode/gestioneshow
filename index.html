@@ -72,10 +72,17 @@
                             </button>
                         </div>
                         <div class="menu-sezione" role="group" aria-labelledby="titoloSezioneBackup">
-                            <span class="titolo-sezione-menu" id="titoloSezioneBackup" data-i18n="menu.backup_title">💾 Backup e dati</span>
-                            <button type="button" class="btn-data" role="menuitem" data-azione="esporta-backup" title="Esporta Backup" data-i18n="actions.export">💾 Esporta</button>
-                            <button type="button" class="btn-data" role="menuitem" data-azione="importa-backup" title="Importa Backup" data-i18n="actions.import">📥 Importa</button>
-                            <button type="button" class="btn-data" role="menuitem" data-azione="apri-cartella-dati" title="Apri Cartella Dati" data-i18n="actions.folder">📁 Cartella</button>
+                            <span class="titolo-sezione-menu" id="titoloSezioneBackup" data-i18n="menu.backup_title">💾 Backup</span>
+                            <button type="button" class="btn-data voce-menu-mcg" role="menuitem" data-azione="esporta-backup"
+                                title="Esporta Backup" data-i18n-title="actions.export_hint">
+                                <span class="voce-menu-titolo" data-i18n="actions.export">💾 Esporta</span>
+                                <small class="voce-menu-descrizione" data-i18n="actions.export_desc">Tutti i dati in un file</small>
+                            </button>
+                            <button type="button" class="btn-data voce-menu-mcg" role="menuitem" data-azione="importa-backup"
+                                title="Importa Backup" data-i18n-title="actions.import_hint">
+                                <span class="voce-menu-titolo" data-i18n="actions.import">📥 Importa</span>
+                                <small class="voce-menu-descrizione" data-i18n="actions.import_desc">Ripristina da un backup</small>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -138,6 +145,10 @@
                         <button type="button" class="btn-data" data-azione="apri-gestione-siti" data-i18n="sites.manage">🌐 Gestisci siti</button>
                         <button type="button" class="btn-data" data-azione="apri-gestione-tag" data-i18n="tags.manage">🏷️ Gestisci tag</button>
                        </section>
+                       <section class="sezione-impostazioni" aria-labelledby="titoloImpDati">
+                        <h3 id="titoloImpDati" class="titolo-impostazioni" data-i18n="settings.data">💾 Dati</h3>
+                        <button type="button" class="btn-data" data-azione="apri-cartella-dati" title="Apri Cartella Dati" data-i18n-title="actions.folder_hint" data-i18n="actions.folder">📁 Cartella dati</button>
+                       </section>
                       </div>
 
                       <div class="colonna-impostazioni">
@@ -174,6 +185,25 @@
                                 <button type="button" id="btnTastoRapidoPredefinito" class="btn-data" data-azione="ripristina-tasto-rapido" title="Ctrl+Shift+H" aria-label="Ripristina" hidden>↺</button>
                             </div>
                             <small id="avvisoTastoRapido" class="avviso-tasto-rapido" role="alert"></small>
+                        </section>
+
+                        <!-- Registro degli eventi (js/preferenze.js, main/log.js) -->
+                        <section class="sezione-impostazioni" aria-labelledby="titoloImpRegistro">
+                            <h3 id="titoloImpRegistro" class="titolo-impostazioni" data-i18n="log.section">📝 Registro (log)</h3>
+                            <div class="lang-selector">
+                                <label for="selectLivelloLog" data-i18n="log.level">Cosa registrare:</label>
+                                <select id="selectLivelloLog" data-al-cambio="cambia-livello-log">
+                                    <option value="off" data-i18n="log.off">Niente</option>
+                                    <option value="error" data-i18n="log.error">Solo errori</option>
+                                    <option value="warn" data-i18n="log.warn">Errori e avvisi</option>
+                                    <option value="info" data-i18n="log.info">Tutto (errori, avvisi, informazioni)</option>
+                                </select>
+                            </div>
+                            <small class="nota-impostazione" data-i18n="log.hint">Il registro non è protetto dal PIN: a livello «Tutto» annota anche le azioni compiute.</small>
+                            <div class="riga-pin">
+                                <button type="button" class="btn-data" data-azione="apri-log" data-i18n="log.open">Apri il registro</button>
+                                <button type="button" class="btn-data" data-azione="cancella-log" data-i18n="log.clear">Cancella il registro</button>
+                            </div>
                         </section>
                       </div>
 
@@ -296,8 +326,8 @@
     <section class="sezione-form" aria-labelledby="titoloSezioneVoto">
         <h3 id="titoloSezioneVoto" class="sezione-form-titolo" data-i18n="form.section_how">Com'è andata</h3>
         <div class="griglia-form griglia-voto">
-            <div class="form-group campo-voto solo-show">
-                <span class="etichetta-campo" data-i18n="form.rating">Voto</span>
+            <div class="form-group riquadro-esito campo-voto solo-show">
+                <span class="etichetta-campo titolo-riquadro"><i class="fa-solid fa-star" aria-hidden="true"></i> <span data-i18n="form.rating">Voto</span></span>
                 <div class="scelta-voto" role="group" aria-label="Valutazione">
                     <button type="button" class="badge-voto voto-pulsante voto-basso" data-azione="voto-stelle" data-voto="1" aria-label="1/5">1</button>
                     <button type="button" class="badge-voto voto-pulsante voto-basso" data-azione="voto-stelle" data-voto="2" aria-label="2/5">2</button>
@@ -315,11 +345,40 @@
                     <option value="1">1</option>
                     <option value="TBD">TBD</option>
                 </select>
+                <small class="nota-riquadro" data-i18n="form.note_rating">Un secondo clic toglie il voto; senza voto resta TBD.</small>
             </div>
-            <label class="interruttore casella-recensione" for="recensione">
-                <input type="checkbox" id="recensione" role="switch">
-                <span data-i18n="form.review_done">Recensione fatta</span>
-            </label>
+            <!-- Ogni opzione in un riquadro: quattro su una riga, due per riga se la finestra è stretta.
+                 Qualità di video e audio e inquadratura (facoltative, form-assistito.js):
+                 un secondo clic sulla scelta la toglie; i valori salvati sono nei campi nascosti -->
+            <div class="form-group riquadro-esito campo-parametro solo-show">
+                <span class="etichetta-campo titolo-riquadro"><i class="fa-solid fa-film" aria-hidden="true"></i> <span data-i18n="form.quality">Qualità (video e audio)</span></span>
+                <div class="selettore-vista scelta-parametro" role="group" aria-label="Qualità">
+                    <button type="button" class="btn-data" data-azione="scegli-qualita" data-valore="alta" aria-pressed="false" data-i18n="quality.alta">Alta</button>
+                    <button type="button" class="btn-data" data-azione="scegli-qualita" data-valore="media" aria-pressed="false" data-i18n="quality.media">Media</button>
+                    <button type="button" class="btn-data" data-azione="scegli-qualita" data-valore="bassa" aria-pressed="false" data-i18n="quality.bassa">Bassa</button>
+                </div>
+                <input type="hidden" id="qualitaShow" value="">
+                <small class="nota-riquadro" data-i18n="form.note_quality">Video e audio. Facoltativa.</small>
+            </div>
+            <div class="form-group riquadro-esito campo-parametro solo-show">
+                <span class="etichetta-campo titolo-riquadro"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> <span data-i18n="form.camera">Inquadratura</span></span>
+                <div class="selettore-vista scelta-parametro" role="group" aria-label="Inquadratura">
+                    <button type="button" class="btn-data" data-azione="scegli-camera" data-valore="orizzontale" aria-pressed="false"><i class="fa-solid fa-mobile-screen fa-rotate-90" aria-hidden="true"></i> <span data-i18n="camera.orizzontale">Orizzontale</span></button>
+                    <button type="button" class="btn-data" data-azione="scegli-camera" data-valore="verticale" aria-pressed="false"><i class="fa-solid fa-mobile-screen" aria-hidden="true"></i> <span data-i18n="camera.verticale">Verticale</span></button>
+                </div>
+                <input type="hidden" id="cameraShow" value="">
+                <small class="nota-riquadro" data-i18n="form.note_camera">Come teneva la camera. Facoltativa.</small>
+            </div>
+            <!-- Recensione: interruttore con lo stato a parole (mostrato via CSS da :checked) -->
+            <div class="form-group riquadro-esito campo-recensione">
+                <label for="recensione" class="etichetta-campo titolo-riquadro"><i class="fa-solid fa-pen-to-square" aria-hidden="true"></i> <span data-i18n="form.review_done">Recensione fatta</span></label>
+                <div class="interruttore">
+                    <input type="checkbox" id="recensione" role="switch">
+                    <span class="stato-interruttore stato-si" data-i18n="form.review_yes" aria-hidden="true">Fatta</span>
+                    <span class="stato-interruttore stato-no" data-i18n="form.review_no" aria-hidden="true">Non fatta</span>
+                </div>
+                <small class="nota-riquadro" data-i18n="form.note_review">Hai lasciato la recensione sul sito?</small>
+            </div>
         </div>
     </section>
 
@@ -583,7 +642,7 @@
                                 <button type="button" class="btn-data" data-azione="prev-durata" data-minuti="60">60</button>
                                 <!-- Durata libera (vuota se è scelto un valore rapido); il valore usato è prevMinuti -->
                                 <input type="number" id="prevMinutiAltro" min="1" placeholder="altro…" data-i18n-ph="form.ph_other_minutes" aria-label="Durata (minuti)" data-al-input="prev-durata-libera">
-                                <input type="hidden" id="prevMinuti" value="30">
+                                <input type="hidden" id="prevMinuti" value="15">
                             </div>
                         </div>
                         <div class="form-group">
@@ -754,6 +813,25 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="mmQualita" data-i18n="form.quality">Qualità (video e audio)</label>
+                    <select id="mmQualita">
+                        <option value="" data-i18n="selection.no_change">— non modificare —</option>
+                        <option value="alta" data-i18n="quality.alta">Alta</option>
+                        <option value="media" data-i18n="quality.media">Media</option>
+                        <option value="bassa" data-i18n="quality.bassa">Bassa</option>
+                        <option value="-" data-i18n="selection.not_set">— non indicata —</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mmCamera" data-i18n="form.camera">Inquadratura</label>
+                    <select id="mmCamera">
+                        <option value="" data-i18n="selection.no_change">— non modificare —</option>
+                        <option value="orizzontale" data-i18n="camera.orizzontale">Orizzontale</option>
+                        <option value="verticale" data-i18n="camera.verticale">Verticale</option>
+                        <option value="-" data-i18n="selection.not_set">— non indicata —</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="mmRecensione" data-i18n="table.review">Recensione</label>
                     <select id="mmRecensione">
                         <option value="" data-i18n="selection.no_change">— non modificare —</option>
@@ -777,7 +855,7 @@
                 <small class="nota-modifica-multipla" data-i18n="tags.bulk_hint">Clic su un tag: + aggiungi, poi − togli, poi di nuovo non modificare.</small>
             </div>
 
-            <p class="nota-modifica-multipla" data-i18n="selection.edit_note">I campi lasciati su «non modificare» restano invariati. Piattaforma e voto non vengono applicati ai regali.</p>
+            <p class="nota-modifica-multipla" data-i18n="selection.edit_note">I campi lasciati su «non modificare» restano invariati. Piattaforma, voto, qualità e inquadratura non si applicano ai regali.</p>
 
             <div class="modal-footer">
                 <button type="button" class="btn-data" data-azione="chiudi-modifica-multipla" data-i18n="form.btn_cancel">Annulla</button>

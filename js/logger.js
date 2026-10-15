@@ -1,51 +1,38 @@
 /* ==========================================================================
-   SISTEMA DI LOGGING (Ordinamento: più recenti in alto)
-   ========================================================================== */
-export const logger = {
-    formatTime() {
-        const d = new Date();
-        return `${d.toLocaleDateString('it-IT')} ${d.toLocaleTimeString('it-IT')}.${String(d.getMilliseconds()).padStart(3, '0')}`;
-    },
+   SISTEMA DI LOGGING
+   ==========================================================================
+   Ogni messaggio va alla console e al processo principale (main/log.js), che lo
+   scrive in app.log se il suo livello rientra in quello scelto nelle impostazioni.
+   Nei messaggi non vanno nomi di modelle, tag o file dell'utente: il log non è
+   protetto dal PIN. */
 
+// Gli Error non si serializzano con JSON.stringify (darebbe "{}"): si scrivono messaggio e stack
+export function descriviDettagli(dettagli) {
+    if (dettagli === null || dettagli === undefined || dettagli === '') return '';
+    if (dettagli instanceof Error) return dettagli.stack || `${dettagli.name}: ${dettagli.message}`;
+    if (typeof dettagli === 'string') return dettagli;
+    try {
+        return JSON.stringify(dettagli);
+    } catch {
+        return String(dettagli);
+    }
+}
+
+export const logger = {
     write(level, message, details = null) {
-        const timestamp = this.formatTime();
-        const logEntry = `[${timestamp}] [${level}] ${message}`;
+        const testoDettagli = descriviDettagli(details);
 
         if (level === 'ERROR') {
-            console.error(logEntry, details || '');
+            console.error(`[${level}] ${message}`, details || '');
         } else if (level === 'WARN') {
-            console.warn(logEntry, details || '');
+            console.warn(`[${level}] ${message}`, details || '');
         } else {
-            console.log(logEntry, details || '');
+            console.log(`[${level}] ${message}`, details || '');
         }
 
-        // Invia all'API Electron per il salvataggio su file
-        const logData = { timestamp, level, message, details: details ? JSON.stringify(details) : '' };
+        // Il processo principale aggiunge l'ora e decide se scrivere su file
         if (window.electronAPI && window.electronAPI.appendLog) {
-            window.electronAPI.appendLog(logData).catch(() => {});
-        }
-
-        // Renderizza nell'interfaccia grafica
-        const logContainer = document.getElementById('logConsole');
-        if (logContainer) {
-            const row = document.createElement('div');
-            row.className = `log-entry log-${level.toLowerCase()}`;
-            row.style.fontSize = '0.8rem';
-            row.style.fontFamily = 'monospace';
-            row.style.marginBottom = '2px';
-            
-            if (level === 'ERROR') row.style.color = '#e63946';
-            else if (level === 'WARN') row.style.color = '#ffb703';
-            else if (level === 'SUCCESS') row.style.color = '#2a9d8f';
-            else row.style.color = 'var(--text-color, #333)';
-
-            row.textContent = `${logEntry} ${details ? '- ' + JSON.stringify(details) : ''}`;
-            
-            // Inserisce la nuova riga IN TESTA (in alto) anziché in coda
-            logContainer.prepend(row);
-            
-            // Mantiene lo scroll ancorato in cima per vedere subito l'ultimo log
-            logContainer.scrollTop = 0;
+            window.electronAPI.appendLog({ level, message, details: testoDettagli }).catch(() => {});
         }
     },
 
@@ -54,3 +41,15 @@ export const logger = {
     warn(msg, details) { this.write('WARN', msg, details); },
     error(msg, details) { this.write('ERROR', msg, details); }
 };
+
+// Errori e promise rifiutate che nessun try/catch ha intercettato
+export function registraErroriGlobali() {
+    window.addEventListener('error', (e) => {
+        // Le immagini che non si caricano sono gestite da data-sostituto (azioni.js)
+        if (e.target && e.target !== window) return;
+        logger.error('Errore JavaScript non gestito', e.error || `${e.message} (${e.filename}:${e.lineno})`);
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+        logger.error('Promise rifiutata e non gestita', e.reason);
+    });
+}

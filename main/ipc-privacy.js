@@ -1,4 +1,4 @@
-// Gestori IPC della privacy: preferenze (aspetto neutro, blocco automatico),
+// Gestori IPC della privacy: preferenze (aspetto neutro, blocco automatico, livello del registro),
 // PIN di sblocco e riduzione a icona rapida. Le preferenze stanno in
 // preferenze.json (main/privacy.js) e vengono lette in modo sincrono all'avvio,
 // prima di creare le finestre.
@@ -8,7 +8,7 @@ const path = require('path');
 const canali = require('./canali');
 const percorsi = require('./percorsi');
 const { scriviFileAtomico } = require('./file');
-const { logToFile } = require('./log');
+const { logToFile, impostaLivello, livelloValido } = require('./log');
 const {
     TITOLO_APP, TITOLO_NEUTRO, MINUTI_BLOCCO_CONSENTITI,
     pinValido, calcolaHashPin, pinCorretto, normalizzaPreferenze, preferenzePubbliche, contatoreTentativi
@@ -27,6 +27,7 @@ function caricaPreferenze() {
         if (err.code !== 'ENOENT') logToFile('WARN', 'Preferenze di privacy illeggibili, uso i valori predefiniti', err.message);
         preferenze = normalizzaPreferenze({});
     }
+    impostaLivello(preferenze.livelloLog);
     return preferenze;
 }
 
@@ -63,6 +64,9 @@ function registra({ finestraPrincipale }) {
             preferenze.aspettoNeutro = valore;
         } else if (chiave === 'bloccoMinuti' && MINUTI_BLOCCO_CONSENTITI.includes(valore) && preferenze.pin) {
             preferenze.bloccoMinuti = valore;
+        } else if (chiave === 'livelloLog' && livelloValido(valore)) {
+            preferenze.livelloLog = valore;
+            impostaLivello(valore);
         } else {
             return { success: false, error: 'Preferenza non valida' };
         }

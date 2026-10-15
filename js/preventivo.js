@@ -264,7 +264,7 @@ export function ridisegnaPreventivo() {
 /* --------------------------------------------------------------------------
    RIQUADRO NELLA SCHEDA DELLA MODELLA
    -------------------------------------------------------------------------- */
-const MINUTI_SCHEDA = 30;
+const MINUTI_SCHEDA = 15;
 
 export function htmlPreventivoScheda(nome) {
     return `<div class="preventivo-scheda">

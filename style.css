@@ -776,6 +776,14 @@ td.col-azioni button {
 .badge-voto.voto-3 { background-color: var(--voto3-bg); color: var(--voto3-text); }
 .badge-voto.voto-basso { background-color: var(--voto-basso-bg); color: var(--voto-basso-text); }
 
+/* Qualità e inquadratura sotto il voto (righe-show.js): stessi colori dei voti */
+.parametri-show { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+.badge-qualita { padding: 1px 6px; border-radius: 4px; font-size: 0.66rem; font-weight: 700; white-space: nowrap; }
+.badge-qualita.qualita-alta { background-color: var(--voto5-bg); color: var(--voto5-text); }
+.badge-qualita.qualita-media { background-color: var(--voto3-bg); color: var(--voto3-text); }
+.badge-qualita.qualita-bassa { background-color: var(--voto-basso-bg); color: var(--voto-basso-text); }
+.icona-camera { display: inline-flex; align-items: center; justify-content: center; width: 18px; color: var(--text-muted); font-size: 0.85rem; line-height: 1; cursor: help; }
+
 /* €/min rispetto alla media personale (fascia neutra del ±10% senza colore) */
 .costo-min-conveniente { color: var(--conveniente-text); font-weight: 600; }
 .costo-min-caro { color: var(--caro-text); font-weight: 600; }
@@ -2071,9 +2079,44 @@ button.campione-colore.attivo { box-shadow: 0 0 0 2px var(--text-color); }
 .griglia-form > .form-group { margin: 0; min-width: 0; }
 .griglia-chi { grid-template-columns: minmax(200px, 1.3fr) minmax(220px, 1.6fr) minmax(190px, 1fr); }
 .griglia-show { grid-template-columns: minmax(280px, 1.35fr) minmax(220px, 1.15fr) minmax(170px, 0.8fr); }
-.griglia-voto { grid-template-columns: auto 1fr; gap: 14px 48px; align-items: end; }
+/* "Com'è andata": ogni opzione in un riquadro (icona e titolo, controllo, nota);
+   quattro su una riga, due per riga sotto i 1250px */
+.griglia-voto { display: grid; grid-template-columns: 1.25fr 1fr 1.15fr 0.85fr; gap: 14px; align-items: stretch; }
+@media (max-width: 1250px) { .griglia-voto { grid-template-columns: 1fr 1fr; } }
+.griglia-voto .scelta-voto { gap: 6px; }
+.griglia-voto button.voto-pulsante { min-width: 40px; padding: 0 10px; }
+.griglia-voto .scelta-parametro .btn-data { padding: 0 12px; gap: 6px; }
+.griglia-voto > .riquadro-esito {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-sm);
+}
+.show-form-grid .riquadro-esito .titolo-riquadro {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.titolo-riquadro i { color: var(--primary-color); font-size: 0.95rem; }
+.riquadro-esito .scelta-voto, .riquadro-esito .scelta-parametro { align-self: flex-start; }
+.nota-riquadro { color: var(--text-muted); font-size: 0.75rem; line-height: 1.35; }
+/* Stato della recensione a parole accanto all'interruttore */
+.stato-interruttore { margin-left: 10px; font-weight: 600; }
+.interruttore input:not(:checked) ~ .stato-si,
+.interruttore input:checked ~ .stato-no { display: none; }
+.interruttore input:not(:checked) ~ .stato-no { color: var(--text-muted); font-weight: 500; }
 @media (max-width: 900px) {
-    .griglia-chi, .griglia-show, .griglia-voto { grid-template-columns: 1fr; }
+    .griglia-chi, .griglia-show { grid-template-columns: 1fr; }
 }
 
 /* Etichette leggibili: stesse per <label> ed etichette di gruppo */
@@ -2290,14 +2333,39 @@ button.voto-pulsante {
 button.voto-pulsante:not(.scelto) { background: var(--bg-card); color: var(--text-color); }
 button.voto-pulsante:not(.scelto):hover { border-color: var(--secondary-color); }
 button.voto-pulsante.scelto { border-color: currentColor; box-shadow: var(--shadow-sm); }
-
-/* Recensione: interruttore */
-.show-form-grid label.interruttore {
+/* Qualità e inquadratura: controllo a segmenti come la durata dello show */
+.scelta-parametro {
+    display: inline-flex;
+    height: 40px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--bg-card);
+}
+.scelta-parametro .btn-data {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
-    margin: 0 0 8px;
-    cursor: pointer;
+    gap: 7px;
+    height: 100%;
+    padding: 0 14px;
+    border: 0;
+    border-right: 1.5px solid var(--border-color);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: 600;
+    box-shadow: none;
+}
+.scelta-parametro .btn-data:last-child { border-right: 0; }
+.scelta-parametro .btn-data:hover { background: var(--bg-card-secondary); }
+.scelta-parametro .btn-data.attivo { background: var(--primary-color); color: #fff; }
+.scelta-parametro .btn-data i { font-size: 0.95rem; }
+
+/* Recensione: interruttore */
+.show-form-grid .interruttore {
+    display: flex;
+    align-items: center;
+    height: 40px;   /* stessa altezza dei pulsanti della riga "Com'è andata" */
 }
 .interruttore input[type="checkbox"] {
     appearance: none;

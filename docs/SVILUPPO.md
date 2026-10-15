@@ -17,7 +17,7 @@ Architettura, struttura del codice, test e build. Le regole per chi modifica il 
 | `main/connettori/index.js` | Registro dei connettori e delle funzioni che ciascuno offre. Per un nuovo sito: `main/connettori/<id>/index.js` che esporta `{ id, capacita }`. |
 | `main/connettori/mcg/` | Connettore di Mondo Cam Girls: `index.js` (lettura delle transazioni con login, modelle online, profili sospesi o rimossi, foto, ping, credito residuo dell'area clienti), `indirizzi.js` (URL dei profili, pagina sospesa e credito disponibile, funzioni pure), `pagine.js` (lettura pagina per pagina della cronologia transazioni). |
 | `main/canali.js` | Nomi dei canali IPC tra interfaccia e processo principale. |
-| `main/log.js`, `main/rete.js`, `main/file.js`, `main/percorsi.js` | Supporto: log, download di pagine e ping con timeout (comuni ai connettori), scrittura atomica dei file e lettura del testo dei CSV (UTF-8 o Windows-1252), percorsi dei dati. |
+| `main/log.js` (livello `off`/`error`/`warn`/`info` da `preferenze.json`, righe ripulite dagli a capo, rotazione a 1 MB), `main/rete.js`, `main/file.js`, `main/percorsi.js` | Supporto: log, download di pagine e ping con timeout (comuni ai connettori), scrittura atomica dei file e lettura del testo dei CSV (UTF-8 o Windows-1252), percorsi dei dati. |
 | `tests/` | Test automatici (`npm test`), esclusi dalla build. |
 | `tools/` | Strumenti di sviluppo, esclusi dalla build: screenshot del README con dati dimostrativi (`npm run screenshot`) e `CHANGELOG.md` da `changelog.json` (`npm run changelog`). |
 | `docs/` | Guida all'uso, questa documentazione, screenshot e note di rilascio. |
@@ -35,7 +35,7 @@ I file di `js/` sono **moduli ES** (`import`/`export`): `index.html` carica solo
 
 | Modulo | Contenuto |
 | :--- | :--- |
-| `logger.js` | Log a console, a file e nel pannello log. |
+| `logger.js` | Log a console e al processo principale (che lo scrive in `app.log`); `registraErroriGlobali()` cattura errori e promise non gestiti. Gli `Error` vanno passati come dettagli: ne viene scritto lo stack. |
 | `i18n.js` | Elenco delle lingue (`LINGUE`), caricamento, funzione `t()` e `localeCorrente()` per le date formattate nella lingua dell'interfaccia. |
 | `stato.js` | Stato condiviso: l'oggetto `stato` (archivio in memoria, filtri, pagina corrente, classifica…). |
 | `azioni.js` | Esecuzione delle azioni dichiarate negli attributi `data-azione`/`data-al-cambio`/`data-al-input`, e sostituzione delle foto che non si caricano. |

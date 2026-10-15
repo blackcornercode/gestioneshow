@@ -29,20 +29,25 @@
     "data": "💾 Dati ▾",
     "settings": "⚙️ Impostazioni ▾",
     "mcg_title": "🌐 Importa da Mondo Cam Girls",
-    "backup_title": "💾 Backup e dati",
+    "backup_title": "💾 Backup",
     "csv_title": "📄 File CSV (tutti i siti)"
   },
   "actions": {
     "export": "💾 Esporta",
     "import": "📥 Importa",
-    "folder": "📁 Cartella",
+    "folder": "📁 Cartella dati",
     "sync": "🔄 Sincronizza MCG",
     "sync_all": "📜 Cronologia completa MCG",
     "close_details": "Chiudi Dettaglio",
     "sync_desc": "Ultime transazioni · rapida",
     "sync_all_desc": "Tutte le pagine · più lenta",
     "sync_hint": "Legge solo la prima pagina delle transazioni di MCG (le ultime 100) e importa gli show nuovi. È rapida: usala dopo ogni show. Serve il login nella finestra di MCG.",
-    "sync_all_hint": "Legge tutte le pagine delle transazioni di MCG, dalla più recente alla più vecchia, e importa tutto ciò che manca. Usala la prima volta o per recuperare show vecchi: può richiedere qualche minuto e prima di salvare mostra un riepilogo da confermare. Serve il login nella finestra di MCG."
+    "sync_all_hint": "Legge tutte le pagine delle transazioni di MCG, dalla più recente alla più vecchia, e importa tutto ciò che manca. Usala la prima volta o per recuperare show vecchi: può richiedere qualche minuto e prima di salvare mostra un riepilogo da confermare. Serve il login nella finestra di MCG.",
+    "folder_hint": "Apre la cartella con archivio, impostazioni e registro",
+    "export_desc": "Tutti i dati in un file",
+    "export_hint": "Salva un backup di tutti i dati in un file",
+    "import_desc": "Ripristina da un backup",
+    "import_hint": "Ripristina i dati da un file di backup"
   },
   "tabs": {
     "dashboard": "📹 Show & Cronologia",
@@ -110,7 +115,15 @@
     "shortcut_save": "salva",
     "shortcut_close": "chiude",
     "key_enter": "Invio",
-    "teams_email_hint": "Con l'email della modella su Teams, un clic sul nickname apre direttamente la chat; con lo username il clic lo copia e apre Teams, dove va cercato."
+    "teams_email_hint": "Con l'email della modella su Teams, un clic sul nickname apre direttamente la chat; con lo username il clic lo copia e apre Teams, dove va cercato.",
+    "quality": "Qualità (video e audio)",
+    "camera": "Inquadratura",
+    "note_rating": "Un secondo clic toglie il voto; senza voto resta TBD.",
+    "note_quality": "Video e audio. Facoltativa.",
+    "note_camera": "Come teneva la camera. Facoltativa.",
+    "note_review": "Hai lasciato la recensione sul sito?",
+    "review_yes": "Fatta",
+    "review_no": "Non fatta"
   },
   "options": {
     "other": "Altro",
@@ -146,7 +159,7 @@
     "confirm_hidden": "Attenzione: alcuni non sono visibili con i filtri attuali ({n}).",
     "edit_title": "✏️ Modifica show selezionati",
     "edit_info": "Show a cui verranno applicate le modifiche: {n}",
-    "edit_note": "I campi lasciati su «non modificare» restano invariati. Piattaforma e voto non vengono applicati ai regali.",
+    "edit_note": "I campi lasciati su «non modificare» restano invariati. Piattaforma, voto, qualità e inquadratura non si applicano ai regali.",
     "no_change": "— non modificare —",
     "review_yes": "✅ Fatta",
     "review_no": "❌ Non fatta",
@@ -154,7 +167,8 @@
     "nothing_to_change": "Scegli almeno un campo da modificare.",
     "invalid_duration": "La durata deve essere un numero intero di minuti (0 o più).",
     "edit_none": "Nessuno show è cambiato: avevano già questi valori.",
-    "edit_done_gifts": "Show aggiornati: {n}. Piattaforma e voto non sono stati applicati ai regali selezionati ({regali})."
+    "edit_done_gifts": "Show aggiornati: {n}. Piattaforma, voto, qualità e inquadratura non sono stati applicati ai regali selezionati ({regali}).",
+    "not_set": "— non indicata —"
   },
   "tags": {
     "label": "🏷️ Tag",
@@ -462,7 +476,23 @@
     "sites_tags": "🗂️ Siti e tag",
     "notes_full": "Mostra le note per intero",
     "notes_full_hint": "Note e tag completi in cronologia, dettaglio del mese e scheda modella, senza dover cliccare.",
-    "autosave": "💾 Le impostazioni si salvano da sole e restano alla riapertura dell'app, come l'ordine e i filtri delle tabelle."
+    "autosave": "💾 Le impostazioni si salvano da sole e restano alla riapertura dell'app, come l'ordine e i filtri delle tabelle.",
+    "data": "💾 Dati"
+  },
+  "log": {
+    "section": "📝 Registro (log)",
+    "level": "Cosa registrare:",
+    "off": "Niente",
+    "error": "Solo errori",
+    "warn": "Errori e avvisi",
+    "info": "Tutto (errori, avvisi, informazioni)",
+    "hint": "Il registro non è protetto dal PIN: a livello «Tutto» annota anche le azioni compiute.",
+    "open": "Apri il registro",
+    "clear": "Cancella il registro",
+    "confirm_clear": "Cancellare il registro? L'operazione non si può annullare.",
+    "save_error": "Impossibile salvare il livello del registro",
+    "open_error": "Impossibile aprire il registro (forse è ancora vuoto)",
+    "clear_error": "Impossibile cancellare il registro"
   },
   "credit": {
     "tip": "Credito disponibile su Mondo Cam Girls (letto il {data})",
@@ -519,5 +549,14 @@
     "sort_hint": "Clic per ordinare; un altro clic inverte l'ordine",
     "open_card": "Apri la scheda di {nome}",
     "no_online": "Nessuna di queste modelle è online su Mondo Cam Girls in questo momento."
+  },
+  "quality": {
+    "alta": "Alta",
+    "media": "Media",
+    "bassa": "Bassa"
+  },
+  "camera": {
+    "orizzontale": "Orizzontale",
+    "verticale": "Verticale"
   }
 }

@@ -145,11 +145,10 @@ export async function confermaImportazioneCsv() {
     if (!esitoCorrente || esitoCorrente.nuovi === 0) return;
     const nuovi = esitoCorrente.voci.filter(v => v.stato === 'nuovo').map(v => ({ id: generaIdUnico(), ...v.show }));
     const { doppioni, errori } = esitoCorrente;
-    const nomeFile = fileCsv.nome;
     try {
         await aggiungiShows(nuovi);
         chiudiImportazioneCsv();
-        logger.success(`Importati da CSV (${nomeFile}): ${nuovi.length} show; doppioni saltati: ${doppioni}; righe con errori: ${errori}`);
+        logger.success(`Importati da CSV: ${nuovi.length} show; doppioni saltati: ${doppioni}; righe con errori: ${errori}`);
         alert(testo('csv.done', { n: nuovi.length, doppioni, errori }));
     } catch (err) {
         // salvaArchivio ha già mostrato l'errore: l'archivio resta com'era

@@ -109,7 +109,7 @@ export async function eliminaSelezionati() {
 /* --------------------------------------------------------------------------
    MODIFICA MULTIPLA (finestra #modalModificaMultipla)
    -------------------------------------------------------------------------- */
-const CAMPI_MODIFICA = ['mmSito', 'mmPiattaforma', 'mmPunteggio', 'mmRecensione', 'mmDurata', 'mmNickname'];
+const CAMPI_MODIFICA = ['mmSito', 'mmPiattaforma', 'mmPunteggio', 'mmQualita', 'mmCamera', 'mmRecensione', 'mmDurata', 'mmNickname'];
 
 export function apriModificaMultipla() {
     const n = stato.selezioneCronologia.size;
@@ -138,6 +138,12 @@ function leggiCampiModifica() {
 
     const voto = valore('mmPunteggio');
     if (voto) campi.punteggio = voto === 'TBD' ? 'TBD' : parseInt(voto, 10);
+
+    // Qualità e inquadratura: "-" = non indicata (toglie il valore)
+    const qualita = valore('mmQualita');
+    if (qualita) campi.qualita = qualita === '-' ? null : qualita;
+    const camera = valore('mmCamera');
+    if (camera) campi.camera = camera === '-' ? null : camera;
 
     const recensione = valore('mmRecensione');
     if (recensione) campi.recensione = recensione === 'si';

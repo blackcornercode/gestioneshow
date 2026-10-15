@@ -4,7 +4,7 @@ const { app, ipcMain, shell } = require('electron');
 const fs = require('fs').promises;
 const canali = require('./canali');
 const percorsi = require('./percorsi');
-const { logToFile } = require('./log');
+const { logToFile, cancellaLog } = require('./log');
 
 // Protocolli che l'app può aprire all'esterno (browser, Teams, Telegram)
 const PROTOCOLLI_ESTERNI_CONSENTITI = ['http:', 'https:', 'msteams:', 'tg:'];
@@ -29,7 +29,7 @@ async function apriUrlEsternoSicuro(url) {
     }
     // Blocca file://, javascript: ecc.: openExternal su un percorso locale può avviare eseguibili
     if (!PROTOCOLLI_ESTERNI_CONSENTITI.includes(protocollo)) {
-        logToFile('WARN', 'Apertura link esterno bloccata', url);
+        logToFile('WARN', 'Apertura link esterno bloccata', protocollo);
         return { success: false, error: `Protocollo non consentito: ${protocollo}` };
     }
     try {
@@ -82,9 +82,25 @@ function changelogInHtml(data) {
 function registra() {
     ipcMain.handle(canali.VERSIONE_APP, () => app.getVersion());
 
-    ipcMain.handle(canali.SCRIVI_LOG, async (event, logData = {}) => {
-        await logToFile(String(logData.level || 'INFO'), String(logData.message || ''), String(logData.details || ''));
+    ipcMain.handle(canali.SCRIVI_LOG, async (event, dati) => {
+        const logData = dati && typeof dati === 'object' ? dati : {};
+        // Il livello va filtrato e il testo ripulito da logToFile; l'ora la mette il processo principale
+        await logToFile(logData.level, logData.message, logData.details);
         return { success: true };
+    });
+
+    ipcMain.handle(canali.APRI_LOG, async () => {
+        const errore = await shell.openPath(percorsi.log);
+        return errore ? { success: false, error: errore } : { success: true };
+    });
+
+    ipcMain.handle(canali.CANCELLA_LOG, async () => {
+        try {
+            await cancellaLog();
+            return { success: true };
+        } catch (err) {
+            return { success: false, error: err.message };
+        }
     });
 
     ipcMain.handle(canali.APRI_CARTELLA_DATI, async () => {

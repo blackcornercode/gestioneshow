@@ -29,20 +29,25 @@
     "data": "💾 Data ▾",
     "settings": "⚙️ Settings ▾",
     "mcg_title": "🌐 Import from Mondo Cam Girls",
-    "backup_title": "💾 Backup and data",
+    "backup_title": "💾 Backup",
     "csv_title": "📄 CSV files (any site)"
   },
   "actions": {
     "export": "💾 Export",
     "import": "📥 Import",
-    "folder": "📁 Folder",
+    "folder": "📁 Data folder",
     "sync": "🔄 Sync MCG",
     "sync_all": "📜 Full MCG history",
     "close_details": "Close Details",
     "sync_desc": "Latest transactions · quick",
     "sync_all_desc": "All pages · slower",
     "sync_hint": "Reads only the first page of your MCG transactions (the latest 100) and imports the new shows. It is quick: use it after every show. You need to log in in the MCG window.",
-    "sync_all_hint": "Reads every page of your MCG transactions, from newest to oldest, and imports everything that is missing. Use it the first time or to recover old shows: it can take a few minutes and shows a summary to confirm before saving. You need to log in in the MCG window."
+    "sync_all_hint": "Reads every page of your MCG transactions, from newest to oldest, and imports everything that is missing. Use it the first time or to recover old shows: it can take a few minutes and shows a summary to confirm before saving. You need to log in in the MCG window.",
+    "folder_hint": "Opens the folder with the archive, settings and log",
+    "export_desc": "All data in one file",
+    "export_hint": "Save a backup of all data to a file",
+    "import_desc": "Restore from a backup",
+    "import_hint": "Restore the data from a backup file"
   },
   "tabs": {
     "dashboard": "📹 Shows & History",
@@ -110,7 +115,15 @@
     "shortcut_save": "saves",
     "shortcut_close": "closes",
     "key_enter": "Enter",
-    "teams_email_hint": "With the model's Teams email, a click on the nickname opens the chat directly; with a username the click copies it and opens Teams, where you search for it."
+    "teams_email_hint": "With the model's Teams email, a click on the nickname opens the chat directly; with a username the click copies it and opens Teams, where you search for it.",
+    "quality": "Quality (video and audio)",
+    "camera": "Camera framing",
+    "note_rating": "Click again to clear the rating; without a rating it stays TBD.",
+    "note_quality": "Video and audio. Optional.",
+    "note_camera": "How she held the camera. Optional.",
+    "note_review": "Did you leave a review on the site?",
+    "review_yes": "Done",
+    "review_no": "Not done"
   },
   "options": {
     "other": "Other",
@@ -146,7 +159,7 @@
     "confirm_hidden": "Warning: some of them are hidden by the current filters ({n}).",
     "edit_title": "✏️ Edit selected shows",
     "edit_info": "Shows the changes will be applied to: {n}",
-    "edit_note": "Fields left on \"don't change\" stay as they are. Platform and rating are not applied to gifts.",
+    "edit_note": "Fields left on \"don't change\" stay as they are. Platform, rating, quality and framing are not applied to gifts.",
     "no_change": "— don't change —",
     "review_yes": "✅ Done",
     "review_no": "❌ Not done",
@@ -154,7 +167,8 @@
     "nothing_to_change": "Choose at least one field to change.",
     "invalid_duration": "Duration must be a whole number of minutes (0 or more).",
     "edit_none": "No show changed: they already had these values.",
-    "edit_done_gifts": "Shows updated: {n}. Platform and rating were not applied to the selected gifts ({regali})."
+    "edit_done_gifts": "Shows updated: {n}. Platform, rating, quality and framing were not applied to the selected gifts ({regali}).",
+    "not_set": "— not set —"
   },
   "tags": {
     "label": "🏷️ Tags",
@@ -462,7 +476,23 @@
     "sites_tags": "🗂️ Sites and tags",
     "notes_full": "Show full notes",
     "notes_full_hint": "Complete notes and tags in the history, month detail and model card, without clicking.",
-    "autosave": "💾 Settings are saved automatically and kept when you reopen the app, as are table order and filters."
+    "autosave": "💾 Settings are saved automatically and kept when you reopen the app, as are table order and filters.",
+    "data": "💾 Data"
+  },
+  "log": {
+    "section": "📝 Log",
+    "level": "What to log:",
+    "off": "Nothing",
+    "error": "Errors only",
+    "warn": "Errors and warnings",
+    "info": "Everything (errors, warnings, info)",
+    "hint": "The log is not protected by the PIN: at the “Everything” level it also records the actions you take.",
+    "open": "Open the log",
+    "clear": "Clear the log",
+    "confirm_clear": "Clear the log? This cannot be undone.",
+    "save_error": "Could not save the log level",
+    "open_error": "Could not open the log (it may still be empty)",
+    "clear_error": "Could not clear the log"
   },
   "credit": {
     "tip": "Available credit on Mondo Cam Girls (read on {data})",
@@ -519,5 +549,14 @@
     "sort_hint": "Click to sort; click again to reverse",
     "open_card": "Open {nome}'s card",
     "no_online": "None of these models is online on Mondo Cam Girls right now."
+  },
+  "quality": {
+    "alta": "High",
+    "media": "Medium",
+    "bassa": "Low"
+  },
+  "camera": {
+    "orizzontale": "Landscape",
+    "verticale": "Portrait"
   }
 }

@@ -1,6 +1,7 @@
 import { logger } from './logger.js';
 import { caricaStatisticheMensili, aggiornaIndicatoreBudgetHomepage } from './statistiche.js';
 import { stato } from './stato.js';
+import { t } from './i18n.js';
 
 /* ==========================================================================
    SCHEDE, PREFERENZE UTENTE E VERSIONE
@@ -142,4 +143,40 @@ export async function mostraVersioneApp() {
     } catch (err) {
         logger.error("Errore durante il recupero della versione app", err);
     }
+}
+
+/* ==========================================================================
+   REGISTRO (LOG)
+   ==========================================================================
+   Il livello (off, error, warn, info) sta in preferenze.json e lo applica il
+   processo principale (main/log.js): vedi le opzioni "Registro" delle impostazioni. */
+export async function inizializzaRegistro() {
+    const select = document.getElementById('selectLivelloLog');
+    if (!select || !window.electronAPI?.leggiPreferenze) return;
+    try {
+        select.value = (await window.electronAPI.leggiPreferenze()).livelloLog;
+    } catch (err) {
+        logger.error('Livello del registro non letto', err);
+    }
+}
+
+export async function cambiaLivelloLog(select) {
+    const esito = await window.electronAPI?.salvaPreferenza?.('livelloLog', select.value);
+    if (!esito || !esito.success) {
+        alert(`❌ ${t('log.save_error')}${esito?.error ? `: ${esito.error}` : ''}`);
+        inizializzaRegistro();
+        return;
+    }
+    logger.info(`Livello del registro: ${select.value}`);
+}
+
+export async function apriLog() {
+    const esito = await window.electronAPI?.apriLog?.();
+    if (!esito || !esito.success) alert(`❌ ${t('log.open_error')}${esito?.error ? `: ${esito.error}` : ''}`);
+}
+
+export async function cancellaLog() {
+    if (!confirm(t('log.confirm_clear'))) return;
+    const esito = await window.electronAPI?.cancellaLog?.();
+    if (!esito || !esito.success) alert(`❌ ${t('log.clear_error')}${esito?.error ? `: ${esito.error}` : ''}`);
 }

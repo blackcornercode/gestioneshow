@@ -64,7 +64,7 @@ async function creaTag(nomeInserito) {
         colore: COLORI_TAG[stato.catalogoTag.length % COLORI_TAG.length]
     };
     await salvaCatalogoTag(ordinaCatalogo([...stato.catalogoTag, nuovo]));
-    logger.success(`Tag creato: ${nome}`);
+    logger.success('Tag creato');
     return nuovo;
 }
 
@@ -237,7 +237,7 @@ export async function rinominaTag(campo) {
     }
     try {
         await salvaCatalogoTag(ordinaCatalogo(stato.catalogoTag.map(x => x.id === tag.id ? { ...x, nome } : x)));
-        logger.success(`Tag rinominato: ${tag.nome} -> ${nome}`);
+        logger.success('Tag rinominato');
     } catch (err) {
         campo.value = tag.nome;
         logger.error('Rinomina del tag non riuscita', err);
@@ -261,7 +261,7 @@ export async function eliminaTag(el) {
     if (!confirm(testo('tags.confirm_delete', { nome: tag.nome, n: usi }))) return;
     try {
         const modificati = await eliminaTagDalCatalogo(tag.id);
-        logger.success(`Tag eliminato: ${tag.nome} (tolto da ${modificati} show)`);
+        logger.success(`Tag eliminato (tolto da ${modificati} show)`);
     } catch (err) {
         logger.error('Eliminazione del tag non riuscita', err);
     }

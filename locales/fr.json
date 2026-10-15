@@ -29,20 +29,25 @@
     "data": "💾 Données ▾",
     "settings": "⚙️ Paramètres ▾",
     "mcg_title": "🌐 Importer depuis Mondo Cam Girls",
-    "backup_title": "💾 Sauvegarde et données",
+    "backup_title": "💾 Sauvegarde",
     "csv_title": "📄 Fichiers CSV (tout site)"
   },
   "actions": {
     "export": "💾 Exporter",
     "import": "📥 Importer",
-    "folder": "📁 Dossier",
+    "folder": "📁 Dossier de données",
     "sync": "🔄 Synchroniser MCG",
     "sync_all": "📜 Historique MCG complet",
     "close_details": "Fermer le détail",
     "sync_desc": "Dernières transactions · rapide",
     "sync_all_desc": "Toutes les pages · plus lent",
     "sync_hint": "Lit seulement la première page de tes transactions MCG (les 100 dernières) et importe les nouveaux shows. C'est rapide : utilise-le après chaque show. Tu dois te connecter dans la fenêtre de MCG.",
-    "sync_all_hint": "Lit toutes les pages de tes transactions MCG, de la plus récente à la plus ancienne, et importe tout ce qui manque. Utilise-le la première fois ou pour récupérer d'anciens shows : cela peut prendre quelques minutes et affiche un résumé à confirmer avant d'enregistrer. Tu dois te connecter dans la fenêtre de MCG."
+    "sync_all_hint": "Lit toutes les pages de tes transactions MCG, de la plus récente à la plus ancienne, et importe tout ce qui manque. Utilise-le la première fois ou pour récupérer d'anciens shows : cela peut prendre quelques minutes et affiche un résumé à confirmer avant d'enregistrer. Tu dois te connecter dans la fenêtre de MCG.",
+    "folder_hint": "Ouvre le dossier avec l'archive, les réglages et le journal",
+    "export_desc": "Toutes les données dans un fichier",
+    "export_hint": "Enregistre une sauvegarde de toutes les données",
+    "import_desc": "Restaurer depuis une sauvegarde",
+    "import_hint": "Restaure les données depuis un fichier de sauvegarde"
   },
   "tabs": {
     "dashboard": "📹 Shows & Historique",
@@ -110,7 +115,15 @@
     "shortcut_save": "enregistre",
     "shortcut_close": "ferme",
     "key_enter": "Entrée",
-    "teams_email_hint": "Avec l'e-mail Teams du modèle, un clic sur le pseudo ouvre directement le chat ; avec un nom d'utilisateur, le clic le copie et ouvre Teams, où il faut le chercher."
+    "teams_email_hint": "Avec l'e-mail Teams du modèle, un clic sur le pseudo ouvre directement le chat ; avec un nom d'utilisateur, le clic le copie et ouvre Teams, où il faut le chercher.",
+    "quality": "Qualité (vidéo et audio)",
+    "camera": "Cadrage",
+    "note_rating": "Un second clic retire la note ; sans note, elle reste TBD.",
+    "note_quality": "Vidéo et audio. Facultatif.",
+    "note_camera": "Comment elle tenait la caméra. Facultatif.",
+    "note_review": "As-tu laissé un avis sur le site ?",
+    "review_yes": "Fait",
+    "review_no": "Pas fait"
   },
   "options": {
     "other": "Autre",
@@ -146,7 +159,7 @@
     "confirm_hidden": "Attention : certains sont masqués par les filtres actuels ({n}).",
     "edit_title": "✏️ Modifier les shows sélectionnés",
     "edit_info": "Shows auxquels les modifications seront appliquées : {n}",
-    "edit_note": "Les champs laissés sur « ne pas modifier » restent inchangés. La plateforme et la note ne s'appliquent pas aux cadeaux.",
+    "edit_note": "Les champs laissés sur « ne pas modifier » restent inchangés. La plateforme, la note, la qualité et le cadrage ne s'appliquent pas aux cadeaux.",
     "no_change": "— ne pas modifier —",
     "review_yes": "✅ Fait",
     "review_no": "❌ Pas fait",
@@ -154,7 +167,8 @@
     "nothing_to_change": "Choisis au moins un champ à modifier.",
     "invalid_duration": "La durée doit être un nombre entier de minutes (0 ou plus).",
     "edit_none": "Aucun show modifié : ils avaient déjà ces valeurs.",
-    "edit_done_gifts": "Shows mis à jour : {n}. La plateforme et la note n'ont pas été appliquées aux cadeaux sélectionnés ({regali})."
+    "edit_done_gifts": "Shows mis à jour : {n}. La plateforme, la note, la qualité et le cadrage n'ont pas été appliqués aux cadeaux sélectionnés ({regali}).",
+    "not_set": "— non indiqué —"
   },
   "tags": {
     "label": "🏷️ Tags",
@@ -462,7 +476,23 @@
     "sites_tags": "🗂️ Sites et tags",
     "notes_full": "Afficher les notes en entier",
     "notes_full_hint": "Notes et tags complets dans l'historique, le détail du mois et la fiche du modèle, sans cliquer.",
-    "autosave": "💾 Les paramètres s'enregistrent tout seuls et sont conservés à la réouverture de l'app, tout comme l'ordre et les filtres des tableaux."
+    "autosave": "💾 Les paramètres s'enregistrent tout seuls et sont conservés à la réouverture de l'app, tout comme l'ordre et les filtres des tableaux.",
+    "data": "💾 Données"
+  },
+  "log": {
+    "section": "📝 Journal (log)",
+    "level": "Que consigner :",
+    "off": "Rien",
+    "error": "Erreurs seulement",
+    "warn": "Erreurs et avertissements",
+    "info": "Tout (erreurs, avertissements, infos)",
+    "hint": "Le journal n'est pas protégé par le PIN : au niveau « Tout », il note aussi les actions effectuées.",
+    "open": "Ouvrir le journal",
+    "clear": "Effacer le journal",
+    "confirm_clear": "Effacer le journal ? Cette action est irréversible.",
+    "save_error": "Impossible d'enregistrer le niveau du journal",
+    "open_error": "Impossible d'ouvrir le journal (il est peut-être encore vide)",
+    "clear_error": "Impossible d'effacer le journal"
   },
   "credit": {
     "tip": "Crédit disponible sur Mondo Cam Girls (lu le {data})",
@@ -519,5 +549,14 @@
     "sort_hint": "Clique pour trier ; un autre clic inverse l'ordre",
     "open_card": "Ouvrir la fiche de {nome}",
     "no_online": "Aucun de ces modèles n'est en ligne sur Mondo Cam Girls en ce moment."
+  },
+  "quality": {
+    "alta": "Haute",
+    "media": "Moyenne",
+    "bassa": "Basse"
+  },
+  "camera": {
+    "orizzontale": "Horizontal",
+    "verticale": "Vertical"
   }
 }

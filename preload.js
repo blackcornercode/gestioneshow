@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // Logging & Utility di Sistema
     getAppVersion: () => ipcRenderer.invoke('get-app-version'),
     appendLog: (logData) => ipcRenderer.invoke('append-log', logData),
+    apriLog: () => ipcRenderer.invoke('open-log'),
+    cancellaLog: () => ipcRenderer.invoke('clear-log'),
 
     // Gestione Changelog & Aggiornamenti
     getChangelog: () => ipcRenderer.invoke('get-changelog'),

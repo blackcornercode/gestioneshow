@@ -120,8 +120,8 @@ export function inizializzaUrlProfiloForm() {
     document.addEventListener('sito-form-cambiato', aggiornaUrlProfiloPerSito);
 }
 
-// "Ripeti ultimo show": stessi dettagli, durata, costo e tag dell'ultimo show con la
-// modella; data, voto, recensione e note restano da compilare
+// "Ripeti ultimo show": stessi dettagli, durata, costo, tag e inquadratura dell'ultimo show con la
+// modella; data, voto, qualità, recensione e note restano da compilare
 export function ripetiUltimoShow() {
     const ultimo = ultimoShowModella();
     if (!ultimo) return;
@@ -131,6 +131,8 @@ export function ripetiUltimoShow() {
     gestisciStatoRegalo();
     impostaPiattaformaCustom(ultimo.piattaforma || 'Teams');
     imposta('nickname', ultimo.nickname);
+    // L'inquadratura di solito resta quella; la qualità va giudicata show per show
+    imposta('cameraShow', ultimo.camera);
     imposta('urlProfilo', ultimo.urlProfilo);
     imposta('immagine', ultimo.immagine);
     imposta('durataShow', ultimo.durata || '');
@@ -141,7 +143,7 @@ export function ripetiUltimoShow() {
     impostaTagForm(ultimo.tag || []);
     impostaSitoForm(ultimo.sito);
     sincronizzaFormAssistito();
-    logger.info(`Form precompilato dall'ultimo show con ${ultimo.nome}`);
+    logger.info("Form precompilato dall'ultimo show");
 }
 
 export const showForm = document.getElementById('showForm');
@@ -185,8 +187,13 @@ if (showForm) {
             isRegalo: isRegalo,
             piattaforma: isRegalo ? '' : (piattaformaSelect ? piattaformaSelect.value : ''),
             punteggio: isRegalo ? null : (valPunteggio === 'TBD' ? 'TBD' : parseInt(valPunteggio, 10) || 'TBD'),
+            // Qualità e inquadratura facoltative (null = non indicate); i regali non le hanno
+            qualita: isRegalo ? null : (document.getElementById('qualitaShow')?.value || null),
+            camera: isRegalo ? null : (document.getElementById('cameraShow')?.value || null),
             costo: inputCosto ? (parseFloat(inputCosto.value) || 0) : 0,
-            durata: inputDurata ? (parseInt(inputDurata.value, 10) || 0) : 0, // <-- AGGIUNTO
+            // I regali non hanno durata: il campo è nascosto ma può conservare un valore
+            // (es. dopo "Ripeti ultimo show"), che finiva salvato nel regalo
+            durata: isRegalo || !inputDurata ? 0 : (parseInt(inputDurata.value, 10) || 0),
             immagine: inputImmagine ? inputImmagine.value.trim() : '',
             urlProfilo: inputUrlProfilo ? inputUrlProfilo.value.trim() : '',
             recensione: inputRecensione ? inputRecensione.checked : false,
@@ -273,6 +280,11 @@ export async function modificaShow(id) {
     if (!item.isRegalo && punteggioSelect) {
         punteggioSelect.value = (item.punteggio !== undefined && item.punteggio !== null) ? item.punteggio : '';
     }
+
+    const qualitaInput = document.getElementById('qualitaShow');
+    if (qualitaInput) qualitaInput.value = item.qualita || '';
+    const cameraInput = document.getElementById('cameraShow');
+    if (cameraInput) cameraInput.value = item.camera || '';
 
     const recensioneInput = document.getElementById('recensione');
     if (recensioneInput) recensioneInput.checked = Boolean(item.recensione);

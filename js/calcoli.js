@@ -284,14 +284,15 @@ export function filtraOrdinaShows(shows, { nome = '', anni = [], ordine = 'desc'
 }
 
 // Modifica di più show insieme: applica a ogni show con ID in "ids" i campi
-// presenti in "campi" (piattaforma, punteggio, recensione, durata, nickname;
-// un campo assente resta invariato) e aggiunge/toglie i tag di tagAggiungi/tagTogli. Piattaforma e voto non si applicano ai
-// regali, come nel form. Restituisce un nuovo elenco (gli show non toccati
-// restano gli stessi oggetti), quanti show sono cambiati e quanti regali sono
-// stati esclusi da piattaforma/voto.
+// presenti in "campi" (piattaforma, punteggio, qualita, camera, recensione, durata,
+// nickname, sito; un campo assente resta invariato; qualita e camera null = non indicate)
+// e aggiunge/toglie i tag di tagAggiungi/tagTogli. Piattaforma, voto, qualità e
+// inquadratura non si applicano ai regali, come nel form. Restituisce un nuovo elenco
+// (gli show non toccati restano gli stessi oggetti), quanti show sono cambiati e quanti
+// regali sono stati esclusi da questi campi.
 export function applicaModificheMultiple(shows, ids, campi) {
     const scelti = new Set(ids.map(String));
-    const tocchiPiattaformaVoto = campi.piattaforma !== undefined || campi.punteggio !== undefined;
+    const tocchiPiattaformaVoto = ['piattaforma', 'punteggio', 'qualita', 'camera'].some(campo => campi[campo] !== undefined);
     let modificati = 0;
     let regaliSaltati = 0;
 
@@ -300,7 +301,8 @@ export function applicaModificheMultiple(shows, ids, campi) {
         const nuovo = { ...show };
         let cambiato = false;
         const imposta = (campo, valore) => {
-            if (nuovo[campo] !== valore) { nuovo[campo] = valore; cambiato = true; }
+            // Un campo mancante e uno a null (qualità o inquadratura non indicate) sono uguali
+            if ((nuovo[campo] ?? null) !== (valore ?? null)) { nuovo[campo] = valore; cambiato = true; }
         };
 
         if (show.isRegalo) {
@@ -308,6 +310,8 @@ export function applicaModificheMultiple(shows, ids, campi) {
         } else {
             if (campi.piattaforma !== undefined) imposta('piattaforma', campi.piattaforma);
             if (campi.punteggio !== undefined) imposta('punteggio', campi.punteggio);
+            if (campi.qualita !== undefined) imposta('qualita', campi.qualita);
+            if (campi.camera !== undefined) imposta('camera', campi.camera);
         }
         if (campi.recensione !== undefined) imposta('recensione', campi.recensione);
         if (campi.durata !== undefined) imposta('durata', campi.durata);

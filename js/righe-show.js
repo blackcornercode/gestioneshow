@@ -79,6 +79,26 @@ function cellaData(show) {
 
 const selezionato = (show) => stato.selezioneCronologia.has(String(show.id));
 
+// Qualità (etichetta colorata) e inquadratura (icona dello smartphone ruotato o dritto,
+// come nel form) di uno show; stringa vuota per i regali e se non sono indicate
+const ICONE_CAMERA = {
+    orizzontale: '<i class="fa-solid fa-mobile-screen fa-rotate-90" aria-hidden="true"></i>',
+    verticale: '<i class="fa-solid fa-mobile-screen" aria-hidden="true"></i>'
+};
+export function parametriShow(show) {
+    if (show.isRegalo || (!show.qualita && !show.camera)) return '';
+    const parti = [];
+    if (show.qualita) {
+        const titolo = `${t('form.quality')}: ${t(`quality.${show.qualita}`)}`;
+        parti.push(`<span class="badge-qualita qualita-${escapeHtml(show.qualita)}" title="${escapeHtml(titolo)}">${escapeHtml(t(`quality.${show.qualita}`))}</span>`);
+    }
+    if (show.camera) {
+        const titolo = `${t('form.camera')}: ${t(`camera.${show.camera}`)}`;
+        parti.push(`<span class="icona-camera" title="${escapeHtml(titolo)}" aria-label="${escapeHtml(titolo)}">${ICONE_CAMERA[show.camera] || ''}</span>`);
+    }
+    return `<div class="parametri-show">${parti.join('')}</div>`;
+}
+
 // chiave: [chiave della traduzione dell'intestazione, classe dell'intestazione, cella,
 //          intestazione personalizzata (facoltativa, al posto del testo tradotto)]
 export const COLONNE_SHOW = {
@@ -95,7 +115,8 @@ export const COLONNE_SHOW = {
     durata:        ['table.duration', 'col-centro', s => `<td class="col-nowrap col-centro col-grassetto">${formattaDurata(s.durata)}</td>`],
     costo:         ['table.cost', '', s => cellaCosto(s)],
     costoMinuto:   ['table.cost_per_minute', 'col-centro', s => `<td class="col-nowrap col-centro">${formattaCostoAlMinuto(costoAlMinuto(s))}</td>`],
-    voto:          ['table.rating', '', s => `<td class="col-nowrap">${formattaVoto(s)}</td>`],
+    // Sotto il voto: qualità e inquadratura, se indicate
+    voto:          ['table.rating', '', s => `<td class="col-nowrap">${formattaVoto(s)}${parametriShow(s)}</td>`],
     // Intestazione abbreviata (nome completo nel tooltip): la colonna contiene solo ✅/❌
     recensione:    ['table.review', 'col-centro', s => `<td class="col-centro">${s.recensione ? '✅' : '❌'}</td>`,
                     () => `<span title="${escapeHtml(t('table.review'))}">${escapeHtml(t('table.review_short'))}</span>`],

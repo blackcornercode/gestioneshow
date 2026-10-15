@@ -7,6 +7,9 @@ Generato da `changelog.json` con `npm run changelog`: per modificarlo, modificar
 
 ### ✨ Novità
 
+- Il pulsante Cartella è passato dal menu Dati a Impostazioni › Dati e si chiama «Cartella dati»; la sezione «Backup e dati» del menu Dati si chiama ora «Backup» e i suoi due pulsanti (Esporta, Importa) hanno titolo e descrizione come gli altri del menu
+- Impostazioni › Registro (log): si sceglie cosa annotare in app.log (niente, solo errori, errori e avvisi, tutto), con i pulsanti per aprire e cancellare il registro. Il registro ora riporta il messaggio e lo stack degli errori (prima restava «{}»), annota gli errori non gestiti e l'arresto dell'interfaccia, non contiene più nomi di modelle, tag e siti, e le righe inviate dall'interfaccia sono ripulite e limitate in lunghezza
+- Due nuovi parametri dello show, facoltativi: qualità di video e audio (Alta, Media, Bassa) e inquadratura della camera (orizzontale o verticale). Si scelgono nel form, nella sezione Com'è andata, compaiono sotto il voto in tutte le tabelle, si cambiano con la modifica multipla e sono nell'esportazione CSV. Ripeti ultimo show riprende l'inquadratura. La sezione Com'è andata mostra voto, qualità, inquadratura e recensione in quattro riquadri affiancati, con icona, titolo e una nota breve (due per riga se la finestra è stretta)
 - Scheda Preventivo, tra Classifica e Statistiche: per ogni modella un €/min suggerito (media degli ultimi 5 show con durata, sul sito scelto se lei ne ha almeno 2 lì), il prezzo atteso per la durata scelta, l'ultimo show con lei della stessa durata e il confronto del prezzo chiesto (anche in token) con la sua media e con la tua media generale: in linea entro ±10%, più caro o più conveniente. Sotto, la tabella dei prezzi suggeriti di tutte le modelle con la tendenza e i prezzi per 10, 15, 30 e 60 minuti, ordinabile cliccando sulle intestazioni (dal più costoso al meno costoso e viceversa, ordine ricordato alla riapertura) e con un pulsante per aprire la scheda di ogni modella, presente anche nel calcolatore; accanto al nome i badge Online e Sospesa/Rimossa come in classifica e la casella «Solo online», ricordata alla riapertura
 - Riquadro Preventivo nella scheda della modella e prezzo atteso nel form appena scelte modella e durata, prima di scrivere il costo
 - Credito residuo su Mondo Cam Girls nell'intestazione, accanto all'indicatore MCG: viene letto a ogni sincronizzazione e poi aggiornato da solo ogni 15 minuti (o con un clic) usando il login salvato, senza aprire finestre; se MCG chiede di nuovo il login resta l'ultimo valore letto, con la data
@@ -19,6 +22,7 @@ Generato da `changelog.json` con `npm run changelog`: per modificarlo, modificar
 
 ### 🐛 Correzioni
 
+- Un regalo registrato dopo Ripeti ultimo show (o dopo aver scelto una durata) veniva salvato con la durata dello show, che per i regali è nascosta
 - Nella scheda della modella, nei riquadri per sito, alcune etichette (in inglese «Total duration» e «Total spent») si sovrapponevano e in tedesco e russo le parole lunghe venivano spezzate; ora ogni etichetta resta intera e, se non c'è spazio, va sulla riga sotto. La pagina dichiara anche la lingua dell'interfaccia, utile ai lettori di schermo
 
 ## 2.0.0

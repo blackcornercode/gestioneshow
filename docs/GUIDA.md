@@ -41,7 +41,7 @@ Il form è diviso in quattro sezioni con un titolo, nell'ordine in cui si regist
 | :--- | :--- |
 | **Chi e quando** | **Modella** (con autocompletamento), **🌐 Sito** e **Data e ora** sulla stessa riga; i campi obbligatori hanno l'asterisco rosso. Il sito si sceglie tra le sigle (es. MCG, SC, CB) e accanto al titolo compare il nome completo: per uno show nuovo vale il **sito predefinito**, poi, appena scrivi il nome di una modella già nell'archivio, il sito del suo ultimo show, a meno che tu non l'abbia scelto a mano. La data è preimpostata all'ora attuale (una data non valida blocca il salvataggio con un avviso). Sotto, se la modella è già nell'archivio, la **mini-scheda**: foto, numero di show, media voti, ultimo show (data, costo, durata, piattaforma), badge Online/Sospesa e tag usati più spesso, con il pulsante **↻ Ripeti ultimo show** che compila durata, costo (anche in token), tag e dettagli come nell'ultimo show con lei. |
 | **Lo show** | **Durata**: una barra con 10/15/20/30/45/60 minuti e il campo **altro…** per un valore libero; facoltativa (senza durata lo show resta fuori dal calcolo del €/min). **Costo (€)** con il pulsante **= ultimo** per riusare il prezzo dell'ultimo show. Se il sito fa pagare in un'altra valuta (token, dollari, crediti…) il campo principale diventa **Token pagati** (o *Dollari pagati*…), con accanto l'equivalente in euro calcolato col tasso del sito (es. «= € 64,96») e sotto il tasso («1 token = € 0,08 su Stripchat») con il link **inserisci in euro** per scrivere direttamente il costo in euro; l'importo originale resta nel tooltip del costo (simbolo ¤). **Costo al minuto**: calcolato mentre scrivi, verde o rosso rispetto alla tua media, che compare accanto. |
-| **Com'è andata** | **Voto** con gli stessi colori della cronologia (1-2 rosso, 3 ambra, 4 verde acqua, 5 verde, TBD grigio): quelli non scelti hanno solo il contorno. Un secondo clic sullo stesso voto lo toglie; senza voto lo show viene salvato come TBD. **Recensione fatta** è un interruttore. |
+| **Com'è andata** | **Voto** con gli stessi colori della cronologia (1-2 rosso, 3 ambra, 4 verde acqua, 5 verde, TBD grigio): quelli non scelti hanno solo il contorno. Un secondo clic sullo stesso voto lo toglie; senza voto lo show viene salvato come TBD. Facoltative: **Qualità** di video e audio (Alta, Media, Bassa) e **Inquadratura** della camera (Orizzontale o Verticale, con l'icona dello smartphone ruotato o dritto); anche qui un secondo clic toglie la scelta. **Recensione fatta** è un interruttore. Voto, qualità, inquadratura e recensione stanno ciascuno in un riquadro con icona, titolo e una nota breve: quattro su una riga, due per riga se la finestra è stretta. Accanto all'interruttore della recensione lo stato è scritto a parole (Fatta / Non fatta). Non valgono per i regali. *Ripeti ultimo show* riprende l'inquadratura, non la qualità. |
 | **Tag e note** | Tag a «pillola», pieni nel loro colore quando scelti; quelli usati di solito con la modella hanno una ★. **＋ Nuovo tag** apre il campo per crearne uno. Sotto, le **note** in testo libero e la sezione **Dettagli**, chiusa, con piattaforma, nickname, link al profilo e URL della foto: si compilano da soli dall'ultimo show o da MCG e il titolo ne mostra il riepilogo. I valori compilati da soli seguono il nome scritto: se il nome cambia (es. da «Anna» ad «Annabella») vengono sostituiti da quelli della nuova modella, o svuotati se è nuova; quelli scritti a mano restano. |
 
 La **barra dei pulsanti** (🧹 Svuota, Annulla in modifica, 💾 Salva show) resta sempre visibile in fondo allo schermo mentre scorri il form. **Svuota** azzera in un colpo tutti i campi e lascia il form aperto (in modifica equivale ad annullare: i dati salvati non cambiano).
@@ -54,11 +54,12 @@ Scorciatoie: **Ctrl+Invio** salva, **Esc** chiude il form (in modifica equivale 
 - **Badge del sito**: sotto l'ora di ogni show, in tutte le tabelle, la sigla del sito nel suo colore, con `🤖` se lo show è stato importato in automatico e `👤` se è stato inserito a mano (es. `🤖 MCG`, `👤 SC`). Il tooltip riporta il nome del sito e l'origine.
 - **Sito di provenienza**: ogni show ricorda il sito su cui è stato acquistato; gli show registrati prima dell'introduzione dei siti sono di Mondo Cam Girls. Il sito è distinto dalla *piattaforma* (Teams, Telegram…), che indica dove lo show si è svolto. Vedi anche la [roadmap](ROADMAP.md) verso il supporto completo a più siti.
 - **Spazio per tag e note**: in tutte le tabelle degli show (cronologia, dettaglio del mese, scheda modella) data e ora stanno su due righe e la colonna **Tag e note** prende tutto lo spazio che avanza, quindi le note troncate si leggono molto di più.
+- **Qualità e inquadratura**: sotto il voto di ogni show compaiono, se indicate, la qualità come etichetta colorata (Alta in verde, Media in ambra, Bassa in rosso) e l'inquadratura come icona dello smartphone (ruotato se orizzontale, dritto se verticale), con il dettaglio nel tooltip.
 - **Righe compatte**: Modifica (✏️) ed Elimina (🗑️) sono pulsanti a icona; nickname e note lunghi sono troncati con "…" e il testo completo compare al passaggio del mouse. Cliccando su una nota (o premendo Invio quando è selezionata) la si espande per leggerla tutta; un secondo clic la richiude. Se la finestra è stretta, la tabella scorre in orizzontale invece di tagliare le colonne.
 - **Chat con un clic**: sotto la piattaforma compare il nickname. Con **💬** il clic apre direttamente la chat: su Telegram con lo username, su Teams solo se il nickname è l'**email** della modella (Teams non permette di aprire una chat partendo dallo username). Con **📋** (username di Teams) il clic copia il nome negli appunti e apre Teams, dove va incollato nella ricerca o nel campo «A:» della nuova chat. Nel form, scegliendo Teams e scrivendo uno username, una nota sotto il nickname ricorda che con l'email la chat si apre direttamente.
 - **Selezione multipla**: una casella all'inizio di ogni riga seleziona lo show; quella nell'intestazione seleziona l'intera pagina. La selezione resta valida cambiando pagina, ordine o filtri. Con almeno uno show selezionato compare una barra con il conteggio (e quanti selezionati sono nascosti dai filtri attuali) e i pulsanti:
   - **Seleziona tutti i risultati**: tutti gli show che passano i filtri, anche nelle altre pagine.
-  - **✏️ Modifica selezionati**: **sito**, piattaforma, voto, recensione, durata e nickname impostati in un colpo solo; i campi lasciati su «non modificare» restano invariati. Come nel form, piattaforma e voto non vengono applicati ai regali.
+  - **✏️ Modifica selezionati**: **sito**, piattaforma, voto, qualità, inquadratura, recensione, durata e nickname impostati in un colpo solo; i campi lasciati su «non modificare» restano invariati, mentre «— non indicata —» toglie qualità o inquadratura. Come nel form, piattaforma, voto, qualità e inquadratura non vengono applicati ai regali.
   - **🗑️ Elimina selezionati**: dopo una conferma che avvisa se tra i selezionati ci sono show nascosti dai filtri.
   
   Entrambe le operazioni salvano su disco una sola volta.
@@ -137,6 +138,19 @@ Dal menu **⚙️ Impostazioni › 🔒 Privacy**:
 - **PIN di sblocco** (4-8 cifre): con un PIN l'app parte bloccata e si blocca con il **tasto rapido per nascondere l'app** (che la riduce anche a icona) e, se scelto, dopo 5/15/30/60 minuti di inattività. Dopo 5 tentativi errati bisogna attendere 30 secondi. Il PIN non viene salvato in chiaro (hash scrypt con sale in `preferenze.json`); per cambiarlo o rimuoverlo serve quello attuale. **Protegge l'app aperta, ma non cifra i file dei dati.** Se lo dimentichi, chiudi l'app ed elimina `preferenze.json` dalla cartella dei dati.
 - **Tasto rapido per nascondere l'app** (predefinito **Ctrl+Shift+H**): riduce subito a icona l'app, e la blocca se c'è un PIN. Mentre è nascosta la finestra usa anche nome e icona neutri, pure con l'opzione spenta: tornano quelli veri alla riapertura o, con un PIN, dopo lo sblocco (l'impostazione salvata non cambia). Si cambia con **Cambia** premendo la nuova combinazione (Esc annulla) e si ripristina con ↺. Lettere e numeri richiedono Ctrl o Alt (con il solo Shift scatterebbe scrivendo una maiuscola); i tasti F1-F12 si possono usare anche da soli. Le combinazioni già usate dall'app o dal sistema (Ctrl+C/V/X/A/Z/Y, Ctrl+Invio, Alt+F4, F5…) vengono rifiutate. Il tasto viene riconosciuto per posizione, quindi funziona con qualsiasi layout di tastiera.
 
+## 📝 Registro (log)
+
+Dal menu **⚙️ Impostazioni › 📝 Registro (log)** si sceglie **cosa registrare** in `app.log`:
+
+- **Niente**: il registro non viene scritto.
+- **Solo errori**: la riga d'avvio con la **versione dell'app** (che c'è a ogni livello tranne «Niente») e i problemi (salvataggi falliti, archivio illeggibile, errori non previsti, arresto dell'interfaccia).
+- **Errori e avvisi** (predefinito): aggiunge gli avvisi, come un sito che non risponde o un link bloccato.
+- **Tutto**: aggiunge anche le informazioni sulle azioni compiute (avvio, importazioni, modifiche di tag e siti, cambi di impostazioni…).
+
+**Apri il registro** lo mostra nel programma predefinito per i file di testo; **Cancella il registro** elimina `app.log` e `app.log.1` (con conferma). Il livello scelto sta in `preferenze.json` e vale subito, senza riavviare.
+
+Gli errori riportano il messaggio e, quando c'è, il punto del codice in cui sono avvenuti. Anche gli errori che nessuno ha previsto (JavaScript non gestito, promise rifiutate, arresto del processo dell'interfaccia) finiscono nel registro. Nei messaggi non compaiono nomi di modelle, tag, siti o file; il registro però **non è protetto dal PIN**: a livello «Tutto» racconta cosa hai fatto, quindi in caso di dubbio scegli un livello più basso o cancellalo.
+
 ## ⚙️ Funzioni di Sistema e Utility
 
 L'intestazione mostra l'indicatore di raggiungibilità di Mondo Cam Girls e, accanto, il **💳 credito residuo** sul tuo account MCG (es. «💳 € 16.51»). Il credito si vede solo dopo il login, quindi viene letto:
@@ -148,12 +162,14 @@ Se MCG chiede di nuovo il login resta l'ultimo valore letto, attenuato e in cors
 Le funzioni sono raccolte in due menu a tendina:
 - **💾 Dati**, in due sezioni:
   - **🌐 Importa da Mondo Cam Girls** (evidenziata): **🔄 Sincronizza MCG** (ultime transazioni, rapida: da usare dopo ogni show) e **📜 Cronologia completa MCG** (tutte le pagine, più lenta: la prima volta o per recuperare show vecchi). Sotto ogni voce c'è una descrizione breve; il tooltip spiega la differenza per intero.
-  - **💾 Backup e dati**: Esporta, Importa, Cartella.
+  - **💾 Backup**: Esporta e Importa, con una breve descrizione sotto ogni voce.
 - **⚙️ Impostazioni**, in sezioni su due colonne:
   - **🎨 Aspetto**: lingua, tema, dimensione del testo.
   - **📋 Tabelle**: **Mostra le note per intero**, che in cronologia, dettaglio del mese e scheda modella mostra note e tag completi, a capo, senza doverli aprire con un clic (spenta, la nota resta su una riga troncata con «…» e i tag oltre il terzo diventano «+N»).
   - **🗂️ Siti e tag**: Gestisci siti, Gestisci tag.
+  - **💾 Dati**: **📁 Cartella dati** (prima nel menu Dati), che apre la cartella con archivio, impostazioni e registro.
   - **🔒 Privacy** (seconda colonna): vedi la sezione [Privacy](#-privacy).
+  - **📝 Registro (log)** (seconda colonna): vedi la sezione [Registro](#-registro-log).
 
   Ogni scelta si salva da sola e resta alla riapertura dell'app.
   - **🌐 Gestisci siti**: nome, sigla (fino a 6 caratteri), colore, **valuta** (euro, dollari, sterline, token, crediti) e **tasso** in euro di ogni sito (i tassi iniziali sono indicativi: controllali), aggiunta di nuovi siti e **sito predefinito** per gli show nuovi (salvato anche nel backup). Mondo Cam Girls e i siti usati da almeno uno show non si possono eliminare: prima vanno spostati su un altro sito con la modifica multipla.
@@ -177,7 +193,7 @@ I menu si chiudono con un clic fuori o con `Esc`.
   - **Dimensione Testo**: Pulsanti `A+` / `A-` per modificare al volo la grandezza dei font (12px - 26px).
   - **Temi Visivi**: Selezione tra *Neve & Nebbia*, *Luce Chiara*, *Eclissi Scura* e *Bordeaux & Oro (MCG)*, con i colori di mondocamgirls.com (crema, bordeaux, oro). I colori di stato (budget, mese corrente, badge) sono definiti come variabili CSS per ogni tema in `style.css`.
   - **Font e icone in locale**: il font Inter e le icone Font Awesome sono inclusi tra le dipendenze (`@fontsource/inter`, `@fortawesome/fontawesome-free`), quindi l'interfaccia si vede correttamente anche offline.
-- **📁 Gestione Cartella Dati**: Collegamento rapido alla cartella `userData` di sistema per consultare file JSON e log.
+- **📁 Cartella dati** (Impostazioni › Dati): collegamento rapido alla cartella `userData` di sistema per consultare file JSON e log.
 
 ---
 
@@ -191,11 +207,11 @@ Dal menu **💾 Dati › 📄 File CSV (tutti i siti)**:
   3. **Anteprima**: per ogni riga lo stato (**nuovo**, **già presente**, **errore** con il motivo) e il conteggio complessivo. Una riga è già presente se esiste uno show della stessa modella alla stessa data e ora (al minuto), nell'archivio o più su nel file.
 
   Il pulsante **Importa N show** salva tutti gli show nuovi con un solo salvataggio. Gli show importati hanno il sito scelto, il costo in euro (con l'importo originale se in un'altra valuta), la durata e le note del file, la piattaforma, la foto e il profilo già noti per la modella, e voto **TBD** da completare. Il file può usare `;`, `,` o il tabulatore come separatore e la virgola o il punto per i decimali; i file salvati da Excel in italiano (codifica Windows) vengono letti correttamente.
-- **📤 Esporta in CSV**: salva tutta la cronologia in un file CSV (`;` e virgola decimale, apribile con Excel in italiano) con data, ora, modella, sito, piattaforma, durata, costo, €/min, voto, recensione, regalo, tag, note, nickname, origine e importo originale. Il file si può reimportare: gli show già presenti vengono riconosciuti.
+- **📤 Esporta in CSV**: salva tutta la cronologia in un file CSV (`;` e virgola decimale, apribile con Excel in italiano) con data, ora, modella, sito, piattaforma, durata, costo, €/min, voto, recensione, regalo, tag, note, nickname, origine, importo originale, qualità e inquadratura. Il file si può reimportare: gli show già presenti vengono riconosciuti.
 
 ## 💾 Dati e Backup
 
-I dati sono salvati nella cartella `userData` dell'applicazione (apribile dal pulsante **📁 Cartella Dati**):
+I dati sono salvati nella cartella `userData` dell'applicazione (apribile da Impostazioni › Dati › **📁 Cartella dati**):
 
 | File | Contenuto |
 | :--- | :--- |
@@ -203,11 +219,11 @@ I dati sono salvati nella cartella `userData` dell'applicazione (apribile dal pu
 | `shows_data.bak.json` | Copia della versione precedente, aggiornata a ogni salvataggio o importazione. |
 | `shows_data.prima-2.0.json` | Copia dell'archivio fatta una sola volta al primo avvio della 2.0, prima della conversione al nuovo formato (campi `sito` e `importatoDa`). |
 | `shows_data.corrotto-<timestamp>.json` | Copia di un archivio illeggibile, conservata invece di sovrascriverlo. |
-| `app.log` | Log dell'applicazione, in ordine cronologico (righe più recenti in fondo). Oltre 1 MB diventa `app.log.1` e ne viene iniziato uno nuovo. |
+| `app.log` | Registro dell'applicazione, in ordine cronologico (righe più recenti in fondo), secondo il livello scelto in Impostazioni › Registro. Oltre 1 MB diventa `app.log.1` e ne viene iniziato uno nuovo. |
 | `siti.json` | Catalogo dei siti di provenienza degli show (`id`, `nome`, `sigla`, `colore`, `valuta`, `tasso` in euro, `urlProfilo` facoltativo). Ogni show salva l'ID nel campo `sito`; `importatoDa` indica il sito da cui è stato importato (vuoto se inserito a mano); `importoOriginale` (`{ valore, valuta }`) l'importo pagato se diverso dall'euro. |
 | `tags.json` | Catalogo dei tag (`id`, `nome`, `colore`). Gli show salvano solo gli ID dei tag nel campo `tag`, quindi rinominare un tag non modifica l'archivio. |
 | `window_state.json` | Dimensione e posizione della finestra. |
-| `preferenze.json` | Preferenze di privacy: nome e icona neutri, PIN di sblocco (solo hash e sale), minuti del blocco automatico. |
+| `preferenze.json` | Preferenze di privacy: nome e icona neutri, PIN di sblocco (solo hash e sale), minuti del blocco automatico, livello del registro. |
 | `mcg_ultima_sincronizzazione.json` | Copia della tabella letta nell'ultima sincronizzazione MCG, con l'esito di ogni riga. |
 
 Il budget mensile, il tema, la lingua, la dimensione del testo, le note per intero, la sfocatura, il tasto rapido e il sito predefinito sono salvati nel `localStorage` dell'interfaccia, come l'ordine e i filtri delle tabelle: in cronologia ordine, numero di risultati, anni, sito e tag; in classifica sito e «Solo online»; nel Preventivo «Solo online» e l'ordine della tabella dei prezzi; nelle statistiche la vista del grafico. La ricerca per nome no: di solito serve una volta sola. **Reset Filtri** riporta la cronologia ai valori predefiniti anche per le aperture successive.

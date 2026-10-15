@@ -78,6 +78,11 @@ export function parseDataItaliana(testo) {
     return isNaN(d) ? null : d;
 }
 
+// Parametri facoltativi dello show (non dei regali): qualità di video e audio e
+// inquadratura della camera. Negli show: campi "qualita" e "camera", null se non indicati.
+export const QUALITA_SHOW = ['alta', 'media', 'bassa'];
+export const CAMERE_SHOW = ['orizzontale', 'verticale'];
+
 // Porta uno show salvato da una versione precedente al formato attuale.
 // Va applicata a ogni record letto dall'archivio (vedi leggiArchivio in dati.js),
 // così il resto del codice usa solo i campi correnti:
@@ -114,6 +119,10 @@ export function normalizzaShow(originale) {
     if (!s.sito) s.sito = SITO_MCG;
     if (s.importatoDa === undefined) s.importatoDa = s.isAutoImport ? SITO_MCG : null;
     delete s.isAutoImport;
+
+    // Qualità e inquadratura: valori sconosciuti (es. file modificati a mano) ignorati
+    if (s.qualita !== undefined && !QUALITA_SHOW.includes(s.qualita)) s.qualita = null;
+    if (s.camera !== undefined && !CAMERE_SHOW.includes(s.camera)) s.camera = null;
     return s;
 }
 

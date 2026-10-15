@@ -17,6 +17,8 @@ module.exports = Object.freeze({
     // Sistema, log e changelog (ipc-sistema.js)
     VERSIONE_APP: 'get-app-version',
     SCRIVI_LOG: 'append-log',
+    APRI_LOG: 'open-log',
+    CANCELLA_LOG: 'clear-log',
     APRI_CARTELLA_DATI: 'open-data-folder',
     APRI_LINK_ESTERNO: 'open-external',
     CHANGELOG: 'get-changelog',

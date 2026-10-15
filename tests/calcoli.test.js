@@ -447,3 +447,26 @@ test('preventivo: tabella dei prezzi ordinabile per colonna', () => {
     assert.equal(nomi(f.ordinaPrezziSuggeriti(voci, 'sconosciuta')), 'Bea,Anna,Cleo', 'colonna sconosciuta: ordine invariato');
     assert.equal(nomi(voci), 'Bea,Anna,Cleo', "l'elenco ricevuto non cambia");
 });
+
+test('qualità e inquadratura: modifica multipla (non sui regali) e valori sconosciuti ignorati', () => {
+    const shows = [
+        { id: 1, nome: 'Anna', costo: 30, qualita: 'bassa' },
+        { id: 2, nome: 'Anna', costo: 40 },
+        { id: 3, nome: 'Anna', costo: 10, isRegalo: true }
+    ];
+    const r = f.applicaModificheMultiple(shows, [1, 2, 3], { qualita: 'alta', camera: 'verticale' });
+    assert.equal(r.modificati, 2);
+    assert.equal(r.regaliSaltati, 1);
+    assert.deepEqual(r.shows.map(s => [s.qualita, s.camera]), [['alta', 'verticale'], ['alta', 'verticale'], [undefined, undefined]]);
+    // "Non indicata" (null) su uno show che non l'aveva: nessuna modifica
+    const nessuna = f.applicaModificheMultiple(shows, [2], { qualita: null });
+    assert.equal(nessuna.modificati, 0);
+    const tolta = f.applicaModificheMultiple(shows, [1], { qualita: null });
+    assert.equal(tolta.modificati, 1);
+    assert.equal(tolta.shows[0].qualita, null);
+
+    assert.equal(f.normalizzaShow({ id: 4, qualita: 'altissima', camera: 'verticale' }).qualita, null);
+    assert.equal(f.normalizzaShow({ id: 4, qualita: 'media', camera: 'storta' }).camera, null);
+    assert.equal(f.normalizzaShow({ id: 4, qualita: 'media' }).qualita, 'media');
+    assert.equal('camera' in f.normalizzaShow({ id: 5 }), false, 'show senza parametri: nessun campo aggiunto');
+});

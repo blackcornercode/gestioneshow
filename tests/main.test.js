@@ -75,15 +75,16 @@ test('privacy: PIN di 4-8 cifre, verificato senza conservarlo in chiaro', () => 
 
 test('privacy: preferenze normalizzate, e l\'interfaccia non riceve mai il PIN', () => {
     const p = require('../main/privacy');
-    assert.deepEqual(p.normalizzaPreferenze(null), { aspettoNeutro: false, pin: null, bloccoMinuti: 0 });
+    assert.deepEqual(p.normalizzaPreferenze(null), { aspettoNeutro: false, pin: null, bloccoMinuti: 0, livelloLog: 'warn' });
     const pin = p.calcolaHashPin('1357');
-    assert.deepEqual(p.normalizzaPreferenze({ aspettoNeutro: true, pin, bloccoMinuti: 15 }), { aspettoNeutro: true, pin, bloccoMinuti: 15 });
+    assert.deepEqual(p.normalizzaPreferenze({ aspettoNeutro: true, pin, bloccoMinuti: 15, livelloLog: 'info' }), { aspettoNeutro: true, pin, bloccoMinuti: 15, livelloLog: 'info' });
+    assert.equal(p.normalizzaPreferenze({ livelloLog: 'debug' }).livelloLog, 'warn');
     // minuti non previsti o blocco senza PIN -> 0; hash malformato -> nessun PIN
     assert.equal(p.normalizzaPreferenze({ pin, bloccoMinuti: 7 }).bloccoMinuti, 0);
     assert.equal(p.normalizzaPreferenze({ bloccoMinuti: 15 }).bloccoMinuti, 0);
     assert.equal(p.normalizzaPreferenze({ pin: { sale: 'x', hash: 'corto' } }).pin, null);
     const pubbliche = p.preferenzePubbliche(p.normalizzaPreferenze({ pin, bloccoMinuti: 5 }));
-    assert.deepEqual(pubbliche, { aspettoNeutro: false, pinImpostato: true, bloccoMinuti: 5 });
+    assert.deepEqual(pubbliche, { aspettoNeutro: false, pinImpostato: true, bloccoMinuti: 5, livelloLog: 'warn' });
 });
 
 test('privacy: dopo 5 PIN errati si attende 30 secondi', () => {

@@ -58,6 +58,27 @@ export function aggiornaStelle() {
     });
 }
 
+/* --- Qualità e inquadratura (facoltative): un secondo clic sulla scelta la toglie --- */
+export function scegliParametroShow(pulsante, idCampo) {
+    const campo = el(idCampo);
+    if (!campo) return;
+    campo.value = campo.value === pulsante.dataset.valore ? '' : pulsante.dataset.valore;
+    aggiornaParametriShow();
+}
+
+export function aggiornaParametriShow() {
+    const allinea = (idCampo, pulsanti) => {
+        const valore = el(idCampo)?.value || '';
+        pulsanti.forEach(btn => {
+            const scelto = btn.dataset.valore === valore;
+            btn.classList.toggle('attivo', scelto);
+            btn.setAttribute('aria-pressed', String(scelto));
+        });
+    };
+    allinea('qualitaShow', document.querySelectorAll('[data-azione="scegli-qualita"]'));
+    allinea('cameraShow', document.querySelectorAll('[data-azione="scegli-camera"]'));
+}
+
 /* --- Durata rapida e €/min --- */
 export function durataRapida(pulsante) {
     const campo = el('durataShow');
@@ -299,6 +320,7 @@ export function sincronizzaFormAssistito() {
     aggiornaVistaTipo();
     aggiornaConvertitoreValuta();
     aggiornaStelle();
+    aggiornaParametriShow();
     aggiornaAnteprimaCostoMinuto();
     aggiornaMiniScheda();
     aggiornaRiepilogoDettagli();

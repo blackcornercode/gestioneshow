@@ -202,7 +202,7 @@ export async function creaSitoDaGestione() {
     };
     try {
         await salvaCatalogoSiti([...stato.catalogoSiti, nuovo]);
-        logger.success(`Sito creato: ${nome}`);
+        logger.success('Sito creato');
         campo.value = '';
         campo.focus();
     } catch (err) {
@@ -334,7 +334,7 @@ export async function eliminaSito(pulsante) {
     if (!confirm(testo('sites.confirm_delete', { nome: sito.nome }))) return;
     try {
         await salvaCatalogoSiti(stato.catalogoSiti.filter(s => s.id !== sito.id));
-        logger.success(`Sito eliminato: ${sito.nome}`);
+        logger.success('Sito eliminato');
     } catch (err) {
         logger.error('Eliminazione del sito non riuscita', err);
     }
@@ -343,7 +343,7 @@ export async function eliminaSito(pulsante) {
 export function cambiaSitoPredefinito(select) {
     if (!sitoDaId(select.value)) return;
     impostaSitoPredefinito(select.value);
-    logger.info(`Sito predefinito per i nuovi show: ${sitoDaId(select.value).nome}`);
+    logger.info('Sito predefinito per i nuovi show cambiato');
     // Uno show nuovo in compilazione, senza sito scelto a mano, passa subito al nuovo predefinito
     if (!el('editId')?.value && !sceltoAMano) {
         sitoForm = select.value;

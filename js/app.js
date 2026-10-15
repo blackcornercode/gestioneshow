@@ -13,21 +13,21 @@ import { inizializzaCredito, aggiornaCredito, aggiornaTestoCredito } from './cre
 import { inizializzaFiltriCronologia, inizializzaFiltroAnni, caricaCronologia, cambiaPagina, resetFiltriCronologia, filtraCronologiaPerNome } from './cronologia.js';
 import { esportaDati, importaDati, apriCartellaDati } from './dati.js';
 import { inizializzaFiltriSalvati } from './filtri-salvati.js';
-import { impostaTipo, cliccaVoto, durataRapida, aggiornaAnteprimaCostoMinuto, aggiornaRiepilogoDettagli, sincronizzaFormAssistito, ultimoShowModella, convertiImportoValuta, inizializzaConvertitoreValuta, alternaCostoInEuro, mostraNuovoTag, durataLibera } from './form-assistito.js';
+import { impostaTipo, cliccaVoto, scegliParametroShow, durataRapida, aggiornaAnteprimaCostoMinuto, aggiornaRiepilogoDettagli, sincronizzaFormAssistito, ultimoShowModella, convertiImportoValuta, inizializzaConvertitoreValuta, alternaCostoInEuro, mostraNuovoTag, durataLibera } from './form-assistito.js';
 import { inizializzaUrlProfiloForm, impostaDataOraAttuale, autocompilaDatiModella, aggiornaPulsanteForm, aggiornaDatalistModelle, toggleForm, annullaModifica, gestisciStatoRegalo, modificaShow, eliminaShow, ripetiUltimoShow, inizializzaScorciatoieForm, svuotaForm } from './form-show.js';
 import { apriModalImmagine, chiudiModalImmagine, navigaGalleria } from './galleria.js';
 import { disegnaSelettoreSitoForm, scegliSitoForm, aggiornaSelectSiti, apriGestioneSiti, chiudiGestioneSiti, disegnaGestioneSiti, creaSitoDaGestione, rinominaSito, cambiaSiglaSito, cambiaColoreSito, cambiaValutaSito, cambiaTassoSito, cambiaAttivoSito, applicaSitiAttivi, controllaBenvenuto, aggiornaBenvenuto, confermaBenvenuto, eliminaSito, cambiaSitoPredefinito, inizializzaSiti } from './gestione-siti.js';
 import { avviaImportazioneCsv, chiudiImportazioneCsv, confermaImportazioneCsv, aggiornaAnteprimaCsv, impostaValutaDalSito, esportaCronologiaCsv } from './importa-csv.js';
 import { impostaVistaGraficoSpesa } from './grafico-spesa.js';
 import { caricaLingua, linguaCorrente } from './i18n.js';
-import { logger } from './logger.js';
+import { logger, registraErroriGlobali } from './logger.js';
 import { inizializzaMenuHeader } from './menu-header.js';
 import { apriModalModella, chiudiModalModella, aggiornaBadgeSchedaModella } from './modale-modella.js';
 import { verificaProfiliSospesi, inizializzaProfiliSospesi } from './profili-sospesi.js';
 import { ridisegnaPreventivo, aggiornaPreventivo, cambiaModellaPreventivo, durataPreventivo, durataLiberaPreventivo, usaNelPreventivo, aggiornaPreventivoScheda, apriPreventivoDaScheda, ordinaPrezzi, disegnaPrezziSuggeriti } from './preventivo.js';
 import { apriUnisciModella, chiudiUnisciModella, cambiaSitoSepara, aggiornaAnteprimaUnisci, confermaUnisciModella } from './unisci-modelle.js';
 import { inizializzaPrivacy, aggiornaTestiPrivacy, cambiaSfocatura, cambiaAspettoNeutro, cambiaBloccoMinuti, apriFinestraPin, chiudiFinestraPin, salvaPin, sblocca, registraTastoRapido, ripristinaTastoRapido } from './privacy.js';
-import { mostraVersioneApp, inizializzaTema, inizializzaFont, inizializzaGestioneBudget, apriTab, cambiaTema, aumentaFont, riduciFont, inizializzaNoteComplete, cambiaNoteComplete } from './preferenze.js';
+import { mostraVersioneApp, inizializzaTema, inizializzaFont, inizializzaGestioneBudget, apriTab, cambiaTema, aumentaFont, riduciFont, inizializzaNoteComplete, cambiaNoteComplete, inizializzaRegistro, cambiaLivelloLog, apriLog, cancellaLog } from './preferenze.js';
 import { selezionaShow, selezionaPagina, selezionaTuttiFiltrati, deselezionaTutti, eliminaSelezionati, apriModificaMultipla, applicaModificaMultipla, chiudiModificaMultipla } from './selezione.js';
 import { sincronizzaTransazioniMondoCamGirls, importaCronologiaCompletaMcg } from './sincronizzazione.js';
 import { stato } from './stato.js';
@@ -60,6 +60,8 @@ registraAzioni({
     'gestisci-regalo': () => gestisciStatoRegalo(),
     'tipo-show': (el) => { impostaTipo(el.dataset.tipo); gestisciStatoRegalo(); },
     'voto-stelle': (el) => cliccaVoto(el),
+    'scegli-qualita': (el) => scegliParametroShow(el, 'qualitaShow'),
+    'scegli-camera': (el) => scegliParametroShow(el, 'cameraShow'),
     'durata-rapida': (el) => durataRapida(el),
     'costo-ultimo': () => {
         const ultimo = ultimoShowModella();
@@ -150,6 +152,11 @@ registraAzioni({
     'sito-separa-modella': () => cambiaSitoSepara(),
     'anteprima-unisci-modella': () => aggiornaAnteprimaUnisci(),
     'conferma-unisci-modella': () => confermaUnisciModella(),
+
+    // Registro (log)
+    'cambia-livello-log': (el) => cambiaLivelloLog(el),
+    'apri-log': () => apriLog(),
+    'cancella-log': () => cancellaLog(),
 
     // Privacy
     'cambia-sfocatura': (el) => cambiaSfocatura(el),
@@ -313,6 +320,7 @@ function inizializzaIndicatoreMCG() {
    AVVIO (i moduli vengono eseguiti a documento già analizzato)
    -------------------------------------------------------------------------- */
 async function avvia() {
+    registraErroriGlobali();
     logger.info("Inizializzazione applicazione...");
     inizializzaAzioni();
     await caricaLingua(linguaCorrente);
@@ -327,6 +335,7 @@ async function avvia() {
     // Ordine e filtri ricordati: prima del primo disegno di cronologia e classifica
     inizializzaFiltriSalvati();
     inizializzaNoteComplete();
+    inizializzaRegistro();
     aggiornaInterfaccia();
     inizializzaTema();
     inizializzaFont();
