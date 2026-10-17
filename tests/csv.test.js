@@ -83,7 +83,7 @@ test('esportazione leggibile da Excel e reimportabile senza perdite', () => {
     const shows = [
         { id: 2, nome: 'Bea', dataOraISO: new Date(2026, 9, 3, 22, 0).toISOString(), costo: 60, durata: 20, punteggio: 5, sito: 'stripchat',
           importatoDa: 'stripchat', importoOriginale: { valore: 750, valuta: 'token' }, tag: ['lush'], note: 'Ciao; "top"', piattaforma: 'Teams',
-          qualita: 'alta', camera: 'verticale' },
+          qualita: 'alta', camera: 'verticale', recensione: true, testoRecensione: 'Bella; "show"\nrisposta rapida' },
         { id: 1, nome: 'Ana', dataOraISO: new Date(2026, 9, 2, 21, 30).toISOString(), costo: 0, isRegalo: true, sito: 'mcg', importatoDa: null }
     ];
     const csv = f.esportaCsv(shows, { siti: [{ id: 'stripchat', nome: 'Stripchat' }, { id: 'mcg', nome: 'Mondo Cam Girls' }], tag: [{ id: 'lush', nome: 'Lush' }] });
@@ -94,7 +94,8 @@ test('esportazione leggibile da Excel e reimportabile senza perdite', () => {
     const bea = letto.righe[1];
     assert.deepEqual([bea[6], bea[7], bea[11], bea[12], bea[15], bea[16]], ['60', '3', 'Lush', 'Ciao; "top"', '750', 'token']);
     assert.deepEqual([bea[17], bea[18]], ['alta', 'verticale'], 'qualità e inquadratura in fondo');
-    assert.deepEqual(letto.righe[0].slice(17), ['', ''], 'un regalo non le ha');
+    assert.deepEqual(letto.righe[0].slice(17), ['', '', ''], 'un regalo non le ha');
+    assert.equal(bea[19], 'Bella; "show"\nrisposta rapida', 'testo della recensione in fondo, con virgolette e a capo');
     // Reimportando il file tutti gli show risultano già presenti
     const esito = f.preparaImportazione(letto.righe, f.indovinaColonne(letto.intestazioni), { sito: 'mcg' }, shows);
     assert.equal(esito.doppioni, 2);

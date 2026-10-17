@@ -61,7 +61,10 @@ export function inizializzaAzioni() {
         const img = e.target;
         if (img.tagName === 'IMG' && img.dataset.sostituto !== undefined) {
             const riquadro = document.createElement('div');
-            riquadro.className = 'no-img';
+            // Il riquadro eredita il clic sulla modella e il bordo "online" della foto
+            riquadro.className = ['no-img', ...['cliccabile', 'foto-online'].filter(c => img.classList.contains(c))].join(' ');
+            for (const chiave of ['azione', 'nome']) if (img.dataset[chiave] !== undefined) riquadro.dataset[chiave] = img.dataset[chiave];
+            if (img.title) riquadro.title = img.title;
             riquadro.textContent = img.dataset.sostituto;
             img.replaceWith(riquadro);
         }

@@ -40,8 +40,14 @@ test('normalizzaShow converte i campi delle versioni precedenti', () => {
     assert.ok('tempoShow' in vecchio, "l'originale non viene modificato");
 });
 
+test('normalizzaShow: il testo della recensione manca o non è una stringa -> vuoto, altrimenti resta', () => {
+    assert.equal(f.normalizzaShow({ costo: 1 }).testoRecensione, '');
+    assert.equal(f.normalizzaShow({ costo: 1, testoRecensione: 42 }).testoRecensione, '');
+    assert.equal(f.normalizzaShow({ costo: 1, testoRecensione: 'Ottima' }).testoRecensione, 'Ottima');
+});
+
 test('normalizzaShow lascia invariati i record già nel formato attuale', () => {
-    const attuale = { id: 2, nome: 'B', dataOraISO: '2026-01-10T20:00:00.000Z', dataFormattata: '10/01/2026 21:00', urlProfilo: 'https://b.mondocamgirls.com', punteggio: 'TBD', costo: 40, durata: 30, sito: 'stripchat', importatoDa: null };
+    const attuale = { id: 2, nome: 'B', dataOraISO: '2026-01-10T20:00:00.000Z', dataFormattata: '10/01/2026 21:00', urlProfilo: 'https://b.mondocamgirls.com', punteggio: 'TBD', costo: 40, durata: 30, sito: 'stripchat', importatoDa: null, testoRecensione: '' };
     assert.deepEqual(f.normalizzaShow(attuale), attuale);
     // durata assente resta assente (non viene aggiunto 0 a ogni record)
     assert.ok(!('durata' in f.normalizzaShow({ costo: 10, dataOraISO: attuale.dataOraISO })));

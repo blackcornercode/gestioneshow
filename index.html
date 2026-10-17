@@ -378,6 +378,8 @@
                     <span class="stato-interruttore stato-no" data-i18n="form.review_no" aria-hidden="true">Non fatta</span>
                 </div>
                 <small class="nota-riquadro" data-i18n="form.note_review">Hai lasciato la recensione sul sito?</small>
+                <!-- Visibile solo con l'interruttore acceso (CSS); il testo resta salvato anche se lo si spegne -->
+                <textarea id="testoRecensione" class="testo-recensione" rows="4" maxlength="5000" data-i18n-ph="form.review_text_ph" placeholder="Testo della recensione (facoltativo)" aria-label="Testo della recensione"></textarea>
             </div>
         </div>
     </section>
@@ -889,6 +891,20 @@
             <div class="modal-footer">
                 <button type="button" class="btn-data" data-azione="chiudi-unisci-modella" data-i18n="form.btn_cancel">Annulla</button>
                 <button type="button" class="btn-primary" id="btnConfermaUnisciModella" data-azione="conferma-unisci-modella" data-i18n="models.confirm">Conferma</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TESTO DELLA RECENSIONE di uno show, in sola lettura (js/recensione.js) -->
+    <div id="modalRecensione" class="modal">
+        <div class="modal-content modal-modifica-multipla">
+            <button type="button" class="close-btn" aria-label="Chiudi" data-azione="chiudi-recensione">&times;</button>
+            <h2 id="titoloRecensione"></h2>
+            <p id="testoRecensioneLettura" class="testo-recensione-lettura"></p>
+            <div class="modal-footer">
+                <button type="button" class="btn-data" id="btnCopiaRecensione" data-azione="copia-recensione" data-i18n="review.copy">Copia</button>
+                <button type="button" class="btn-data" data-azione="modifica-recensione" data-i18n="review.edit">Modifica</button>
+                <button type="button" class="btn-primary" data-azione="chiudi-recensione" data-i18n="review.close">Chiudi</button>
             </div>
         </div>
     </div>

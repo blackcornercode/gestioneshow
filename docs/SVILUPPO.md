@@ -61,6 +61,7 @@ I file di `js/` sono **moduli ES** (`import`/`export`): `index.html` carica solo
 | `preventivo.js` | Scheda Preventivo (prezzo atteso, confronto del prezzo chiesto con la media della modella e con quella generale), tabella dei prezzi suggeriti e riquadro nella scheda della modella; i calcoli (`prezzoSuggerito`, `valutaPrezzo`, `prezziSuggeriti`) sono in `calcoli.js`. |
 | `modale-modella.js` | Scheda dettaglio modella: profili e totali per sito, foto dal sito che le offre. |
 | `unisci-modelle.js` | Unisci / separa modelle dalla scheda (rinomina degli show con `rinominaModella` di `calcoli.js`, che salva il nome di acquisto in `nomeOriginale`). |
+| `recensione.js` | Finestra di sola lettura con il testo della recensione di uno show (`testoRecensione`), con Copia e Modifica. |
 | `connettori.js` | Funzioni dei connettori ricevute dal processo principale (`caricaConnettori`) e `funzioneDisponibile(sito, funzione)`, da controllare prima di contattare un sito; profilo di una modella su un sito (`urlProfiloSulSito`, `urlModelleDelSito`). |
 | `connettore-mcg.js` | Parti del connettore MCG usate dall'interfaccia: sottodominio del profilo e indirizzo dedotto dal nome. |
 | `sincronizzazione.js` | Importazione transazioni da Mondo Cam Girls. |

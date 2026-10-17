@@ -122,6 +122,7 @@
     "note_quality": "Video și audio. Opțional.",
     "note_camera": "Cum ținea camera. Opțional.",
     "note_review": "Ai lăsat recenzia pe site?",
+    "review_text_ph": "Textul recenziei (opțional)",
     "review_yes": "Făcută",
     "review_no": "Nefăcută"
   },
@@ -401,9 +402,12 @@
     "source": "Origine",
     "review": "Recenzie",
     "review_short": "Rec.",
+    "quality_camera": "Calitate și încadrare",
+    "quality_camera_short": "Cal./Înc.",
     "notes": "Note",
     "actions": "Acțiuni",
     "open_model": "Deschide fișa modelului",
+    "open_model_online": "Deschide fișa modelului (online acum)",
     "select": "Selectează",
     "tags_notes": "Etichete și note",
     "edit": "Editează",
@@ -446,6 +450,8 @@
   "models": {
     "per_site": "🌐 Pe site-uri:",
     "as_name": "ca {nomi}",
+    "merged_from": "🔗 Date unite din:",
+    "merged_count": "{n} show-uri",
     "merge": "🔗 Unește…",
     "merge_tip": "Unește cu acest model show-urile înregistrate sub alt nume (ex. același model pe alt site)",
     "split": "✂️ Separă…",
@@ -549,6 +555,15 @@
     "sort_hint": "Fă clic pentru a sorta; încă un clic inversează ordinea",
     "open_card": "Deschide fișa lui {nome}",
     "no_online": "Niciunul dintre aceste modele nu este online pe Mondo Cam Girls în acest moment."
+  },
+  "review": {
+    "title": "Recenzie",
+    "show": "Citește recenzia",
+    "copy": "Copiază",
+    "copied": "Copiat ✓",
+    "not_copied": "Nu s-a putut copia în clipboard.",
+    "edit": "Modifică",
+    "close": "Închide"
   },
   "quality": {
     "alta": "Ridicată",

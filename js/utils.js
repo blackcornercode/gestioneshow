@@ -123,6 +123,9 @@ export function normalizzaShow(originale) {
     // Qualità e inquadratura: valori sconosciuti (es. file modificati a mano) ignorati
     if (s.qualita !== undefined && !QUALITA_SHOW.includes(s.qualita)) s.qualita = null;
     if (s.camera !== undefined && !CAMERE_SHOW.includes(s.camera)) s.camera = null;
+
+    // Testo della recensione scritta a mano (facoltativo, resta anche con l'interruttore spento)
+    s.testoRecensione = typeof s.testoRecensione === 'string' ? s.testoRecensione : '';
     return s;
 }
 

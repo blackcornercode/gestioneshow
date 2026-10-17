@@ -161,6 +161,7 @@ if (showForm) {
         const inputCosto = document.getElementById('costo');
         const inputDurata = document.getElementById('durataShow'); // <-- AGGIUNTO
         const inputRecensione = document.getElementById('recensione');
+        const inputTestoRecensione = document.getElementById('testoRecensione');
         const inputNote = document.getElementById('note');
         const inputNickname = document.getElementById('nickname');
         const dataOraInput = document.getElementById('dataOra');
@@ -197,6 +198,8 @@ if (showForm) {
             immagine: inputImmagine ? inputImmagine.value.trim() : '',
             urlProfilo: inputUrlProfilo ? inputUrlProfilo.value.trim() : '',
             recensione: inputRecensione ? inputRecensione.checked : false,
+            // Salvato anche con l'interruttore spento: il testo nascosto non si perde
+            testoRecensione: inputTestoRecensione ? inputTestoRecensione.value.trim() : '',
             note: inputNote ? inputNote.value : '',
             // Sito scelto nel form; uno show nuovo è inserito a mano, in modifica l'origine
             // resta quella salvata (aggiornaShow unisce i campi a quelli esistenti)
@@ -288,6 +291,8 @@ export async function modificaShow(id) {
 
     const recensioneInput = document.getElementById('recensione');
     if (recensioneInput) recensioneInput.checked = Boolean(item.recensione);
+    const testoRecensioneInput = document.getElementById('testoRecensione');
+    if (testoRecensioneInput) testoRecensioneInput.value = item.testoRecensione || '';
 
     const noteInput = document.getElementById('note');
     if (noteInput) noteInput.value = item.note || '';

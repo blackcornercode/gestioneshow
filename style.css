@@ -656,6 +656,12 @@ td.col-centro {
     text-align: center;
 }
 
+/* Filo verticale leggero tra le colonne delle tabelle degli show (cronologia, scheda
+   modella, dettaglio del mese); la prima colonna non lo ha */
+:is(#intestazioneCronologia, #listaShow, #intestazioneScheda, #modalListaShow, .tabella-dettaglio-mese) :is(th, td) + :is(th, td) {
+    border-left: 1px solid color-mix(in srgb, var(--border-color) 60%, transparent);
+}
+
 /* ④ Avatar 40 px: più leggibile delle iniziali nel placeholder */
 .thumb-img {
     width: 40px;
@@ -665,6 +671,14 @@ td.col-centro {
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
 }
+
+/* Modella online su MCG: bordo verde attorno alla foto tonda */
+.thumb-img.foto-online,
+.no-img.foto-online {
+    border: 2px solid var(--success-color);
+    box-shadow: 0 0 0 1px var(--success-bg);
+}
+.no-img.cliccabile { cursor: pointer; }
 
 .no-img {
     width: 40px;
@@ -776,8 +790,8 @@ td.col-azioni button {
 .badge-voto.voto-3 { background-color: var(--voto3-bg); color: var(--voto3-text); }
 .badge-voto.voto-basso { background-color: var(--voto-basso-bg); color: var(--voto-basso-text); }
 
-/* Qualità e inquadratura sotto il voto (righe-show.js): stessi colori dei voti */
-.parametri-show { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+/* Qualità e inquadratura (colonna accanto al voto, righe-show.js): stessi colori dei voti */
+.parametri-show { display: flex; align-items: center; gap: 6px; }
 .badge-qualita { padding: 1px 6px; border-radius: 4px; font-size: 0.66rem; font-weight: 700; white-space: nowrap; }
 .badge-qualita.qualita-alta { background-color: var(--voto5-bg); color: var(--voto5-text); }
 .badge-qualita.qualita-media { background-color: var(--voto3-bg); color: var(--voto3-text); }
@@ -1844,13 +1858,14 @@ td.col-destra { text-align: right; }
 th.col-selezione, td.col-selezione {
     width: 1%;
     padding-left: 8px !important;
-    padding-right: 2px !important;
+    padding-right: 8px !important;
     text-align: center;
 }
 .casella-selezione {
+    display: block;
     width: 16px;
     height: 16px;
-    margin: 0;
+    margin: 0 auto;
     cursor: pointer;
     accent-color: var(--primary-color);
 }
@@ -2006,6 +2021,56 @@ button.etichetta-tag.tag-togli { text-decoration: line-through; }
     font-weight: 600;
     margin-right: 4px;
 }
+
+/* Testo della recensione: il campo del form si vede solo con l'interruttore acceso
+   (se si spegne il testo resta nel campo e viene salvato); la finestra di lettura
+   rispetta gli a capo del testo */
+.testo-recensione { display: none; width: 100%; resize: vertical; margin-top: 8px; }
+.campo-recensione:has(#recensione:checked) .testo-recensione { display: block; }
+.testo-recensione-lettura { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 50vh; overflow-y: auto; margin: 12px 0; line-height: 1.5; }
+/* Recensione fatta con testo: pulsante tondo verde come il ✅, che si riempie al passaggio */
+.btn-recensione-testo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--success-color);
+    background: var(--success-bg);
+    color: var(--success-text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+.btn-recensione-testo:hover { background: var(--success-color); color: #fff; transform: scale(1.1); }
+.btn-recensione-testo:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+body.modalita-discreta .testo-recensione-lettura,
+body.modalita-discreta .testo-recensione { filter: blur(6px); }
+body.modalita-discreta .testo-recensione-lettura:hover,
+body.modalita-discreta .testo-recensione:focus,
+body.modalita-discreta .testo-recensione:hover { filter: none; }
+
+/* Scheda modella: nomi con cui sono stati acquistati gli show uniti */
+.modella-uniti {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    background: var(--bg-card-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+.modella-unita {
+    font-size: 0.8rem;
+    padding: 2px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+}
+.modella-unita small { color: var(--text-muted); }
 
 /* Finestra Gestisci tag */
 .modal-gestione-tag { max-width: 760px; }

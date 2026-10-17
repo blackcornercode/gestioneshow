@@ -122,6 +122,7 @@
     "note_quality": "Video e audio. Facoltativa.",
     "note_camera": "Come teneva la camera. Facoltativa.",
     "note_review": "Hai lasciato la recensione sul sito?",
+    "review_text_ph": "Testo della recensione (facoltativo)",
     "review_yes": "Fatta",
     "review_no": "Non fatta"
   },
@@ -401,9 +402,12 @@
     "source": "Origine",
     "review": "Recensione",
     "review_short": "Rec.",
+    "quality_camera": "Qualità e inquadratura",
+    "quality_camera_short": "Qual./Inq.",
     "notes": "Note",
     "actions": "Azioni",
     "open_model": "Apri la scheda della modella",
+    "open_model_online": "Apri la scheda della modella (online ora)",
     "select": "Seleziona",
     "tags_notes": "Tag e note",
     "edit": "Modifica",
@@ -446,6 +450,8 @@
   "models": {
     "per_site": "🌐 Per sito:",
     "as_name": "come {nomi}",
+    "merged_from": "🔗 Dati uniti da:",
+    "merged_count": "{n} show",
     "merge": "🔗 Unisci…",
     "merge_tip": "Unisci a questa modella gli show registrati con un altro nome (es. la stessa modella su un altro sito)",
     "split": "✂️ Separa…",
@@ -549,6 +555,15 @@
     "sort_hint": "Clic per ordinare; un altro clic inverte l'ordine",
     "open_card": "Apri la scheda di {nome}",
     "no_online": "Nessuna di queste modelle è online su Mondo Cam Girls in questo momento."
+  },
+  "review": {
+    "title": "Recensione",
+    "show": "Leggi la recensione",
+    "copy": "Copia",
+    "copied": "Copiata ✓",
+    "not_copied": "Impossibile copiare negli appunti.",
+    "edit": "Modifica",
+    "close": "Chiudi"
   },
   "quality": {
     "alta": "Alta",

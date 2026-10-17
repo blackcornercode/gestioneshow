@@ -110,6 +110,19 @@ export async function apriModalModella(nomeModella) {
             }).join('')}</div>
         </div>` : '';
 
+    // Unione di dati: show acquistati con un nome diverso da quello attuale (Unisci/Separa)
+    const nomiUniti = new Map();
+    showsModella.forEach(s => {
+        if (!s.nomeOriginale || chiaveModella(s.nomeOriginale) === chiave) return;
+        const voce = nomiUniti.get(chiaveModella(s.nomeOriginale)) || { nome: s.nomeOriginale.trim(), n: 0 };
+        voce.n++;
+        nomiUniti.set(chiaveModella(s.nomeOriginale), voce);
+    });
+    const unitiHtml = nomiUniti.size
+        ? `<div class="modella-uniti"><span class="modella-tipi-etichetta">${escapeHtml(t('models.merged_from'))}</span>
+            ${[...nomiUniti.values()].map(v => `<span class="modella-unita">${escapeHtml(v.nome)} <small>${escapeHtml(testoModelle('models.merged_count', { n: v.n }))}</small></span>`).join('')}</div>`
+        : '';
+
     // Unisci con un'altra modella; separa solo se ci sono show su più siti
     const azioniHtml = `
         <div class="modella-azioni">
@@ -143,6 +156,7 @@ export async function apriModalModella(nomeModella) {
             </div>
         </div>
         ${tipiShowHtml}
+        ${unitiHtml}
         ${perSitoHtml}
         ${azioniHtml}
         ${htmlPreventivoScheda(nomeModella)}

@@ -25,6 +25,7 @@ import { inizializzaMenuHeader } from './menu-header.js';
 import { apriModalModella, chiudiModalModella, aggiornaBadgeSchedaModella } from './modale-modella.js';
 import { verificaProfiliSospesi, inizializzaProfiliSospesi } from './profili-sospesi.js';
 import { ridisegnaPreventivo, aggiornaPreventivo, cambiaModellaPreventivo, durataPreventivo, durataLiberaPreventivo, usaNelPreventivo, aggiornaPreventivoScheda, apriPreventivoDaScheda, ordinaPrezzi, disegnaPrezziSuggeriti } from './preventivo.js';
+import { apriRecensione, chiudiRecensione, copiaRecensione, modificaDaRecensione } from './recensione.js';
 import { apriUnisciModella, chiudiUnisciModella, cambiaSitoSepara, aggiornaAnteprimaUnisci, confermaUnisciModella } from './unisci-modelle.js';
 import { inizializzaPrivacy, aggiornaTestiPrivacy, cambiaSfocatura, cambiaAspettoNeutro, cambiaBloccoMinuti, apriFinestraPin, chiudiFinestraPin, salvaPin, sblocca, registraTastoRapido, ripristinaTastoRapido } from './privacy.js';
 import { mostraVersioneApp, inizializzaTema, inizializzaFont, inizializzaGestioneBudget, apriTab, cambiaTema, aumentaFont, riduciFont, inizializzaNoteComplete, cambiaNoteComplete, inizializzaRegistro, cambiaLivelloLog, apriLog, cancellaLog } from './preferenze.js';
@@ -74,6 +75,10 @@ registraAzioni({
     'ripeti-ultimo-show': () => ripetiUltimoShow(),
     'svuota-form': () => svuotaForm(),
     'modifica-show': (el) => modificaShow(el.dataset.id),
+    'apri-recensione': (el) => apriRecensione(el),
+    'chiudi-recensione': () => chiudiRecensione(),
+    'copia-recensione': () => copiaRecensione(),
+    'modifica-recensione': () => modificaDaRecensione(),
     'elimina-show': (el) => eliminaShow(el.dataset.id),
     'filtra-cronologia': () => filtraCronologiaPerNome(),
     'reset-filtri-cronologia': () => resetFiltriCronologia(),
@@ -217,6 +222,7 @@ document.addEventListener('modelle-online-aggiornate', () => {
     filtraClassificaModelle();
     aggiornaBadgeSchedaModella();
     disegnaPrezziSuggeriti();
+    caricaCronologia(stato.tuttiGliShow);   // bordo verde delle foto
 });
 // Esito della verifica dei profili sospesi (profili-sospesi.js)
 document.addEventListener('profili-sospesi-aggiornati', () => {

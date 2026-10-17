@@ -2,8 +2,9 @@ import { chiaveModella } from './calcoli.js';
 import { t, localeCorrente } from './i18n.js';
 import { badgeSitoShow } from './gestione-siti.js';
 import { stato, iconePiattaformaHTML } from './stato.js';
+import { eModellaOnline } from './stato-online.js';
 import { tagDelloShow, etichettaTag } from './tag.js';
-import { generaLinkChat, eUsernameTeams, escapeHtml, cellaCosto, costoAlMinuto, cellaNote, formattaCostoAlMinuto, formattaVoto, formattaDurata } from './utils.js';
+import { generaLinkChat, eUsernameTeams, escapeHtml, cellaCosto, costoAlMinuto, cellaNote, formattaCostoAlMinuto, formattaVoto, formattaDurata, DATO_MANCANTE } from './utils.js';
 
 /* ==========================================================================
    RIGHE DEGLI SHOW (disegnatore unico)
@@ -41,13 +42,17 @@ export function getPiattaformaFormatted(show) {
     return iconaHtml;
 }
 
+// Foto tonda della modella: il clic apre la sua scheda; bordo verde se è online su MCG
 export function cellaFoto(show) {
     const fotoUrl = show.immagine || stato.mappaImmaginiModelle[chiaveModella(show.nome)] || '';
     const testoSenzaFoto = escapeHtml(t('table.no_photo'));
-    if (!fotoUrl) return `<td><div class="no-img">${testoSenzaFoto}</div></td>`;
+    const online = eModellaOnline(show.nome) === true ? ' foto-online' : '';
+    const titolo = escapeHtml(t(online ? 'table.open_model_online' : 'table.open_model'));
+    const nome = escapeHtml(show.nome);
+    if (!fotoUrl) return `<td><div class="no-img cliccabile${online}" title="${titolo}" data-azione="apri-scheda-modella" data-nome="${nome}">${testoSenzaFoto}</div></td>`;
     // data-sostituto: se l'immagine non si carica viene sostituita dal riquadro "No Foto" (azioni.js)
-    return `<td><img src="${escapeHtml(fotoUrl)}" class="thumb-img cliccabile" alt="foto" title="${escapeHtml(t('modal.click_to_enlarge'))}"
-        data-azione="ingrandisci-foto" data-url="${escapeHtml(fotoUrl)}" data-sostituto="${testoSenzaFoto}"></td>`;
+    return `<td><img src="${escapeHtml(fotoUrl)}" class="thumb-img cliccabile${online}" alt="foto" title="${titolo}"
+        data-azione="apri-scheda-modella" data-nome="${nome}" data-sostituto="${testoSenzaFoto}"></td>`;
 }
 
 // Tag e note nella stessa colonna, per non allargare la tabella: in alto fino a
@@ -80,13 +85,14 @@ function cellaData(show) {
 const selezionato = (show) => stato.selezioneCronologia.has(String(show.id));
 
 // Qualità (etichetta colorata) e inquadratura (icona dello smartphone ruotato o dritto,
-// come nel form) di uno show; stringa vuota per i regali e se non sono indicate
+// come nel form) di uno show: colonna accanto al voto. Per i regali e se non sono
+// indicate c'è il trattino dei dati mancanti
 const ICONE_CAMERA = {
     orizzontale: '<i class="fa-solid fa-mobile-screen fa-rotate-90" aria-hidden="true"></i>',
     verticale: '<i class="fa-solid fa-mobile-screen" aria-hidden="true"></i>'
 };
 export function parametriShow(show) {
-    if (show.isRegalo || (!show.qualita && !show.camera)) return '';
+    if (show.isRegalo || (!show.qualita && !show.camera)) return DATO_MANCANTE;
     const parti = [];
     if (show.qualita) {
         const titolo = `${t('form.quality')}: ${t(`quality.${show.qualita}`)}`;
@@ -97,6 +103,14 @@ export function parametriShow(show) {
         parti.push(`<span class="icona-camera" title="${escapeHtml(titolo)}" aria-label="${escapeHtml(titolo)}">${ICONE_CAMERA[show.camera] || ''}</span>`);
     }
     return `<div class="parametri-show">${parti.join('')}</div>`;
+}
+
+// ✅ semplice; con il testo scritto (e la recensione fatta) è un pulsante che lo apre (recensione.js)
+function cellaRecensione(s) {
+    if (!s.recensione) return '<td class="col-centro">❌</td>';
+    if (!s.testoRecensione) return '<td class="col-centro">✅</td>';
+    const titolo = escapeHtml(t('review.show'));
+    return `<td class="col-centro"><button type="button" class="btn-recensione-testo" title="${titolo}" aria-label="${titolo}" data-azione="apri-recensione" data-id="${escapeHtml(s.id)}"><i class="fa-solid fa-comment-dots" aria-hidden="true"></i></button></td>`;
 }
 
 // chiave: [chiave della traduzione dell'intestazione, classe dell'intestazione, cella,
@@ -116,22 +130,24 @@ export const COLONNE_SHOW = {
     costo:         ['table.cost', '', s => cellaCosto(s)],
     costoMinuto:   ['table.cost_per_minute', 'col-centro', s => `<td class="col-nowrap col-centro">${formattaCostoAlMinuto(costoAlMinuto(s))}</td>`],
     // Sotto il voto: qualità e inquadratura, se indicate
-    voto:          ['table.rating', '', s => `<td class="col-nowrap">${formattaVoto(s)}${parametriShow(s)}</td>`],
+    voto:          ['table.rating', '', s => `<td class="col-nowrap">${formattaVoto(s)}</td>`],
+    // Qualità e inquadratura: intestazione abbreviata (nome completo nel tooltip)
+    parametri:     ['table.quality_camera', '', s => `<td class="col-nowrap">${parametriShow(s)}</td>`,
+                    () => `<span title="${escapeHtml(t('table.quality_camera'))}">${escapeHtml(t('table.quality_camera_short'))}</span>`],
     // Intestazione abbreviata (nome completo nel tooltip): la colonna contiene solo ✅/❌
-    recensione:    ['table.review', 'col-centro', s => `<td class="col-centro">${s.recensione ? '✅' : '❌'}</td>`,
+    recensione:    ['table.review', 'col-centro', cellaRecensione,
                     () => `<span title="${escapeHtml(t('table.review'))}">${escapeHtml(t('table.review_short'))}</span>`],
     // col-note: la colonna prende tutto lo spazio che avanza (style.css)
     note:          ['table.tags_notes', 'col-note', cellaTagNote],
     azioni:        ['table.actions', '', s => `<td class="col-azioni">
-                        <button class="btn-scheda" title="${escapeHtml(t('table.open_model'))}" aria-label="${escapeHtml(t('table.open_model'))}" data-azione="apri-scheda-modella" data-nome="${escapeHtml(s.nome)}"><i class="fa-solid fa-user"></i></button>
                         <button class="btn-edit" title="${escapeHtml(t('table.edit'))}" aria-label="${escapeHtml(t('table.edit'))}" data-azione="modifica-show" data-id="${escapeHtml(s.id)}"><i class="fa-solid fa-pen"></i></button>
                         <button class="btn-delete" title="${escapeHtml(t('table.delete'))}" aria-label="${escapeHtml(t('table.delete'))}" data-azione="elimina-show" data-id="${escapeHtml(s.id)}"><i class="fa-solid fa-trash"></i></button>
                     </td>`]
 };
 
-export const COLONNE_CRONOLOGIA = ['selezione', 'foto', 'data', 'nome', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'recensione', 'note', 'azioni'];
-export const COLONNE_DETTAGLIO_MESE = ['foto', 'data', 'nomeCliccabile', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'recensione', 'note'];
-export const COLONNE_SCHEDA = ['data', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'recensione', 'note'];
+export const COLONNE_CRONOLOGIA = ['selezione', 'foto', 'data', 'nome', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'parametri', 'recensione', 'note', 'azioni'];
+export const COLONNE_DETTAGLIO_MESE = ['foto', 'data', 'nomeCliccabile', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'parametri', 'recensione', 'note'];
+export const COLONNE_SCHEDA = ['data', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'parametri', 'recensione', 'note'];
 
 export function intestazioneShow(colonne) {
     return `<tr>${colonne.map(c => {

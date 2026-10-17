@@ -122,6 +122,7 @@
     "note_quality": "Vidéo et audio. Facultatif.",
     "note_camera": "Comment elle tenait la caméra. Facultatif.",
     "note_review": "As-tu laissé un avis sur le site ?",
+    "review_text_ph": "Texte de l'avis (facultatif)",
     "review_yes": "Fait",
     "review_no": "Pas fait"
   },
@@ -401,9 +402,12 @@
     "source": "Origine",
     "review": "Avis",
     "review_short": "Avis",
+    "quality_camera": "Qualité et cadrage",
+    "quality_camera_short": "Qual./Cad.",
     "notes": "Notes",
     "actions": "Actions",
     "open_model": "Ouvrir la fiche du modèle",
+    "open_model_online": "Ouvrir la fiche du modèle (en ligne)",
     "select": "Sélectionner",
     "tags_notes": "Tags et notes",
     "edit": "Modifier",
@@ -446,6 +450,8 @@
   "models": {
     "per_site": "🌐 Par site :",
     "as_name": "sous le nom {nomi}",
+    "merged_from": "🔗 Données fusionnées de :",
+    "merged_count": "{n} shows",
     "merge": "🔗 Fusionner…",
     "merge_tip": "Fusionner dans ce modèle les shows enregistrés sous un autre nom (ex. le même modèle sur un autre site)",
     "split": "✂️ Séparer…",
@@ -549,6 +555,15 @@
     "sort_hint": "Clique pour trier ; un autre clic inverse l'ordre",
     "open_card": "Ouvrir la fiche de {nome}",
     "no_online": "Aucun de ces modèles n'est en ligne sur Mondo Cam Girls en ce moment."
+  },
+  "review": {
+    "title": "Avis",
+    "show": "Lire l'avis",
+    "copy": "Copier",
+    "copied": "Copié ✓",
+    "not_copied": "Impossible de copier dans le presse-papiers.",
+    "edit": "Modifier",
+    "close": "Fermer"
   },
   "quality": {
     "alta": "Haute",

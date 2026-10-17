@@ -122,6 +122,7 @@
     "note_quality": "Video und Audio. Optional.",
     "note_camera": "Wie sie die Kamera hielt. Optional.",
     "note_review": "Hast du auf der Seite eine Rezension hinterlassen?",
+    "review_text_ph": "Text der Bewertung (optional)",
     "review_yes": "Erledigt",
     "review_no": "Nicht erledigt"
   },
@@ -401,9 +402,12 @@
     "source": "Herkunft",
     "review": "Rezension",
     "review_short": "Rez.",
+    "quality_camera": "Qualität und Kamera",
+    "quality_camera_short": "Qual./Kam.",
     "notes": "Notizen",
     "actions": "Aktionen",
     "open_model": "Karte des Models öffnen",
+    "open_model_online": "Modellprofil öffnen (jetzt online)",
     "select": "Auswählen",
     "tags_notes": "Tags & Notizen",
     "edit": "Bearbeiten",
@@ -446,6 +450,8 @@
   "models": {
     "per_site": "🌐 Nach Seite:",
     "as_name": "als {nomi}",
+    "merged_from": "🔗 Zusammengeführte Daten von:",
+    "merged_count": "{n} Shows",
     "merge": "🔗 Zusammenführen…",
     "merge_tip": "Die unter einem anderen Namen erfassten Shows mit diesem Model zusammenführen (z. B. dasselbe Model auf einer anderen Seite)",
     "split": "✂️ Trennen…",
@@ -549,6 +555,15 @@
     "sort_hint": "Klicken zum Sortieren; erneut klicken kehrt die Reihenfolge um",
     "open_card": "Karte von {nome} öffnen",
     "no_online": "Keines dieser Models ist gerade auf Mondo Cam Girls online."
+  },
+  "review": {
+    "title": "Bewertung",
+    "show": "Bewertung lesen",
+    "copy": "Kopieren",
+    "copied": "Kopiert ✓",
+    "not_copied": "Kopieren in die Zwischenablage nicht möglich.",
+    "edit": "Bearbeiten",
+    "close": "Schließen"
   },
   "quality": {
     "alta": "Hoch",

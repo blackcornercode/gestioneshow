@@ -15,6 +15,10 @@ Generato da `changelog.json` con `npm run changelog`: per modificarlo, modificar
 - Credito residuo su Mondo Cam Girls nell'intestazione, accanto all'indicatore MCG: viene letto a ogni sincronizzazione e poi aggiornato da solo ogni 15 minuti (o con un clic) usando il login salvato, senza aprire finestre; se MCG chiede di nuovo il login resta l'ultimo valore letto, con la data
 - Opzione «Mostra le note per intero» (Impostazioni › Tabelle): note e tag completi in cronologia, dettaglio del mese e scheda modella, senza doverli aprire con un clic
 - L'app ricorda alla riapertura anche l'ordine e i filtri delle tabelle (sito e tag della cronologia, sito e «Solo online» della classifica), oltre a quelli già salvati; la ricerca per nome no. Reset Filtri li riporta ai valori predefiniti
+- La scheda della modella mostra la barra «Dati uniti da:» con i nomi originali (e il numero di show) degli show uniti con Unisci/Separa
+- Testo della recensione scritto a mano nel form (campo visibile con «Recensione fatta» acceso, conservato anche se lo si spegne) e letto dal pulsante a fumetto della colonna Recensione, con Copia e Modifica; è nell'esportazione CSV
+- Qualità e inquadratura hanno una colonna propria («Qual./Inq.») accanto al voto in cronologia, dettaglio del mese e scheda della modella, invece di stare sotto il voto
+- In cronologia e nel dettaglio del mese la scheda della modella si apre con un clic sulla foto (tolto il pulsante dalle azioni); la foto ha il bordo verde se la modella è online
 
 ### 🎨 Interfaccia
 
