@@ -27,6 +27,16 @@ export let linguaCorrente = Object.hasOwn(LINGUE, linguaSalvata || '') ? linguaS
 // Formato di date e giorni della settimana mostrati nell'interfaccia (es. "lun" / "Mon")
 export const localeCorrente = () => LINGUE[linguaCorrente]?.locale || 'en-GB';
 
+// Data formattata nella lingua dell'interfaccia (come toLocaleString con le stesse
+// opzioni). Il formattatore di ogni lingua e opzioni si crea una volta sola:
+// toLocale*String ne creava uno a ogni chiamata, cioè a ogni riga delle tabelle.
+const formattatori = new Map();
+export function formattaData(data, opzioni) {
+    const chiave = `${localeCorrente()}|${JSON.stringify(opzioni)}`;
+    if (!formattatori.has(chiave)) formattatori.set(chiave, new Intl.DateTimeFormat(localeCorrente(), opzioni));
+    return formattatori.get(chiave).format(data);
+}
+
 // Carica il file JSON della lingua
 export async function caricaLingua(lang) {
     if (!Object.hasOwn(LINGUE, lang)) lang = 'en';

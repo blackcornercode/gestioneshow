@@ -1,4 +1,4 @@
-import { chiaveModella } from './calcoli.js';
+import { chiaveModella, ordinaPerData } from './calcoli.js';
 import { costoAlMinuto, timestampShow } from './utils.js';
 
 /* ==========================================================================
@@ -220,7 +220,7 @@ const decimale = (n) => (n === null || n === undefined || n === '' ? '' : String
 export function esportaCsv(shows, { siti = [], tag = [] } = {}) {
     const nomeSito = (id) => siti.find(s => s.id === id)?.nome || id || '';
     const nomeTag = (id) => tag.find(voce => voce.id === id)?.nome || id;
-    const righe = [...shows].sort((a, b) => timestampShow(a) - timestampShow(b)).map(s => {
+    const righe = ordinaPerData(shows, 'asc').map(s => {
         const d = new Date(timestampShow(s));
         const valida = !isNaN(d) && timestampShow(s) > 0;
         const pad = (n) => String(n).padStart(2, '0');

@@ -672,12 +672,6 @@ td.col-centro {
     box-shadow: var(--shadow-sm);
 }
 
-/* Modella online su MCG: bordo verde attorno alla foto tonda */
-.thumb-img.foto-online,
-.no-img.foto-online {
-    border: 2px solid var(--success-color);
-    box-shadow: 0 0 0 1px var(--success-bg);
-}
 .no-img.cliccabile { cursor: pointer; }
 
 .no-img {
@@ -857,6 +851,26 @@ td.col-data { white-space: nowrap; }
 td.col-data .data-dow { display: block; font-size: 0.68rem; font-weight: 800; color: var(--primary-color); letter-spacing: 0.03em; text-transform: uppercase; }
 td.col-data .data-giorno { display: block; }
 td.col-data .data-ora { display: block; font-size: 0.8rem; color: var(--text-muted); }
+/* Pallino verde dopo il nome: modella online su MCG */
+.pallino-online {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-left: 6px;
+    border-radius: 50%;
+    /* Stesso pallino del badge "Online" della scheda modella (.badge-online::before) */
+    background-color: var(--success-color);
+    vertical-align: middle;
+}
+td .badge-sito { margin-left: 4px; }
+/* Badge del sito sopra il nome, allineato a sinistra con il nome */
+td.col-nome .badge-sito {
+    display: flex;
+    width: fit-content;
+    margin: 0 0 3px;
+    padding: 1px 6px;
+    line-height: 1.35;
+}
 td.col-data .badge-origine { font-size: 0.66rem; padding: 1px 6px; margin-left: 2px; }
 
 /* Modella online su MCG (accanto al nome in classifica e nella scheda) */
@@ -2710,6 +2724,10 @@ kbd.tasto-rapido.in-registrazione { border-color: var(--primary-color); color: v
     background-color: var(--tag-sfondo);
     color: var(--tag-testo);
 }
+/* 🤖 dopo la sigla: show importato in automatico (gli show inseriti a mano non hanno icona) */
+.badge-sito .icona-importato { font-size: 0.9em; margin-left: 2px; }
+/* Con un solo sito in uso resta solo il 🤖, senza sfondo colorato */
+.badge-sito.badge-solo-origine { padding: 0 2px; background: none; }
 .riga-gestione-sito {
     display: grid;
     grid-template-columns: 88px minmax(110px, 1fr) 64px 92px 118px auto 64px auto;

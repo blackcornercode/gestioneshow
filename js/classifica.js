@@ -17,7 +17,8 @@ export function caricaMedieEStoricizzazione(shows) {
     // Ordinamento: 1° media voti, 2° numero di show (vedi calcolaClassifica in calcoli.js)
     stato.classificaCompletaCache = calcolaClassifica(shows, { immagini: stato.mappaImmaginiModelle, url: stato.mappaUrlModelle });
 
-    mostraClassifica(stato.classificaCompletaCache);
+    // Un solo disegno, che mantiene l'eventuale ricerca e i filtri della classifica
+    filtraClassificaModelle();
     aggiornaLegendaMediaMinuto();
 }
 
@@ -89,7 +90,7 @@ export function mostraClassifica(lista) {
         // ③ Barra proporzionale show totali
         const pctShow = Math.round((item.totaleShow / maxShow) * 100);
         const barraShow = `<div class="barra-show">
-            <div class="barra-show-track"><div class="barra-show-fill" style="width:${pctShow}%"></div></div>
+            <div class="barra-show-track"><div class="barra-show-fill"></div></div>
             <span class="barra-show-num">${item.totaleShow}</span>
         </div>`;
 
@@ -106,6 +107,8 @@ export function mostraClassifica(lista) {
             <td class="voto-medio">${stelleVoto(item.mediaValore, item.mediaTxt)}</td>
             <td class="col-centro"><span class="nav-arrow">›</span></td>
         `;
+        // Larghezza della barra dal codice (niente stili inline nei template)
+        tr.querySelector('.barra-show-fill').style.width = `${pctShow}%`;
         fragment.appendChild(tr);
     });
 

@@ -48,13 +48,14 @@ function aggiornaSitiPreventivo(nome) {
     if (!select) return;
     const precedente = select.value;
     const perSito = new Map();
-    showsDiModella(stato.tuttiGliShow, nome).forEach(s => { if (s.sito) perSito.set(s.sito, (perSito.get(s.sito) || 0) + 1); });
+    const elenco = showsDiModella(stato.tuttiGliShow, nome);
+    elenco.forEach(s => { if (s.sito) perSito.set(s.sito, (perSito.get(s.sito) || 0) + 1); });
     select.innerHTML = `<option value="">${escapeHtml(t('quote.all_sites'))}</option>` +
         [...perSito].map(([id, n]) => `<option value="${escapeHtml(id)}">${escapeHtml(testo('quote.site_option', { sito: sitoDaId(id)?.nome || id, n }))}</option>`).join('');
     // Alla scelta della modella si propone il sito del suo ultimo show, solo se lì ne ha
     // abbastanza per calcolare sul sito: altrimenti il prezzo chiesto verrebbe letto nella
     // valuta di un sito (es. token) su cui il calcolo usa comunque tutti i siti
-    const ultimo = showsDiModella(stato.tuttiGliShow, nome)[0]?.sito || '';
+    const ultimo = elenco[0]?.sito || '';
     const proposto = (perSito.get(ultimo) || 0) >= MINIMO_SHOW_SITO ? ultimo : '';
     // Un sito scelto a mano resta finché la modella è la stessa (ridisegni, altre lettere)
     const stessaModella = chiaveModella(nome) === modellaDeiSiti;
@@ -123,7 +124,8 @@ export function aggiornaPreventivo() {
         }
     }
     // Modella già registrata: un pulsante apre la sua scheda
-    if (showsDiModella(stato.tuttiGliShow, nome).length > 0) {
+    const chiave = chiaveModella(nome);
+    if (stato.elencoModelleUniche.some(m => chiaveModella(m.nome) === chiave)) {
         parti.push(`<button type="button" class="btn-data btn-compatto apri-scheda-preventivo" data-azione="apri-scheda-modella" data-nome="${escapeHtml(nome)}">
             <i class="fa-solid fa-user"></i> ${escapeHtml(testo('quote.open_card', { nome }))}</button>`);
     }

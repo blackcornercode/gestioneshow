@@ -37,7 +37,7 @@ Prima della Fase 3 il codice che comunicava con MCG era concentrato in pochi mod
 ## ✅ Fase 2: interfaccia multi-sito
 
 - [x] Campo **Sito** nel form a pulsanti (sigle colorate), con il sito predefinito per gli show nuovi e l'ultimo sito usato con quella modella già scelto.
-- [x] Badge colorato del sito nelle tabelle, sotto l'ora (nessuna colonna in più), con 🤖 se importato e 👤 se inserito a mano.
+- [x] Badge colorato del sito nelle tabelle, sopra il nome (nessuna colonna in più), con 🤖 se importato; con un solo sito in uso resta solo il 🤖.
 - [x] Filtro per sito in cronologia e classifica (la classifica si ricalcola sui soli show del sito).
 - [x] Vista **Per sito** nel grafico della spesa (barre nel colore del sito, €/min nel tooltip).
 - [x] Sito impostabile su più show insieme con la modifica multipla (anche sui regali).

@@ -1,10 +1,11 @@
-import { t, localeCorrente } from './i18n.js';
+import { t, formattaData } from './i18n.js';
 import { logger } from './logger.js';
 import { stato } from './stato.js';
 import { slugProfiloMcg } from './connettore-mcg.js';
 import { escapeHtml } from './utils.js';
 import { SITO_MCG } from './siti.js';
 import { funzioneDisponibile, urlProfiloSulSito, urlModelleDelSito, FUNZIONI } from './connettori.js';
+import { ripetiOgni } from './timer.js';
 
 /* ==========================================================================
    PROFILI SOSPESI O RIMOSSI SU MONDO CAM GIRLS
@@ -52,7 +53,7 @@ export function badgeSospesa(nome) {
     const slug = slugDellaModella(nome);
     const esito = slug && profili[slug];
     if (!esito || !(esito.sospeso || esito.rimosso)) return '';
-    const data = new Date(esito.verificato).toLocaleString(localeCorrente(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const data = formattaData(new Date(esito.verificato), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     const tipo = esito.rimosso ? 'removed' : 'tooltip';
     const titolo = t(`suspended.${tipo}`).replace('{data}', data);
     const [classe, testo] = esito.rimosso ? ['badge-sospesa badge-rimossa', t('suspended.badge_removed')] : ['badge-sospesa', t('suspended.badge')];
@@ -109,5 +110,5 @@ export async function verificaProfiliSospesi() {
 export function inizializzaProfiliSospesi() {
     // La prima verifica parte da ridisegnaViste, quando l'archivio è caricato;
     // qui si ricontrollano ogni ora i profili il cui esito è scaduto
-    setInterval(verificaProfiliSospesi, INTERVALLO_VERIFICA_MS);
+    ripetiOgni(verificaProfiliSospesi, INTERVALLO_VERIFICA_MS);
 }

@@ -31,16 +31,22 @@ export function badgeSito(id) {
 }
 
 /* --------------------------------------------------------------------------
-   BADGE NELLE TABELLE: sigla colorata del sito, con 🤖 se importato in
-   automatico e 👤 se inserito a mano
+   BADGE NELLE TABELLE: sigla colorata del sito e, dopo, 🤖 se lo show è stato
+   importato in automatico. "Inserito a mano" è il caso normale: nessuna icona,
+   solo il tooltip. Con un solo sito in uso la sigla sarebbe uguale su tutte le
+   righe: resta solo l'eventuale 🤖 (e niente se lo show è inserito a mano).
    -------------------------------------------------------------------------- */
 export function badgeSitoShow(show) {
     const sito = sitoDaId(show.sito);
     const origine = show.importatoDa
         ? testo('sites.imported_from', { sito: sitoDaId(show.importatoDa)?.nome || show.importatoDa })
         : t('sites.manual');
-    const titolo = `${sito?.nome || show.sito || '–'} · ${origine}`;
-    return `<span class="badge-sito ${classeColore(sito)}" title="${escapeHtml(titolo)}">${show.importatoDa ? '🤖' : '👤'} ${escapeHtml(siglaSito(show.sito))}</span>`;
+    const titolo = escapeHtml(`${sito?.nome || show.sito || '–'} · ${origine}`);
+    const icona = show.importatoDa ? '<span class="icona-importato" aria-hidden="true">🤖</span>' : '';
+    const inUso = sitiVisibili();
+    const unicoSito = inUso.length === 1 && inUso[0].id === show.sito;
+    if (unicoSito) return icona ? `<span class="badge-sito badge-solo-origine" title="${titolo}">${icona}</span>` : '';
+    return `<span class="badge-sito ${classeColore(sito)}" title="${titolo}">${escapeHtml(siglaSito(show.sito))}${icona}</span>`;
 }
 
 /* --------------------------------------------------------------------------

@@ -10,6 +10,16 @@ import { dataDelloShow, annoDelloShow, timestampShow, minutiDelloShow, costoMedi
 
 export const chiaveModella = (nome) => String(nome || '').trim().toLowerCase();
 
+// Copia degli show ordinata per data ('desc' = dal più recente, 'asc' = dal più vecchio).
+// Il timestamp si calcola una volta per show e non a ogni confronto (ogni volta
+// rileggeva la data); a parità di data resta l'ordine ricevuto.
+export function ordinaPerData(shows, verso = 'desc') {
+    const segno = verso === 'asc' ? 1 : -1;
+    return shows.map(show => ({ show, ts: timestampShow(show) }))
+        .sort((a, b) => segno * (a.ts - b.ts))
+        .map(({ show }) => show);
+}
+
 // Ultima foto e ultimo profilo noti per ogni modella (in ordine di data, vince il più recente).
 // urlPerSito: ultimo profilo della modella su ogni sito { chiave: { mcg: url, stripchat: url } },
 // per le funzioni che valgono solo per un sito (stato online, profili sospesi, foto)
@@ -17,7 +27,7 @@ export function calcolaMappeModelle(shows) {
     const immagini = {};
     const url = {};
     const urlPerSito = {};
-    [...shows].sort((a, b) => timestampShow(a) - timestampShow(b)).forEach(show => {
+    ordinaPerData(shows, 'asc').forEach(show => {
         if (!show.nome) return;
         const chiave = chiaveModella(show.nome);
         if (show.immagine) immagini[chiave] = show.immagine;
@@ -78,7 +88,7 @@ export function rinominaModella(shows, daNome, aNome, sito = null) {
 // piattaforma e nickname dei nuovi show importati da MCG)
 export function calcolaModelleUniche(shows) {
     const mappa = new Map();
-    [...shows].sort((a, b) => timestampShow(a) - timestampShow(b)).forEach(show => {
+    ordinaPerData(shows, 'asc').forEach(show => {
         if (!show.nome || show.nome.trim() === '') return;
         const chiave = chiaveModella(show.nome);
         const esistente = mappa.get(chiave) || {};
@@ -96,8 +106,7 @@ export function calcolaModelleUniche(shows) {
 // Show di una modella, dal più recente
 export function showsDiModella(shows, nome) {
     const chiave = chiaveModella(nome);
-    return shows.filter(s => s.nome && chiaveModella(s.nome) === chiave)
-        .sort((a, b) => timestampShow(b) - timestampShow(a));
+    return ordinaPerData(shows.filter(s => s.nome && chiaveModella(s.nome) === chiave));
 }
 
 // Totali di un gruppo di show: numero, spesa, minuti, voti e €/min medio.
@@ -148,7 +157,7 @@ export function schedaRapidaModella(shows, nome) {
 // mappe = { immagini, url } da calcolaMappeModelle, per foto e profilo di ripiego.
 export function calcolaClassifica(shows, mappe = { immagini: {}, url: {} }) {
     const gruppi = new Map();
-    [...shows].sort((a, b) => timestampShow(b) - timestampShow(a)).forEach(show => {
+    ordinaPerData(shows).forEach(show => {
         if (!show.nome) return;
         const chiave = chiaveModella(show.nome);
         if (!gruppi.has(chiave)) {
@@ -195,8 +204,7 @@ export function calcolaStatisticheAnno(shows, anno) {
         conteggio[m] += 1;
         showPerMese[m].push(show);
     });
-    showPerMese.forEach(elenco => elenco.sort((a, b) => timestampShow(b) - timestampShow(a)));
-    return { spesa, conteggio, showPerMese };
+    return { spesa, conteggio, showPerMese: showPerMese.map(elenco => ordinaPerData(elenco)) };
 }
 
 // Spesa e numero di show per anno, dal più vecchio (per il grafico della spesa).
@@ -276,11 +284,7 @@ export function filtraOrdinaShows(shows, { nome = '', anni = [], ordine = 'desc'
         (anniScelti.size === 0 || anniScelti.has(annoDelloShow(s))) &&
         (!tag || (s.tag || []).includes(tag)) &&
         (!sito || s.sito === sito));
-    risultato.sort((a, b) => {
-        const diff = timestampShow(a) - timestampShow(b);
-        return ordine === 'asc' ? diff : -diff;
-    });
-    return risultato;
+    return ordinaPerData(risultato, ordine);
 }
 
 // Modifica di più show insieme: applica a ogni show con ID in "ids" i campi
@@ -381,7 +385,11 @@ function showConPrezzo(shows, nome) {
 // altrimenti tutti i siti. null se la modella non ha show con durata.
 // { costoMinuto, mediaTutti, showUsati, showConDurata, sito ('' = tutti i siti), tendenza: 'su'|'giu'|'stabile' }
 export function prezzoSuggerito(shows, nome, { sito = '' } = {}) {
-    const tutti = showConPrezzo(shows, nome);
+    return suggeritoDaShowConPrezzo(showConPrezzo(shows, nome), sito);
+}
+
+// prezzoSuggerito sugli show con prezzo della modella, già dal più recente
+function suggeritoDaShowConPrezzo(tutti, sito = '') {
     const delSito = sito ? tutti.filter(s => s.sito === sito) : [];
     const suSito = Boolean(sito) && delSito.length >= MINIMO_SHOW_SITO;
     const base = suSito ? delSito : tutti;
@@ -423,12 +431,19 @@ export function valutaPrezzo(prezzo, minuti, riferimento) {
 }
 
 // Tabella dei prezzi suggeriti: una voce per modella con show di durata nota,
-// dalla modella con più show con durata (a pari merito in ordine di nome)
+// dalla modella con più show con durata (a pari merito in ordine di nome).
+// Gli show vengono divisi per modella in un solo passaggio: chiamare prezzoSuggerito
+// per ogni modella riscorreva e riordinava tutto l'archivio ogni volta.
 export function prezziSuggeriti(shows) {
-    const nomi = new Map();
-    shows.forEach(s => { if (s.nome && !nomi.has(chiaveModella(s.nome))) nomi.set(chiaveModella(s.nome), s.nome.trim()); });
-    return [...nomi.values()]
-        .map(nome => ({ nome, ...prezzoSuggerito(shows, nome) }))
+    const gruppi = new Map();
+    shows.forEach(s => {
+        if (!s.nome) return;
+        const chiave = chiaveModella(s.nome);
+        if (!gruppi.has(chiave)) gruppi.set(chiave, { nome: s.nome.trim(), elenco: [] });
+        if (costoAlMinuto(s) !== null) gruppi.get(chiave).elenco.push(s);
+    });
+    return [...gruppi.values()]
+        .map(({ nome, elenco }) => ({ nome, ...suggeritoDaShowConPrezzo(ordinaPerData(elenco)) }))
         .filter(voce => voce.costoMinuto !== undefined && voce.costoMinuto !== null)
         .sort((a, b) => (b.showConDurata - a.showConDurata) || a.nome.localeCompare(b.nome));
 }
@@ -456,6 +471,12 @@ export function ordinaPrezziSuggeriti(voci, colonna, verso = 'desc') {
         const diff = typeof va === 'string' ? va.localeCompare(vb) : va - vb;
         return segno * diff || a.nome.localeCompare(b.nome);
     });
+}
+
+// Due Set con gli stessi elementi? (null o undefined: mai uguali, es. lo stato
+// delle modelle online non ancora letto)
+export function stessoInsieme(a, b) {
+    return Boolean(a && b) && a.size === b.size && [...a].every(x => b.has(x));
 }
 
 // Una pagina di un elenco. limite 'all' = tutto in una pagina; la pagina

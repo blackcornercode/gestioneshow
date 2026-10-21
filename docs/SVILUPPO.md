@@ -29,20 +29,20 @@ Architettura, struttura del codice, test e build. Le regole per chi modifica il 
 
 I file di `js/` sono **moduli ES** (`import`/`export`): `index.html` carica solo `js/app.js` (`<script type="module">`), che importa gli altri. Lo stato condiviso tra i moduli è un unico oggetto `stato` (in `stato.js`), perché le variabili importate sono in sola lettura.
 
-**Azioni dell'interfaccia.** L'HTML non contiene JavaScript (`onclick`, `onchange`, `onerror`…): gli elementi dichiarano un'azione con attributi `data-azione`, `data-al-cambio` o `data-al-input` (es. `<button data-azione="modifica-show" data-id="…">`), e `azioni.js` le esegue con un solo ascoltatore sul documento. La tabella di tutte le azioni è in `app.js` (`registraAzioni`). Se più elementi annidati hanno un'azione vince il più interno (es. la foto dentro una riga cliccabile).
+**Azioni dell'interfaccia.** L'HTML non contiene JavaScript (`onclick`, `onchange`, `onerror`…): gli elementi dichiarano un'azione con attributi `data-azione`, `data-al-cambio` o `data-al-input` (es. `<button data-azione="modifica-show" data-id="…">`), e `azioni.js` le esegue con un solo ascoltatore sul documento. La tabella di tutte le azioni è in `app.js` (`registraAzioni`). Se più elementi annidati hanno un'azione vince il più interno (es. la foto dentro una riga cliccabile). Nei campi di ricerca `data-ritardo` accanto a `data-al-input` fa partire l'azione solo dopo una breve pausa nella scrittura (150 ms), invece che a ogni lettera.
 
 **Content-Security-Policy.** `index.html` vieta script esterni e codice JavaScript scritto nell'HTML (`script-src 'self'`): un eventuale testo malevolo inserito in un campo non può eseguire codice. `splash.html` non permette script.
 
 | Modulo | Contenuto |
 | :--- | :--- |
 | `logger.js` | Log a console e al processo principale (che lo scrive in `app.log`); `registraErroriGlobali()` cattura errori e promise non gestiti. Gli `Error` vanno passati come dettagli: ne viene scritto lo stack. |
-| `i18n.js` | Elenco delle lingue (`LINGUE`), caricamento, funzione `t()` e `localeCorrente()` per le date formattate nella lingua dell'interfaccia. |
+| `i18n.js` | Elenco delle lingue (`LINGUE`), caricamento, funzione `t()`, `localeCorrente()` e `formattaData()` per le date nella lingua dell'interfaccia (da preferire a `toLocale*String` nelle tabelle: riusa i formattatori). |
 | `stato.js` | Stato condiviso: l'oggetto `stato` (archivio in memoria, filtri, pagina corrente, classifica…). |
 | `azioni.js` | Esecuzione delle azioni dichiarate negli attributi `data-azione`/`data-al-cambio`/`data-al-input`, e sostituzione delle foto che non si caricano. |
 | `utils.js` | Funzioni comuni: escape HTML, ID univoci, lettura delle date (anche formato italiano `gg/mm/aaaa`), normalizzazione dei record vecchi (`normalizzaShow`), formattazione importi, voti e durate, link esterni. |
-| `calcoli.js` | Calcoli puri sugli show, senza accesso alla pagina: classifica, totali di una modella, statistiche per anno, budget, filtri e pagine della cronologia, modifica di più show insieme, mappe di foto e profili. Verificati dai test. |
+| `calcoli.js` | Calcoli puri sugli show, senza accesso alla pagina: ordinamento per data (`ordinaPerData`, da usare al posto di `sort` con `timestampShow`), classifica, totali di una modella, statistiche per anno, budget, filtri e pagine della cronologia, modifica di più show insieme, mappe di foto e profili. Verificati dai test. |
 | `righe-show.js` | Disegnatore unico delle righe degli show: ogni colonna (intestazione e cella) è definita una volta; cronologia, dettaglio del mese e scheda modella sono elenchi di colonne. |
-| `archivio.js` | Archivio in memoria: letto da disco solo all'avvio e dopo un'importazione; aggiunte, modifiche ed eliminazioni (anche di più show insieme) salvano su disco e ridisegnano le viste senza rileggere il file. |
+| `archivio.js` | Archivio in memoria: letto da disco solo all'avvio e dopo un'importazione; aggiunte, modifiche ed eliminazioni (anche di più show insieme) salvano su disco e ridisegnano le viste senza rileggere il file (`aggiornaViste` ricalcola i dati derivati e avvisa le viste; `avvisaViste` le ridisegna soltanto, es. al cambio lingua). |
 | `preferenze.js` | Schede, tema, dimensione font, note per intero (classe `note-complete` sul body), budget, versione. |
 | `filtri-salvati.js` | Ordine e filtri delle tabelle ricordati alla riapertura (localStorage); la ricerca per nome resta esclusa. |
 | `galleria.js` | Lightbox e navigazione foto. |
@@ -71,9 +71,10 @@ I file di `js/` sono **moduli ES** (`import`/`export`): `index.html` carica solo
 | `profili-sospesi.js` | Profili sospesi o rimossi su Mondo Cam Girls: verifica in background e badge in classifica e nella scheda. |
 | `stato-online.js` | Modelle online su Mondo Cam Girls: badge e filtro in classifica e nella scheda. |
 | `privacy.js` | Sfocatura delle foto, schermata di blocco con PIN, blocco per inattività, tasto rapido personalizzabile per nascondere l'app, opzioni di privacy del menu Impostazioni. |
+| `timer.js` | `ripetiOgni()`: controlli periodici (indicatore MCG, credito, modelle online, profili sospesi) fermi con la finestra ridotta a icona o l'app bloccata dal PIN, recuperati una volta sola alla riapertura. Il blocco per inattività non passa da qui. |
 | `form-assistito.js` | Parti assistite del form: show/regalo, stelle, durate rapide, €/min mentre si scrive, mini-scheda della modella, riepilogo dei dettagli. |
 | `menu-header.js` | Menu a tendina Dati e Impostazioni dell'intestazione. |
-| `app.js` | Punto di ingresso: importa i moduli, registra le azioni dell'interfaccia, collega l'archivio alle viste, avvia l'applicazione. |
+| `app.js` | Punto di ingresso: importa i moduli, registra le azioni dell'interfaccia, collega l'archivio alle viste, avvia l'applicazione. Dopo una modifica si ridisegna solo la scheda visibile: le altre (`DISEGNO_SCHEDE`) restano segnate e si ridisegnano all'apertura (evento `scheda-aperta` lanciato da `apriTab`); le finestre Gestisci tag/siti solo se sono aperte. |
 
 ---
 

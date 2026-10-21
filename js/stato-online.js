@@ -1,10 +1,12 @@
-import { t, localeCorrente } from './i18n.js';
+import { stessoInsieme } from './calcoli.js';
+import { t, formattaData } from './i18n.js';
 import { logger } from './logger.js';
 import { stato } from './stato.js';
 import { escapeHtml } from './utils.js';
 import { SITO_MCG } from './siti.js';
 import { funzioneDisponibile, urlProfiloSulSito, FUNZIONI } from './connettori.js';
 import { slugProfiloMcg } from './connettore-mcg.js';
+import { ripetiOgni } from './timer.js';
 
 /* ==========================================================================
    MODELLE ONLINE SU MONDO CAM GIRLS
@@ -25,12 +27,22 @@ export function eModellaOnline(nome) {
     return slug ? slugModelleOnline.has(slug) : null;
 }
 
+// Tooltip di badge e pallino: "online adesso (verificato alle hh:mm)"
+function titoloOnline() {
+    const ora = oraAggiornamentoOnline ? formattaData(oraAggiornamentoOnline, { hour: '2-digit', minute: '2-digit' }) : '';
+    return t('online.tooltip').replace('{ora}', ora);
+}
+
 // Badge "Online" da mettere accanto al nome; stringa vuota se non è online
 export function badgeOnline(nome) {
     if (eModellaOnline(nome) !== true) return '';
-    const ora = oraAggiornamentoOnline ? oraAggiornamentoOnline.toLocaleTimeString(localeCorrente(), { hour: '2-digit', minute: '2-digit' }) : '';
-    const titolo = t('online.tooltip').replace('{ora}', ora);
-    return ` <span class="badge-online" title="${escapeHtml(titolo)}">${escapeHtml(t('online.badge'))}</span>`;
+    return ` <span class="badge-online" title="${escapeHtml(titoloOnline())}">${escapeHtml(t('online.badge'))}</span>`;
+}
+
+// Pallino verde da mettere dopo il nome nelle tabelle; stringa vuota se non è online
+export function pallinoOnline(nome) {
+    if (eModellaOnline(nome) !== true) return '';
+    return ` <span class="pallino-online" role="img" title="${escapeHtml(titoloOnline())}" aria-label="${escapeHtml(t('online.badge'))}"></span>`;
 }
 
 export async function aggiornaStatoOnline() {
@@ -41,8 +53,16 @@ export async function aggiornaStatoOnline() {
             logger.warn('Stato online delle modelle non disponibile', esito && esito.error);
             return;
         }
-        slugModelleOnline = new Set(esito.slug);
+        const nuovi = new Set(esito.slug);
+        const invariati = stessoInsieme(slugModelleOnline, nuovi);
+        slugModelleOnline = nuovi;
         oraAggiornamentoOnline = new Date(esito.aggiornato);
+        if (invariati) {
+            // Stesse modelle online: niente ridisegno delle tabelle, solo l'ora nei tooltip
+            const titolo = titoloOnline();
+            document.querySelectorAll('.badge-online, .pallino-online').forEach(elemento => { elemento.title = titolo; });
+            return;
+        }
         // Classifica e scheda modella si aggiornano ascoltando questo evento (app.js)
         document.dispatchEvent(new CustomEvent('modelle-online-aggiornate'));
     } catch (err) {
@@ -52,5 +72,5 @@ export async function aggiornaStatoOnline() {
 
 export function inizializzaStatoOnline() {
     aggiornaStatoOnline();
-    setInterval(aggiornaStatoOnline, INTERVALLO_ONLINE_MS);
+    ripetiOgni(aggiornaStatoOnline, INTERVALLO_ONLINE_MS);
 }

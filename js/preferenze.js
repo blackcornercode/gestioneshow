@@ -14,8 +14,10 @@ export function apriTab(tabId, bottone) {
     const tabTarget = document.getElementById(tabId);
     if (tabTarget) tabTarget.classList.add('active');
     if (bottone) bottone.classList.add('active');
-    
+
     logger.info(`Cambiato scheda attiva: ${tabId}`);
+    // Le schede nascoste non vengono ridisegnate a ogni modifica: lo fa app.js all'apertura
+    document.dispatchEvent(new CustomEvent('scheda-aperta', { detail: tabId }));
 }
 
 /* ==========================================================================

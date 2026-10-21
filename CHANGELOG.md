@@ -18,7 +18,8 @@ Generato da `changelog.json` con `npm run changelog`: per modificarlo, modificar
 - La scheda della modella mostra la barra «Dati uniti da:» con i nomi originali (e il numero di show) degli show uniti con Unisci/Separa
 - Testo della recensione scritto a mano nel form (campo visibile con «Recensione fatta» acceso, conservato anche se lo si spegne) e letto dal pulsante a fumetto della colonna Recensione, con Copia e Modifica; è nell'esportazione CSV
 - Qualità e inquadratura hanno una colonna propria («Qual./Inq.») accanto al voto in cronologia, dettaglio del mese e scheda della modella, invece di stare sotto il voto
-- In cronologia e nel dettaglio del mese la scheda della modella si apre con un clic sulla foto (tolto il pulsante dalle azioni); la foto ha il bordo verde se la modella è online
+- In cronologia e nel dettaglio del mese la scheda della modella si apre con un clic sulla foto (tolto il pulsante dalle azioni); sopra il nome compare il badge del sito (prima sotto l'ora) e dopo il nome un pallino verde se la modella è online. Il badge mostra la sigla del sito seguita da 🤖 solo per gli show importati in automatico (tolto il 👤 degli show inseriti a mano: l'origine resta nel tooltip); se usi un solo sito la sigla non compare e resta solo il 🤖
+- Con l'app ridotta a icona o bloccata dal PIN i controlli automatici (indicatore MCG, credito, modelle online, profili sospesi) si fermano e non contattano il sito; ripartono appena la riapri o la sblocchi
 
 ### 🎨 Interfaccia
 
@@ -28,6 +29,10 @@ Generato da `changelog.json` con `npm run changelog`: per modificarlo, modificar
 
 - Un regalo registrato dopo Ripeti ultimo show (o dopo aver scelto una durata) veniva salvato con la durata dello show, che per i regali è nascosta
 - Nella scheda della modella, nei riquadri per sito, alcune etichette (in inglese «Total duration» e «Total spent») si sovrapponevano e in tedesco e russo le parole lunghe venivano spezzate; ora ogni etichetta resta intera e, se non c'è spazio, va sulla riga sotto. La pagina dichiara anche la lingua dell'interfaccia, utile ai lettori di schermo
+
+### 🛠️ Tecnico
+
+- App più reattiva con archivi grandi: la tabella dei prezzi suggeriti si calcola in un solo passaggio sull'archivio (con 5.000 show da circa 60 a 5 ms, a ogni salvataggio e a ogni aggiornamento delle modelle online); le tabelle non vengono più ridisegnate ogni 3 minuti se le modelle online sono le stesse (si aggiorna solo l'ora nei tooltip); le ricerche per nome di cronologia, classifica e preventivo filtrano dopo una breve pausa nella scrittura invece che a ogni lettera; dopo una modifica si ridisegna solo la scheda visibile (le altre all'apertura) e la classifica viene disegnata una volta sola invece di due; ordinamenti per data, date nelle tabelle e avvio più rapidi
 
 ## 2.0.0
 

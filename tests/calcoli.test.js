@@ -277,15 +277,28 @@ test('scheda rapida della modella nel form: ultimo show vero e tag più usati', 
     assert.equal(f.schedaRapidaModella([shows[2]], 'Loca').ultimoShow, null);
 });
 
-test('righe: badge del sito nella cella della data, con 🤖 se importato e 👤 se inserito a mano', () => {
+test('righe: badge del sito sopra il nome, con 🤖 solo se importato', () => {
     f.stato.catalogoSiti = [{ id: 'mcg', nome: 'Mondo Cam Girls', sigla: 'MCG', colore: 'rosso' }, { id: 'stripchat', nome: 'Stripchat', sigla: 'SC', colore: 'rosa' }];
     const base = { id: 1, nome: 'A', dataFormattata: '02/10/2026 21:30', costo: 10 };
-    const importato = f.rigaShow({ ...base, sito: 'mcg', importatoDa: 'mcg' }, ['data']);
-    assert.match(importato, /class="badge-sito tag-colore-rosso" title="Mondo Cam Girls · [^"]*">🤖 MCG</);
-    assert.match(importato, /data-giorno">02\/10\/2026<.*data-ora">21:30 /s);
-    assert.match(f.rigaShow({ ...base, sito: 'stripchat', importatoDa: null }, ['data']), /tag-colore-rosa"[^>]*>👤 SC</);
+    const importato = f.rigaShow({ ...base, sito: 'mcg', importatoDa: 'mcg' }, ['nome']);
+    assert.match(importato, /<span class="badge-sito tag-colore-rosso" title="Mondo Cam Girls · [^"]*">MCG<span class="icona-importato" aria-hidden="true">🤖<\/span><\/span><strong>A<\/strong>/);
+    // Inserito a mano: solo la sigla (l'origine resta nel tooltip)
+    assert.match(f.rigaShow({ ...base, sito: 'stripchat', importatoDa: null }, ['nome']), /tag-colore-rosa" title="Stripchat · [^"]+">SC<\/span>/);
     // Sito non più nel catalogo: grigio, con il suo ID
-    assert.match(f.rigaShow({ ...base, sito: 'cam4', importatoDa: null }, ['data']), /tag-colore-grigio"[^>]*>👤 CAM4</);
+    assert.match(f.rigaShow({ ...base, sito: 'cam4', importatoDa: null }, ['nome']), /tag-colore-grigio"[^>]*>CAM4<\/span>/);
+    // Il nome cliccabile (dettaglio del mese) ha lo stesso badge
+    assert.match(f.rigaShow({ ...base, sito: 'mcg', importatoDa: 'mcg' }, ['nomeCliccabile']), /<\/span><strong class="cliccabile"/);
+    // Sotto la data non c'è più; resta solo nella scheda modella, che non ha la colonna del nome
+    const data = f.rigaShow({ ...base, sito: 'mcg', importatoDa: 'mcg' }, ['data']);
+    assert.ok(!data.includes('badge-sito'));
+    assert.match(f.rigaShow({ ...base, sito: 'mcg', importatoDa: 'mcg' }, ['dataSito']), /data-ora">21:30 <span class="badge-sito/);
+
+    // Un solo sito in uso: la sigla sparisce, resta solo il 🤖 degli show importati
+    f.stato.catalogoSiti[1].attivo = false;
+    assert.match(f.rigaShow({ ...base, sito: 'mcg', importatoDa: 'mcg' }, ['nome']), /<span class="badge-sito badge-solo-origine" title="Mondo Cam Girls · [^"]+"><span class="icona-importato"[^>]*>🤖<\/span><\/span><strong>A/);
+    assert.ok(!f.rigaShow({ ...base, sito: 'mcg', importatoDa: null }, ['nome']).includes('badge-sito'), 'a mano su un solo sito: nessun badge');
+    // Uno show di un sito non più in uso mantiene la sigla
+    assert.match(f.rigaShow({ ...base, sito: 'stripchat', importatoDa: null }, ['nome']), />SC<\/span>/);
     f.stato.catalogoSiti = [];
 });
 
@@ -416,6 +429,37 @@ test('preventivo: prezzo suggerito dagli ultimi 5 show, per sito se ce ne sono a
 
     const tabella = f.prezziSuggeriti(shows);
     assert.deepEqual(tabella.map(v => [v.nome, v.showConDurata]), [['Anna', 7], ['Bea', 1]]);
+    // La tabella divide gli show per modella in un solo passaggio: stessi valori del calcolo singolo
+    assert.deepEqual(tabella[0], { nome: 'Anna', ...tutti });
+    // Una modella con soli regali o show senza durata non compare
+    assert.deepEqual(f.prezziSuggeriti([...shows, { id: 30, nome: 'Cleo', costo: 20, durata: 0 }]).map(v => v.nome), ['Anna', 'Bea']);
+});
+
+test('ordinamento per data: dal più recente o dal più vecchio, a pari data resta l\'ordine ricevuto', () => {
+    const shows = [
+        { id: 1, dataOraISO: iso(2026, 3, 1) },
+        { id: 2, dataOraISO: iso(2026, 1, 1) },
+        { id: 3, dataOraISO: iso(2026, 3, 1) },
+        { id: 4, dataFormattata: '15/02/2026 21:00' },
+        { id: 5 }   // senza data: vale l'ID
+    ];
+    assert.deepEqual(f.ordinaPerData(shows).map(s => s.id), [1, 3, 4, 2, 5]);
+    assert.deepEqual(f.ordinaPerData(shows, 'asc').map(s => s.id), [5, 2, 4, 1, 3]);
+    assert.deepEqual(shows.map(s => s.id), [1, 2, 3, 4, 5], "l'elenco ricevuto non cambia");
+});
+
+test('date nella lingua dell\'interfaccia: stesso testo di toLocaleString', () => {
+    const d = new Date(2026, 9, 19, 21, 5);
+    const opzioni = { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' };
+    assert.equal(f.formattaData(d, opzioni), d.toLocaleString(f.localeCorrente(), opzioni));
+    assert.equal(f.formattaData(d, { weekday: 'short' }), d.toLocaleDateString(f.localeCorrente(), { weekday: 'short' }));
+});
+
+test('stato online: due insiemi uguali solo con gli stessi elementi', () => {
+    assert.equal(f.stessoInsieme(new Set(['a', 'b']), new Set(['b', 'a'])), true);
+    assert.equal(f.stessoInsieme(new Set(['a']), new Set(['a', 'b'])), false);
+    assert.equal(f.stessoInsieme(new Set(['a', 'c']), new Set(['a', 'b'])), false);
+    assert.equal(f.stessoInsieme(null, new Set()), false, 'stato non ancora letto: va sempre ridisegnato');
 });
 
 test('preventivo: prezzo chiesto in linea entro ±10%, altrimenti caro o conveniente', () => {

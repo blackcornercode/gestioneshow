@@ -6,7 +6,8 @@
 
      data-azione="nome"      clic (anche Invio/Spazio se l'elemento ha data-tastiera)
      data-al-cambio="nome"   evento change (select, checkbox)
-     data-al-input="nome"    evento input (campi di ricerca)
+     data-al-input="nome"    evento input (campi di ricerca); con data-ritardo
+                             l'azione parte solo dopo una pausa nella scrittura
 
    e un solo ascoltatore sul documento esegue la funzione registrata con quel
    nome, passandole l'elemento e l'evento. Se più elementi annidati hanno
@@ -16,6 +17,10 @@
    riquadro "No Foto" (al posto di onerror="..."). */
 
 const azioni = {};
+
+// data-ritardo: millisecondi di pausa nella scrittura prima di eseguire l'azione
+const RITARDO_INPUT_MS = 150;
+const attese = new WeakMap();
 
 export function registraAzioni(mappa) {
     Object.assign(azioni, mappa);
@@ -53,7 +58,14 @@ export function inizializzaAzioni() {
 
     document.addEventListener('input', (e) => {
         const el = e.target.closest('[data-al-input]');
-        if (el) esegui(el.dataset.alInput, el, e);
+        if (!el) return;
+        if (el.dataset.ritardo === undefined) {
+            esegui(el.dataset.alInput, el, e);
+            return;
+        }
+        // Campi di ricerca: si filtra una volta sola alla fine della parola, non a ogni lettera
+        clearTimeout(attese.get(el));
+        attese.set(el, setTimeout(() => esegui(el.dataset.alInput, el, e), RITARDO_INPUT_MS));
     });
 
     // L'evento "error" delle immagini non risale il DOM: va intercettato in fase di cattura
@@ -61,8 +73,8 @@ export function inizializzaAzioni() {
         const img = e.target;
         if (img.tagName === 'IMG' && img.dataset.sostituto !== undefined) {
             const riquadro = document.createElement('div');
-            // Il riquadro eredita il clic sulla modella e il bordo "online" della foto
-            riquadro.className = ['no-img', ...['cliccabile', 'foto-online'].filter(c => img.classList.contains(c))].join(' ');
+            // Il riquadro eredita il clic sulla modella della foto
+            riquadro.className = ['no-img', ...['cliccabile'].filter(c => img.classList.contains(c))].join(' ');
             for (const chiave of ['azione', 'nome']) if (img.dataset[chiave] !== undefined) riquadro.dataset[chiave] = img.dataset[chiave];
             if (img.title) riquadro.title = img.title;
             riquadro.textContent = img.dataset.sostituto;

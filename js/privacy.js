@@ -147,6 +147,9 @@ function impostaPaginaInerte(inerte) {
     });
 }
 
+// true mentre è visibile la schermata di blocco (i controlli periodici restano fermi, timer.js)
+export const appBloccata = () => bloccata;
+
 export function blocca() {
     if (!preferenze.pinImpostato || bloccata) return;
     bloccata = true;
@@ -172,6 +175,8 @@ export async function sblocca() {
     ultimaAttivita = Date.now();
     elemento('schermataBlocco').hidden = true;
     impostaPaginaInerte(false);
+    // I controlli periodici saltati durante il blocco ripartono (timer.js)
+    document.dispatchEvent(new CustomEvent('app-sbloccata'));
 }
 
 // Tasto rapido: blocca (se c'è un PIN) e riduce subito a icona

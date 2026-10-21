@@ -4,7 +4,7 @@
    Unico script caricato da index.html (type="module"): importa i moduli,
    registra le azioni dell'interfaccia (data-azione, vedi azioni.js), collega
    l'archivio alle viste e avvia l'applicazione. */
-import { aggiornaInterfaccia, alCambioArchivio, aggiornaViste } from './archivio.js';
+import { aggiornaInterfaccia, alCambioArchivio, avvisaViste } from './archivio.js';
 import { inizializzaAzioni, registraAzioni } from './azioni.js';
 import { initChangelogCheck, inizializzaListenerChangelogMenu, apriModalChangelog, chiudiModalChangelog } from './changelog.js';
 import { caricaMedieEStoricizzazione, filtraClassificaModelle } from './classifica.js';
@@ -36,6 +36,7 @@ import { verificaStatoMCG, aggiornaTestoStatoMCG } from './stato-mcg.js';
 import { disegnaSelettoreTagForm, alternaTagForm, creaTagDaForm, disegnaTagModificaMultipla, alternaTagModificaMultipla, aggiornaFiltroTag, apriGestioneTag, chiudiGestioneTag, disegnaGestioneTag, creaTagDaGestione, rinominaTag, cambiaColoreTag, eliminaTag, inizializzaTag } from './tag.js';
 import { inizializzaStatoOnline } from './stato-online.js';
 import { popolaSelettoreAnni, caricaStatisticheMensili, aggiornaStatisticheMensili, selezionaMeseDettaglio, aggiornaIndicatoreBudgetHomepage } from './statistiche.js';
+import { ripetiOgni } from './timer.js';
 import { apriLinkEsterno, copiaEApriTeams, espandiNota } from './utils.js';
 
 /* --------------------------------------------------------------------------
@@ -188,6 +189,30 @@ registraAzioni({
 /* --------------------------------------------------------------------------
    AGGIORNAMENTO DELLE VISTE
    -------------------------------------------------------------------------- */
+// Disegno completo del contenuto di ogni scheda. Una scheda nascosta non viene
+// ridisegnata a ogni modifica: resta segnata e si ridisegna quando la si apre.
+const DISEGNO_SCHEDE = {
+    tabDashboard: () => caricaCronologia(stato.tuttiGliShow),
+    // Mantiene l'eventuale ricerca e i filtri della classifica
+    tabClassifica: () => caricaMedieEStoricizzazione(stato.tuttiGliShow),
+    tabPreventivo: () => ridisegnaPreventivo(),
+    tabStatistiche: () => caricaStatisticheMensili(stato.tuttiGliShow)
+};
+const schedeDaRidisegnare = new Set();
+
+// disegna: cosa fare se la scheda è visibile (di solito il disegno completo);
+// se è nascosta all'apertura vale comunque il disegno completo
+function ridisegnaScheda(id, disegna = DISEGNO_SCHEDE[id]) {
+    if (document.getElementById(id)?.classList.contains('active')) disegna();
+    else schedeDaRidisegnare.add(id);
+}
+
+document.addEventListener('scheda-aperta', (e) => {
+    if (schedeDaRidisegnare.delete(e.detail)) DISEGNO_SCHEDE[e.detail]?.();
+});
+
+const finestraAperta = (id) => document.getElementById(id)?.style.display === 'block';
+
 // Chiamata dall'archivio dopo ogni modifica (e dal cambio lingua)
 function ridisegnaViste() {
     aggiornaDatalistModelle();
@@ -198,17 +223,13 @@ function ridisegnaViste() {
     applicaSitiAttivi();
     aggiornaSelectSiti();
     disegnaSelettoreSitoForm();
-    disegnaGestioneSiti();
+    // Le finestre di gestione si ridisegnano comunque quando vengono aperte
+    if (finestraAperta('modalGestioneSiti')) disegnaGestioneSiti();
     disegnaSelettoreTagForm();
     disegnaTagModificaMultipla();
-    disegnaGestioneTag();
+    if (finestraAperta('modalGestioneTag')) disegnaGestioneTag();
     popolaSelettoreAnni(stato.tuttiGliShow);
-    caricaCronologia(stato.tuttiGliShow);
-    caricaStatisticheMensili(stato.tuttiGliShow);
-    caricaMedieEStoricizzazione(stato.tuttiGliShow);
-    ridisegnaPreventivo();
-    // Mantiene l'eventuale ricerca e il filtro "Solo online" della classifica
-    filtraClassificaModelle();
+    Object.keys(DISEGNO_SCHEDE).forEach(id => ridisegnaScheda(id));
     aggiornaIndicatoreBudgetHomepage(stato.tuttiGliShow);
     // Primo avvio con l'archivio vuoto: quali siti usi?
     controllaBenvenuto();
@@ -219,16 +240,16 @@ alCambioArchivio(ridisegnaViste);
 
 // Nuovo elenco delle modelle online (stato-online.js): classifica e scheda aperta
 document.addEventListener('modelle-online-aggiornate', () => {
-    filtraClassificaModelle();
+    ridisegnaScheda('tabClassifica', filtraClassificaModelle);
     aggiornaBadgeSchedaModella();
-    disegnaPrezziSuggeriti();
-    caricaCronologia(stato.tuttiGliShow);   // bordo verde delle foto
+    ridisegnaScheda('tabPreventivo', disegnaPrezziSuggeriti);
+    ridisegnaScheda('tabDashboard');   // pallino verde accanto al nome
 });
 // Esito della verifica dei profili sospesi (profili-sospesi.js)
 document.addEventListener('profili-sospesi-aggiornati', () => {
-    filtraClassificaModelle();
+    ridisegnaScheda('tabClassifica', filtraClassificaModelle);
     aggiornaBadgeSchedaModella();
-    disegnaPrezziSuggeriti();
+    ridisegnaScheda('tabPreventivo', disegnaPrezziSuggeriti);
 });
 
 async function cambiaLingua(nuovaLingua) {
@@ -237,8 +258,8 @@ async function cambiaLingua(nuovaLingua) {
         logger.info(`Cambio lingua richiesto: ${nuovaLingua}`);
         // caricaLingua salva già la preferenza in localStorage ('appLang')
         await caricaLingua(nuovaLingua);
-        // Ridisegna le viste generate da JS (dalla memoria, senza rileggere il disco)
-        aggiornaViste();
+        // Ridisegna le viste generate da JS (dalla memoria: l'archivio non è cambiato)
+        avvisaViste();
         aggiornaTestoStatoMCG();
         aggiornaTestoCredito();
         aggiornaPulsanteForm();
@@ -308,9 +329,10 @@ function inizializzaModali() {
 }
 
 function inizializzaIndicatoreMCG() {
-    // Verifica subito, poi ogni 60 secondi o al clic (dopo caricaLingua: testi già tradotti)
+    // Verifica subito, poi ogni 60 secondi (non con l'app nascosta o bloccata) o al clic
+    // (dopo caricaLingua: testi già tradotti)
     verificaStatoMCG();
-    setInterval(verificaStatoMCG, 60000);
+    ripetiOgni(verificaStatoMCG, 60000);
     const mcgContainer = document.getElementById('mcgStatusContainer');
     if (!mcgContainer) return;
     mcgContainer.addEventListener('click', verificaStatoMCG);
@@ -329,11 +351,13 @@ async function avvia() {
     registraErroriGlobali();
     logger.info("Inizializzazione applicazione...");
     inizializzaAzioni();
+    // Funzioni dei connettori dei siti (servono a indicatore, stato online e profili
+    // sospesi): lette mentre si caricano lingua e privacy
+    const connettori = caricaConnettori();
     await caricaLingua(linguaCorrente);
     // Prima dei dati: con un PIN l'app parte già bloccata
     await inizializzaPrivacy();
-    // Funzioni dei connettori dei siti: servono a indicatore, stato online e profili sospesi
-    await caricaConnettori();
+    await connettori;
 
     mostraVersioneApp();
     impostaDataOraAttuale();

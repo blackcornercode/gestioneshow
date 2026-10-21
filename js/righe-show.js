@@ -1,8 +1,8 @@
 import { chiaveModella } from './calcoli.js';
-import { t, localeCorrente } from './i18n.js';
+import { t, formattaData } from './i18n.js';
 import { badgeSitoShow } from './gestione-siti.js';
 import { stato, iconePiattaformaHTML } from './stato.js';
-import { eModellaOnline } from './stato-online.js';
+import { pallinoOnline } from './stato-online.js';
 import { tagDelloShow, etichettaTag } from './tag.js';
 import { generaLinkChat, eUsernameTeams, escapeHtml, cellaCosto, costoAlMinuto, cellaNote, formattaCostoAlMinuto, formattaVoto, formattaDurata, DATO_MANCANTE } from './utils.js';
 
@@ -42,16 +42,15 @@ export function getPiattaformaFormatted(show) {
     return iconaHtml;
 }
 
-// Foto tonda della modella: il clic apre la sua scheda; bordo verde se è online su MCG
+// Foto tonda della modella: il clic apre la sua scheda
 export function cellaFoto(show) {
     const fotoUrl = show.immagine || stato.mappaImmaginiModelle[chiaveModella(show.nome)] || '';
     const testoSenzaFoto = escapeHtml(t('table.no_photo'));
-    const online = eModellaOnline(show.nome) === true ? ' foto-online' : '';
-    const titolo = escapeHtml(t(online ? 'table.open_model_online' : 'table.open_model'));
+    const titolo = escapeHtml(t('table.open_model'));
     const nome = escapeHtml(show.nome);
-    if (!fotoUrl) return `<td><div class="no-img cliccabile${online}" title="${titolo}" data-azione="apri-scheda-modella" data-nome="${nome}">${testoSenzaFoto}</div></td>`;
+    if (!fotoUrl) return `<td><div class="no-img cliccabile" title="${titolo}" data-azione="apri-scheda-modella" data-nome="${nome}">${testoSenzaFoto}</div></td>`;
     // data-sostituto: se l'immagine non si carica viene sostituita dal riquadro "No Foto" (azioni.js)
-    return `<td><img src="${escapeHtml(fotoUrl)}" class="thumb-img cliccabile${online}" alt="foto" title="${titolo}"
+    return `<td><img src="${escapeHtml(fotoUrl)}" class="thumb-img cliccabile" alt="foto" title="${titolo}"
         data-azione="apri-scheda-modella" data-nome="${nome}" data-sostituto="${testoSenzaFoto}"></td>`;
 }
 
@@ -72,15 +71,19 @@ export function cellaTagNote(show) {
         <div class="tag-show">${etichette}</div>${nota ? `<div class="testo-note">${nota}</div>` : ''}</td>`;
 }
 
-// Data sopra e, sotto, ora e badge del sito (sigla colorata, 🤖 se importato,
-// 👤 se inserito a mano): più stretta di "gg/mm/aaaa hh:mm" su una riga.
+// Data sopra e, sotto, l'ora (e, nella scheda modella, il badge del sito):
+// più stretta di "gg/mm/aaaa hh:mm" su una riga.
 // ⑤ Prima della data mostra il giorno della settimana abbreviato (Lun, Mar…)
-function cellaData(show) {
+function cellaData(show, conSito = false) {
     const [giorno, ora = ''] = String(show.dataFormattata || '').split(' ');
     const d = show.dataOraISO ? new Date(show.dataOraISO) : null;
-    const dow = d && !isNaN(d) ? d.toLocaleDateString(localeCorrente(), { weekday: 'short' }) : '';
-    return `<td class="col-data">${dow ? `<span class="data-dow">${escapeHtml(dow)}</span>` : ''}<span class="data-giorno">${escapeHtml(giorno)}</span><span class="data-ora">${escapeHtml(ora)} ${badgeSitoShow(show)}</span></td>`;
+    const dow = d && !isNaN(d) ? formattaData(d, { weekday: 'short' }) : '';
+    return `<td class="col-data">${dow ? `<span class="data-dow">${escapeHtml(dow)}</span>` : ''}<span class="data-giorno">${escapeHtml(giorno)}</span><span class="data-ora">${escapeHtml(ora)}${conSito ? ` ${badgeSitoShow(show)}` : ''}</span></td>`;
 }
+
+// Cella del nome: il badge del sito (sigla e 🤖 se importato) sopra il nome
+// e, se la modella è online, il pallino verde. Il nome è già HTML pronto (con eventuale link)
+const cellaNome = (show, nomeHtml) => `<td class="col-nowrap col-nome">${badgeSitoShow(show)}${nomeHtml}${pallinoOnline(show.nome)}</td>`;
 
 const selezionato = (show) => stato.selezioneCronologia.has(String(show.id));
 
@@ -122,9 +125,11 @@ export const COLONNE_SHOW = {
                     () => `<input type="checkbox" id="selezionaPaginaCronologia" class="casella-selezione"
                         title="${escapeHtml(t('selection.select_page'))}" aria-label="${escapeHtml(t('selection.select_page'))}" data-al-cambio="seleziona-pagina">`],
     foto:          ['table.photo', '', cellaFoto],
-    data:          ['table.date', '', cellaData],
-    nome:          ['table.name', '', s => `<td class="col-nowrap"><strong>${escapeHtml(s.nome)}</strong></td>`],
-    nomeCliccabile:['table.name', '', s => `<td class="col-nowrap"><strong class="cliccabile" data-azione="apri-scheda-modella" data-nome="${escapeHtml(s.nome)}">${escapeHtml(s.nome)}</strong></td>`],
+    data:          ['table.date', '', s => cellaData(s)],
+    // Senza colonna del nome (scheda modella) il badge del sito resta sotto l'ora
+    dataSito:      ['table.date', '', s => cellaData(s, true)],
+    nome:          ['table.name', '', s => cellaNome(s, `<strong>${escapeHtml(s.nome)}</strong>`)],
+    nomeCliccabile:['table.name', '', s => cellaNome(s, `<strong class="cliccabile" data-azione="apri-scheda-modella" data-nome="${escapeHtml(s.nome)}">${escapeHtml(s.nome)}</strong>`)],
     piattaforma:   ['table.platform', '', s => `<td>${getPiattaformaFormatted(s)}</td>`],
     durata:        ['table.duration', 'col-centro', s => `<td class="col-nowrap col-centro col-grassetto">${formattaDurata(s.durata)}</td>`],
     costo:         ['table.cost', '', s => cellaCosto(s)],
@@ -147,7 +152,7 @@ export const COLONNE_SHOW = {
 
 export const COLONNE_CRONOLOGIA = ['selezione', 'foto', 'data', 'nome', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'parametri', 'recensione', 'note', 'azioni'];
 export const COLONNE_DETTAGLIO_MESE = ['foto', 'data', 'nomeCliccabile', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'parametri', 'recensione', 'note'];
-export const COLONNE_SCHEDA = ['data', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'parametri', 'recensione', 'note'];
+export const COLONNE_SCHEDA = ['dataSito', 'piattaforma', 'durata', 'costo', 'costoMinuto', 'voto', 'parametri', 'recensione', 'note'];
 
 export function intestazioneShow(colonne) {
     return `<tr>${colonne.map(c => {

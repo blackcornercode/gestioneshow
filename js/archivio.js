@@ -146,29 +146,35 @@ export function aggiornaViste() {
     stato.mappaUrlPerSito = mappe.urlPerSito;
     stato.elencoModelleUniche = calcolaModelleUniche(stato.tuttiGliShow);
 
+    avvisaViste();
+}
+
+// Ridisegna le viste senza ricalcolare i dati derivati (es. al cambio lingua,
+// quando l'archivio non è cambiato)
+export function avvisaViste() {
     ascoltatori.forEach(funzione => funzione());
 }
 
 // Rilegge l'archivio dal disco e ridisegna tutto: all'avvio e dopo un'importazione
 export async function aggiornaInterfaccia() {
+    // Un catalogo illeggibile non blocca l'app: si segnala e si parte da un catalogo vuoto
+    const catalogoOVuoto = (descrizione) => (err) => {
+        logger.error(`Catalogo ${descrizione} non caricato`, err);
+        alert(`⚠️ ${err.message}`);
+        return [];
+    };
     try {
-        stato.tuttiGliShow = await leggiArchivio();
-        try {
-            stato.catalogoTag = await leggiCatalogoTag();
-        } catch (err) {
-            // Senza catalogo gli show restano utilizzabili, solo senza tag visibili
-            logger.error('Catalogo dei tag non caricato', err);
-            alert(`⚠️ ${err.message}`);
-            stato.catalogoTag = [];
-        }
-        try {
-            stato.catalogoSiti = await leggiCatalogoSiti();
-        } catch (err) {
-            // Senza catalogo i siti si mostrano con il loro ID
-            logger.error('Catalogo dei siti non caricato', err);
-            alert(`⚠️ ${err.message}`);
-            stato.catalogoSiti = [];
-        }
+        // Archivio e cataloghi letti insieme (tre richieste indipendenti al processo principale).
+        // Senza catalogo dei tag gli show restano utilizzabili, solo senza tag visibili;
+        // senza catalogo dei siti i siti si mostrano con il loro ID.
+        const [shows, catalogoTag, catalogoSiti] = await Promise.all([
+            leggiArchivio(),
+            leggiCatalogoTag().catch(catalogoOVuoto('dei tag')),
+            leggiCatalogoSiti().catch(catalogoOVuoto('dei siti'))
+        ]);
+        stato.tuttiGliShow = shows;
+        stato.catalogoTag = catalogoTag;
+        stato.catalogoSiti = catalogoSiti;
         logger.info(`Dati letti. Totale show caricati: ${stato.tuttiGliShow.length}`);
         aggiornaViste();
     } catch (err) {

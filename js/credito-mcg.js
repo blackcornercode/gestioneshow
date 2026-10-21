@@ -2,6 +2,7 @@ import { t, localeCorrente } from './i18n.js';
 import { logger } from './logger.js';
 import { SITO_MCG } from './siti.js';
 import { funzioneDisponibile, FUNZIONI } from './connettori.js';
+import { ripetiOgni } from './timer.js';
 
 /* ==========================================================================
    CREDITO RESIDUO SU MONDO CAM GIRLS
@@ -76,5 +77,5 @@ export async function aggiornaCredito() {
 export function inizializzaCredito() {
     aggiornaTestoCredito();
     aggiornaCredito();
-    setInterval(aggiornaCredito, INTERVALLO_CREDITO_MS);
+    ripetiOgni(aggiornaCredito, INTERVALLO_CREDITO_MS);
 }
