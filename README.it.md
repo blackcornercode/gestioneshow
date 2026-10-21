@@ -6,7 +6,7 @@
 
 **Il tuo diario privato degli show: ogni incontro registrato, ogni euro sotto controllo, ogni modella al posto giusto in classifica.**
 
-[![Versione](https://img.shields.io/badge/versione-2.0.0-6d2336)](https://github.com/blackcornercode/private-diary/releases)
+[![Versione](https://img.shields.io/badge/versione-2.0.1-6d2336)](https://github.com/blackcornercode/private-diary/releases)
 ![Piattaforma](https://img.shields.io/badge/piattaforma-Windows-0078d4)
 [![Test](https://github.com/blackcornercode/private-diary/actions/workflows/test.yml/badge.svg)](https://github.com/blackcornercode/private-diary/actions/workflows/test.yml)
 [![Licenza](https://img.shields.io/badge/licenza-ISC-c5a05a)](LICENSE)
