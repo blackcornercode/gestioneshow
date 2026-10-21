@@ -6,7 +6,7 @@
 
 **Your private cam-show diary: every session logged, every euro under control, every model in the right place in the ranking.**
 
-[![Version](https://img.shields.io/badge/version-2.0.0-6d2336)](https://github.com/blackcornercode/private-diary/releases)
+[![Version](https://img.shields.io/badge/version-2.0.1-6d2336)](https://github.com/blackcornercode/private-diary/releases)
 ![Platform](https://img.shields.io/badge/platform-Windows-0078d4)
 [![Tests](https://github.com/blackcornercode/private-diary/actions/workflows/test.yml/badge.svg)](https://github.com/blackcornercode/private-diary/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-ISC-c5a05a)](LICENSE)
